@@ -2,6 +2,12 @@
 
 SaturnCI is a continuous integration platform for Ruby on Rails applications.
 
+## Why another CI service?
+
+What distinguishes SaturnCI from other CI services like CircleCI and GitHub Actions is the user-friendliness of its interface.
+
+Because SaturnCI is tailored specifically to Rails apps instead of being technology-agnostic, SaturnCI can make assumptions about how your build process works and what you want to see.
+
 ## Setup
 
 Install GitHub app
