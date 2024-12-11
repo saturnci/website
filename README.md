@@ -1,3 +1,7 @@
+## What is SaturnCI?
+
+SaturnCI is a continuous integration platform for Ruby on Rails applications.
+
 ## Setup
 
 Install GitHub app
