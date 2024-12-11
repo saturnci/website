@@ -18,6 +18,10 @@ For example, if your test suite has 80 tests and your parallelization is set to 
 
 ## How do I get started?
 
+### Requirements
+
+SaturnCI only works for Ruby on Rails applications, and currently only for the RSpec framework.
+
 ### Create a SaturnCI account
 
 1. Visit [https://app.saturnci.com](https://app.saturnci.com)
