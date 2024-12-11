@@ -12,7 +12,9 @@ Because SaturnCI is tailored specifically to Rails apps instead of being technol
 
 ## How does SaturnCI work?
 
-When you do a Git push, a **build** will automatically start in SaturnCI. Each build is associated with one or more **runners**, each of which will perform a **run** of your test suite.
+When you do a Git push, SaturnCI will automatically start a **build**. For performance reasons, SaturnCI runs chunks of your test suite in parallel. Each build is associated with one or more **runners**, each of which will perform a **run** of part of your test suite.
+
+For example, if your test suite has 80 tests and your parallelization is set to 2, your build will get 2 runners, each of which run 40 tests. If your test suite has 80 tests and your parallelization is set to 8, your build will get 8 runners, each of which runs 10 tests.
 
 ## Setup
 
