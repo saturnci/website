@@ -1,4 +1,4 @@
-## Client setup
+## Setup
 
 Install GitHub app
 
