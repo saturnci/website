@@ -16,9 +16,17 @@ When you do a Git push, SaturnCI will automatically start a **build**. For perfo
 
 For example, if your test suite has 80 tests and your parallelization is set to 2, your build will get 2 runners, each of which run 40 tests. If your test suite has 80 tests and your parallelization is set to 8, your build will get 8 runners, each of which runs 10 tests.
 
-## Setup
+## How do I get started?
 
-Install GitHub app
+### Create a SaturnCI account
+
+1. Visit [https://app.saturnci.com](https://app.saturnci.com)
+2. Click "Sign up with GitHub"
+3. Grant permissions to GitHub
+
+[screenshot]
+
+### Install SaturnCI GitHub app
 
 https://github.com/apps/saturnci
 
