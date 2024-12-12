@@ -30,9 +30,13 @@ SaturnCI only works for Ruby on Rails applications, and currently only for the R
 
 [screenshot]
 
-### Install SaturnCI GitHub app
+### Install the SaturnCI GitHub app
 
-https://github.com/apps/saturnci
+1. Visit [https://github.com/apps/saturnci](https://github.com/apps/saturnci)
+2. Click "Configure"
+3. Grant permissions to SaturnCI for whichever repositories you wish
+
+### Add the SaturnCI configuration files to your repository
 
 ```Dockerfile
 # .saturnci/Dockerfile
