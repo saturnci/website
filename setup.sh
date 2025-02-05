@@ -33,7 +33,6 @@ services:
       - ../:/code
     depends_on:
       - postgres
-      - redis
       - chrome
     environment:
       DOCKER_ENV: "true"
@@ -42,7 +41,6 @@ services:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       RAILS_ENV: test
-      REDIS_URL: redis://redis:6379/0
       SATURNCI_API_USERNAME: myuser
       SATURNCI_API_PASSWORD: mypassword
 
@@ -66,16 +64,6 @@ services:
     logging:
       driver: none
 
-  redis:
-    image: redis:4.0.14-alpine
-    volumes:
-      - redis:/data:delegated
-    ports:
-      - "127.0.0.1:6379:6379"
-    restart: on-failure
-    logging:
-      driver: none
-
   chrome:
     image: seleniarm/standalone-chromium
     hostname: chrome
@@ -85,7 +73,6 @@ services:
 
 volumes:
   postgresql:
-  redis:
 EOF
 
 # Create database.yml
