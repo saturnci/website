@@ -43,7 +43,7 @@ services:
       RAILS_ENV: test
 
   postgres:
-    image: postgres:13.1-alpine
+    image: postgres:17.2-alpine
     volumes:
       - postgresql:/var/lib/postgresql/data:delegated
       - ./init.sql:/data/application/init.sql
