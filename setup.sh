@@ -25,6 +25,7 @@ version: "3.8"
 
 services:
   saturn_test_app:
+    hostname: saturn_test_app
     build:
       context: ../
       dockerfile: .saturnci/Dockerfile
