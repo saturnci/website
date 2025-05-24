@@ -25,16 +25,30 @@ version: "3.8"
 
 services:
   saturn_test_app:
+    # This hostname is what will go in the Capybara host config.
     hostname: saturn_test_app
+
     build:
       context: ../
       dockerfile: .saturnci/Dockerfile
-    image: \${SATURN_TEST_APP_IMAGE_URL}
+
+    image: \${SATURN_TEST_APP_IMAGE_URL:latest}
+
     volumes:
       - ../:/code
+
     depends_on:
       - postgres
       - chrome
+
+    # .saturnci/.env is where SaturnCI will put the environment variables
+    # that you set in your repository's Secrets section in Settings.
+    #
+    # Optionally, you can add a local .saturnci.env file to provide environment
+    # variables when you run your SaturnCI setup locally.
+    env_file:
+      - .env
+
     environment:
       DOCKER_ENV: "true"
       DATABASE_USERNAME: saturn
@@ -88,7 +102,5 @@ EOF
 # Create pre.sh
 cat <<EOF > .saturnci/pre.sh
 #!/bin/bash
-rails db:create && \\
-  rails db:schema:load && \\
-  rails assets:precompile
+bundle exec rails db:create db:schema:load
 EOF
