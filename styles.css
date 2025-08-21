@@ -148,3 +148,24 @@ a.sign-up-link {
 a.sign-up-link:hover {
   background: linear-gradient(to bottom, #FF6347, #FF0000);
 }
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 90%;
+    margin: 20px;
+    padding: 40px 30px;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  a.sign-up-link {
+    font-size: 20px;
+    padding: 12px 24px;
+  }
+}
