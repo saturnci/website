@@ -6,11 +6,44 @@ body {
   background: linear-gradient(to bottom, #000428, #004e92);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #333;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: rgba(0, 4, 40, 0.7);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+  color: #A8C8EC;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #FFF;
+}
+
+.nav-link.active {
+  color: #FFF;
+  font-weight: 600;
 }
 
 .container {
@@ -21,6 +54,7 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   max-width: 400px;
+  margin: 80px auto 40px auto;
 }
 
 h1 {
@@ -62,10 +96,49 @@ a.sign-up-link:hover {
   background: linear-gradient(to bottom, #FF6347, #FF0000);
 }
 
+.about-container {
+  max-width: 700px;
+  text-align: left;
+}
+
+.about-container h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-container .sign-up-link {
+  display: block;
+  width: fit-content;
+  margin: 30px auto 0 auto;
+}
+
+.about-content {
+  text-align: left;
+}
+
+.about-content h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #FFF;
+  font-size: 22px;
+  margin: 25px 0 10px 0;
+  text-align: left;
+}
+
+.about-content p {
+  color: #A8C8EC;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.about-content a {
+  color: #FFF;
+}
+
 @media (max-width: 768px) {
   .container {
     max-width: 90%;
-    margin: 20px;
+    margin: 100px 20px 20px 20px;
     padding: 40px 30px;
   }
 
@@ -80,5 +153,9 @@ a.sign-up-link:hover {
   a.sign-up-link {
     font-size: 20px;
     padding: 12px 24px;
+  }
+  
+  .navbar {
+    gap: 20px;
   }
 }
