@@ -20,13 +20,11 @@ body {
   left: 0;
   right: 0;
   padding: 20px;
-  background: rgba(0, 4, 40, 0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 4, 40, 1);
   display: flex;
   justify-content: center;
   gap: 30px;
   z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-link {
