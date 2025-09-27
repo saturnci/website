@@ -1,0 +1,56 @@
+name: Build and Deploy Site
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'pages/**'
+      - 'layouts/**'
+      - 'build.rb'
+      - '*.css'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+
+    - name: Build site
+      run: ruby build.rb
+
+    - name: Deploy built files to root
+      run: |
+        # Copy HTML files
+        cp public/*.html .
+
+        # Copy CSS files
+        cp public/*.css .
+
+        # Copy other assets if they exist
+        cp public/CNAME . 2>/dev/null || true
+        cp public/setup.sh . 2>/dev/null || true
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        # Add all generated files
+        git add *.html *.css CNAME setup.sh 2>/dev/null || true
+
+        # Only commit if there are changes
+        if ! git diff --staged --quiet; then
+          git commit -m "Auto-build site from source [skip ci]"
+          git push
+        else
+          echo "No changes to commit"
+        fi
