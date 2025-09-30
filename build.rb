@@ -41,7 +41,7 @@ class StaticSiteBuilder
   end
 
   def load_pages
-    Dir.glob("#{@pages_dir}/*.md").each do |file|
+    Dir.glob("#{@pages_dir}/*.html").each do |file|
       content = File.read(file)
       if content.start_with?('---')
         parts = content.split('---', 3)
@@ -52,7 +52,7 @@ class StaticSiteBuilder
         body = content
       end
 
-      filename = File.basename(file, '.md')
+      filename = File.basename(file, '.html')
       @pages << {
         filename: filename,
         frontmatter: frontmatter,
@@ -66,12 +66,19 @@ class StaticSiteBuilder
     layout_template = load_layout('default')
 
     @pages.each do |page|
+      # Wrap content in container for all pages except home
+      content = if page[:filename] == 'index'
+        page[:content]
+      else
+        "<div class=\"container\">\n#{page[:content]}\n</div>"
+      end
+
       # Create context for ERB template
       context = OpenStruct.new(
         title: page[:frontmatter]['title'] || 'SaturnCI',
         page_title: page[:frontmatter]['page_title'],
         active_nav: page[:frontmatter]['nav'] || page[:filename],
-        content: page[:content],
+        content: content,
         pages: @pages
       )
 

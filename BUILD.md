@@ -19,7 +19,7 @@ This generates the site in `public/` directory.
 
 ## Adding Pages
 
-1. Create a new file in `pages/` with `.md` extension
+1. Create a new file in `pages/` with `.html` extension
 2. Add YAML frontmatter:
    ```yaml
    ---
