@@ -1,10 +1,4 @@
 module SyntaxHighlighter
-  begin
-    require 'rouge'
-  rescue LoadError
-    puts "Rouge gem not found. Install with: gem install rouge"
-    exit 1
-  end
 
   def highlight_code_blocks(content)
     content.gsub(/<pre><code class="language-(\w+)">(.*?)<\/code><\/pre>/m) do

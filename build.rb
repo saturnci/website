@@ -4,6 +4,14 @@ require 'erb'
 require 'yaml'
 require 'fileutils'
 require 'ostruct'
+
+begin
+  require 'rouge'
+rescue LoadError
+  puts "Rouge gem not found. Install with: gem install rouge"
+  exit 1
+end
+
 require_relative 'lib/syntax_highlighter'
 
 class StaticSiteBuilder
