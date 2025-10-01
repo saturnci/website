@@ -140,6 +140,15 @@ a.sign-up-link:hover {
   overflow-x: auto;
 }
 
+/* Rouge YAML syntax highlighting */
+.highlight .c1 { color: #75715e; } /* Comments */
+.highlight .na { color: #66d9ef; } /* Keys */
+.highlight .s { color: #a6e22e; } /* Strings */
+.highlight .s2 { color: #a6e22e; } /* Double quoted strings */
+.highlight .pi { color: #f8f8f2; } /* Punctuation */
+.highlight .m { color: #ae81ff; } /* Numbers */
+.highlight .nv { color: #fd971f; } /* Variables */
+
 @media (max-width: 768px) {
   .container {
     max-width: 90%;

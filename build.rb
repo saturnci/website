@@ -5,6 +5,13 @@ require 'yaml'
 require 'fileutils'
 require 'ostruct'
 
+begin
+  require 'rouge'
+rescue LoadError
+  puts "Rouge gem not found. Install with: gem install rouge"
+  exit 1
+end
+
 class StaticSiteBuilder
   def initialize
     @layouts_dir = 'layouts'
@@ -66,7 +73,7 @@ class StaticSiteBuilder
     layout_template = load_layout('default')
 
     @pages.each do |page|
-      content = page[:content]
+      content = highlight_code_blocks(page[:content])
 
       # Create context for ERB template
       context = OpenStruct.new(
@@ -89,6 +96,20 @@ class StaticSiteBuilder
 
   def load_layout(name)
     File.read("#{@layouts_dir}/#{name}.html.erb")
+  end
+
+  def highlight_code_blocks(content)
+    formatter = Rouge::Formatters::HTML.new(css_class: 'highlight')
+
+    content.gsub(/<pre><code>(.*?)<\/code><\/pre>/m) do |match|
+      code = $1.strip
+
+      # Force YAML lexer for now
+      lexer = Rouge::Lexer.find('yaml')
+      highlighted = formatter.format(lexer.lex(code))
+
+      "<pre class=\"highlight\"><code>#{highlighted}</code></pre>"
+    end
   end
 end
 

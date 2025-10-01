@@ -9,13 +9,25 @@ This site uses a custom Ruby static site generator.
 - `public/` - Generated output (deploy this)
 - `build.rb` - Build script
 
+## Setup
+
+Install dependencies:
+```bash
+bundle install
+```
+
 ## Building
 
 ```bash
-ruby build.rb
+bundle exec ruby build.rb
 ```
 
 This generates the site in `public/` directory.
+
+For development with auto-rebuild:
+```bash
+./serve.sh
+```
 
 ## Adding Pages
 

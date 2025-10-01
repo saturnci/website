@@ -18,7 +18,7 @@ fi
 
 # Initial build
 cd "$SCRIPT_DIR"
-ruby build.rb
+bundle exec ruby build.rb
 
 # Start server in background with absolute path
 ruby -run -e httpd "$PUBLIC_DIR" -p $PORT &
@@ -43,5 +43,5 @@ trap cleanup EXIT INT TERM
 # Build loop - stay in script directory
 while true; do
   sleep 1
-  ruby build.rb
+  bundle exec ruby build.rb
 done
