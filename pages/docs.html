@@ -12,7 +12,7 @@ nav: docs
     SaturnCI uses Docker Compose to create the environment in which your tests run.
     Below is an example Docker Compose file.
 
-    <pre><code># .saturnci/docker-compose.yml
+    <pre><code class="language-yaml"># .saturnci/docker-compose.yml
 #
 # SaturnCI Docker Environment
 #
@@ -112,7 +112,7 @@ volumes:
 
     <h3>Dockerfile</h3>
 
-    <pre><code># .saturnci/Dockerfile
+    <pre><code class="language-dockerfile"># .saturnci/Dockerfile
 FROM ruby:3.3.5-slim
 
 WORKDIR /app

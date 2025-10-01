@@ -99,15 +99,14 @@ class StaticSiteBuilder
   end
 
   def highlight_code_blocks(content)
-    formatter = Rouge::Formatters::HTML.new(css_class: 'highlight')
+    content.gsub(/<pre><code class="language-(\w+)">(.*?)<\/code><\/pre>/m) do
+      language = $1
+      code = $2
 
-    content.gsub(/<pre><code>(.*?)<\/code><\/pre>/m) do |match|
-      code = $1.strip
+      lexer = Rouge::Lexer.find(language)
+      formatter = Rouge::Formatters::HTML.new(css_class: 'highlight')
 
-      # Force YAML lexer for now
-      lexer = Rouge::Lexer.find('yaml')
       highlighted = formatter.format(lexer.lex(code))
-
       "<pre class=\"highlight\"><code>#{highlighted}</code></pre>"
     end
   end
