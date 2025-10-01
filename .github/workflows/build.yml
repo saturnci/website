@@ -24,12 +24,10 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
-
-    - name: Install Rouge gem
-      run: gem install rouge
+        bundler-cache: true
 
     - name: Build site
-      run: ruby build.rb
+      run: bundle exec ruby build.rb
 
     - name: Deploy built files to root
       run: |
