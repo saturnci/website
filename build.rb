@@ -66,12 +66,7 @@ class StaticSiteBuilder
     layout_template = load_layout('default')
 
     @pages.each do |page|
-      # Wrap content in container for all pages except home
-      content = if page[:filename] == 'index'
-        page[:content]
-      else
-        "<div class=\"container\">\n#{page[:content]}\n</div>"
-      end
+      content = page[:content]
 
       # Create context for ERB template
       context = OpenStruct.new(
