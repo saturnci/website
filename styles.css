@@ -132,6 +132,14 @@ a.sign-up-link:hover {
   color: #FFF;
 }
 
+.page-content pre {
+  background: #000;
+  color: #FFF;
+  padding: 20px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
 @media (max-width: 768px) {
   .container {
     max-width: 90%;
