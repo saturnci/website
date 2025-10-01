@@ -6,6 +6,7 @@ on:
     paths:
       - 'pages/**'
       - 'layouts/**'
+      - 'lib/**'
       - 'build.rb'
       - '*.css'
 
@@ -23,6 +24,9 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
+
+    - name: Install Rouge gem
+      run: gem install rouge
 
     - name: Build site
       run: ruby build.rb
