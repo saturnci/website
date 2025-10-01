@@ -94,27 +94,27 @@ a.sign-up-link:hover {
   background: linear-gradient(to bottom, #FF6347, #FF0000);
 }
 
-.about-container {
+.page-container {
   max-width: 700px;
   text-align: left;
 }
 
-.about-container h1 {
+.page-container h1 {
   text-align: center;
   margin-bottom: 40px;
 }
 
-.about-container .sign-up-link {
+.page-container .sign-up-link {
   display: block;
   width: fit-content;
   margin: 30px auto 0 auto;
 }
 
-.about-content {
+.page-content {
   text-align: left;
 }
 
-.about-content h3 {
+.page-content h3 {
   font-family: Georgia, 'Times New Roman', serif;
   color: #FFF;
   font-size: 22px;
@@ -122,14 +122,14 @@ a.sign-up-link:hover {
   text-align: left;
 }
 
-.about-content p {
+.page-content p {
   color: #A8C8EC;
   line-height: 1.6;
   margin-bottom: 20px;
   text-align: left;
 }
 
-.about-content a {
+.page-content a {
   color: #FFF;
 }
 
