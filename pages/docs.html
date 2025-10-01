@@ -13,6 +13,17 @@ nav: docs
     Below is an example Docker Compose file.
 
     <pre><code># .saturnci/docker-compose.yml
+# SaturnCI Docker Environment
+#
+# This Docker Compose file specifies the environment that SaturnCI uses to run your tests.
+#
+# Local Development Usage:
+#   cd .saturnci
+#   docker-compose up -d                    # Start all services
+#   docker-compose run saturn_test_app bash # Get shell in app container
+#   docker-compose run saturn_test_app bundle exec rspec  # Run tests
+#   docker-compose down                     # Stop and remove containers
+
 version: "3.8"
 
 services:
@@ -20,10 +31,13 @@ services:
     # This hostname is what will go in the Capybara host config.
     hostname: saturn_test_app
 
-    image: ${SATURN_TEST_APP_IMAGE_URL}:latest
+    image: ${SATURN_TEST_APP_IMAGE_URL:-saturnci-local}
+    build:
+      context: ..
+      dockerfile: .saturnci/Dockerfile
     volumes:
-      - ../:/code
-      - ./database.yml:/code/config/database.yml:ro
+      - ../:/app
+      - ./database.yml:/app/config/database.yml:ro
     depends_on:
       - postgres
       - chrome
@@ -83,6 +97,7 @@ services:
       retries: 5
 
 volumes:
-  postgresql:</code></pre>
+  postgresql:
+    </code></pre>
   </div>
 </div>
