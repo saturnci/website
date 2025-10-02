@@ -5,21 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Docs - SaturnCI</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="stars.css">
 </head>
 
 <body>
 
 <nav class="navbar">
-  <a href="index.html" class="nav-link">Home</a>
-  <a href="docs.html" class="nav-link active">Docs</a>
-  <a href="about.html" class="nav-link">About</a>
+  <a href="./index.html" class="nav-link">Home</a>
+  <a href="./docs.html" class="nav-link active">Docs</a>
+  <a href="./about.html" class="nav-link">About</a>
 </nav>
 
 <div class="container page-container">
   <h1>Documentation</h1>
 
   <div class="page-content">
+    <h2>What is SaturnCI?</h2>
+
+    <p>
+      SaturnCI is a continuous integration (CI) tool for Ruby on Rails applications.
+      SaturnCI currently only supports RSpec (as opposed to Minitest).
+    </p>
+
+    <h2>Configuration</h2>
+
+    <p>
+      Most CI products (GitHub Actions, GitLab Pipelines, CircleCI, etc.) use custom quasi-executable YAML files for configuration, often with embedded bash scripts.
+      SaturnCI works differently. SaturnCI simply takes advantage of the existing flexibility of Docker and Docker Compose, which many developers are already familiar with.
+    </p>
+
     <h3>Docker Compose Configuration</h3>
 
     SaturnCI uses Docker Compose to create the environment in which your tests run.
