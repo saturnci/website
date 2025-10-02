@@ -1,0 +1,174 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docs - SaturnCI</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="stars.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="docs.html" class="nav-link active">Docs</a>
+  <a href="about.html" class="nav-link">About</a>
+</nav>
+
+<div class="container page-container">
+  <h1>Documentation</h1>
+
+  <div class="page-content">
+    <h3>Docker Compose Configuration</h3>
+
+    SaturnCI uses Docker Compose to create the environment in which your tests run.
+    Below is an example Docker Compose file.
+
+    <pre class="highlight"><code><span class="c1"># .saturnci/docker-compose.yml</span>
+<span class="c1">#</span>
+<span class="c1"># SaturnCI Docker Environment</span>
+<span class="c1">#</span>
+<span class="c1"># This Docker Compose file specifies the environment that SaturnCI uses to run</span>
+<span class="c1"># your tests.</span>
+<span class="c1">#</span>
+<span class="c1"># Local Development Usage:</span>
+<span class="c1">#   cd .saturnci</span>
+<span class="c1">#</span>
+<span class="c1">#   Start all services</span>
+<span class="c1">#   docker-compose up -d</span>
+<span class="c1">#</span>
+<span class="c1">#   Get shell in app container</span>
+<span class="c1">#   docker-compose run saturn_test_app bash</span>
+<span class="c1">#</span>
+<span class="c1">#   Run tests</span>
+<span class="c1">#   docker-compose run saturn_test_app bundle exec rspec</span>
+<span class="c1">#</span>
+<span class="c1">#   Stop and remove containers</span>
+<span class="c1">#   docker-compose down</span>
+
+<span class="na">version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3.8"</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">saturn_test_app</span><span class="pi">:</span>
+    <span class="c1"># This hostname is what will go in the Capybara host config.</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">saturn_test_app</span>
+
+    <span class="na">image</span><span class="pi">:</span> <span class="s">${SATURN_TEST_APP_IMAGE_URL:-saturnci-local}</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">..</span>
+      <span class="na">dockerfile</span><span class="pi">:</span> <span class="s">.saturnci/Dockerfile</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">../:/app</span>
+      <span class="pi">-</span> <span class="s">./database.yml:/app/config/database.yml:ro</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">postgres</span>
+      <span class="pi">-</span> <span class="s">chrome</span>
+
+    <span class="c1"># .saturnci/.env is where SaturnCI will put the environment variables</span>
+    <span class="c1"># that you set in your repository's Secrets section in Settings.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Optionally, you can add a local .saturnci.env file to provide environment</span>
+    <span class="c1"># variables when you run your SaturnCI setup locally.</span>
+    <span class="na">env_file</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">.env</span>
+
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">DOCKER_ENV</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+      <span class="na">DATABASE_USERNAME</span><span class="pi">:</span> <span class="s">saturn</span>
+      <span class="na">DATABASE_PASSWORD</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+      <span class="na">DATABASE_HOST</span><span class="pi">:</span> <span class="s">postgres</span>
+      <span class="na">DATABASE_PORT</span><span class="pi">:</span> <span class="m">5432</span>
+      <span class="na">RAILS_ENV</span><span class="pi">:</span> <span class="s">test</span>
+
+    <span class="na">healthcheck</span><span class="pi">:</span>
+      <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">--fail"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:3000"</span><span class="pi">]</span>
+      <span class="na">interval</span><span class="pi">:</span> <span class="s">10s</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="s">5s</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">10</span>
+
+  <span class="na">postgres</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:17.2-alpine</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">postgresql:/var/lib/postgresql/data:delegated</span>
+      <span class="pi">-</span> <span class="s">./init.sql:/data/application/init.sql</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">127.0.0.1:5432:5432"</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="na">PSQL_HISTFILE</span><span class="pi">:</span> <span class="s">/usr/src/app/log/.psql_history</span>
+      <span class="na">POSTGRES_USER</span><span class="pi">:</span> <span class="s">saturn</span>
+      <span class="na">POSTGRES_HOST_AUTH_METHOD</span><span class="pi">:</span> <span class="s">trust</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">on-failure</span>
+    <span class="na">healthcheck</span><span class="pi">:</span>
+      <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD-SHELL"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">saturn"</span><span class="pi">]</span>
+      <span class="na">interval</span><span class="pi">:</span> <span class="s">10s</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="s">2s</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">10</span>
+    <span class="na">logging</span><span class="pi">:</span>
+      <span class="na">driver</span><span class="pi">:</span> <span class="s">none</span>
+
+  <span class="na">chrome</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">seleniarm/standalone-chromium</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">chrome</span>
+    <span class="na">shm_size</span><span class="pi">:</span> <span class="s">2g</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">4444:4444"</span>
+    <span class="na">healthcheck</span><span class="pi">:</span>
+      <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">--fail"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:4444/wd/hub/status"</span><span class="pi">]</span>
+      <span class="na">interval</span><span class="pi">:</span> <span class="s">10s</span>
+      <span class="na">timeout</span><span class="pi">:</span> <span class="s">5s</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">5</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">postgresql</span><span class="pi">:</span>
+    </code></pre>
+
+    <h3>Dockerfile</h3>
+
+    <pre class="highlight"><code><span class="c"># .saturnci/Dockerfile</span>
+
+<span class="k">FROM</span><span class="s"> ruby:3.3.5-slim</span>
+
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+
+<span class="k">ENV</span><span class="s"> RAILS_ENV=test</span>
+
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\
+</span>    build-essential <span class="se">\
+</span>    libpq-dev <span class="se">\
+</span>    nodejs <span class="se">\
+</span>    git <span class="se">\
+</span>    <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /var/lib/apt/lists/<span class="k">*</span>
+
+<span class="k">COPY</span><span class="s"> Gemfile Gemfile.lock ./</span>
+<span class="k">RUN </span>bundle <span class="nb">install</span> <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /usr/local/bundle/cache/<span class="k">*</span>
+
+<span class="k">COPY</span><span class="s"> app/assets ./app/assets</span>
+<span class="k">COPY</span><span class="s"> app/javascript ./app/javascript</span>
+<span class="k">COPY</span><span class="s"> app/views ./app/views</span>
+<span class="k">COPY</span><span class="s"> config/environments ./config/environments</span>
+<span class="k">COPY</span><span class="s"> config/initializers ./config/initializers</span>
+<span class="k">COPY</span><span class="s"> config/application.rb config/boot.rb config/environment.rb ./config/</span>
+<span class="k">COPY</span><span class="s"> public ./public</span>
+
+<span class="c"># Dummy database environment variables required for asset precompilation.</span>
+<span class="c"># Rails loads the application environment during asset compilation, which</span>
+<span class="c"># evaluates database.yml and may trigger database connections in initializers.</span>
+<span class="c"># These dummy values prevent build failures when no database is available.</span>
+<span class="k">ENV</span><span class="s"> DATABASE_NAME=dummy_database_name</span>
+<span class="k">ENV</span><span class="s"> DATABASE_USERNAME=dummy_database_username</span>
+<span class="k">ENV</span><span class="s"> DATABASE_PASSWORD=dummy_database_password</span>
+<span class="k">ENV</span><span class="s"> DATABASE_HOST=localhost</span>
+<span class="k">ENV</span><span class="s"> DATABASE_PORT=5432</span>
+
+<span class="k">RUN </span>bundle <span class="nb">exec </span>rails assets:precompile <span class="o">&amp;&amp;</span> <span class="se">\
+</span>    <span class="nb">rm</span> <span class="nt">-rf</span> tmp/cache node_modules/.cache
+
+<span class="k">COPY</span><span class="s"> . ./</span>
+
+<span class="k">CMD</span><span class="s"> ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]</span></code></pre>
+  </div>
+</div>
+
+</body>
+</html>
