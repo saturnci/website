@@ -11,7 +11,7 @@ The Rails template adds SaturnCI configuration to any existing Rails application
 Run this command from your Rails application directory:
 
 ```bash
-rails app:template LOCATION=https://raw.githubusercontent.com/saturnci/website/main/templates/rails_template.rb
+rails app:template LOCATION=https://saturnci.com/templates/rails_template.rb
 ```
 
 ### What it adds
