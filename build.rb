@@ -44,8 +44,8 @@ class StaticSiteBuilder
       FileUtils.cp(file, @output_dir)
     end
 
-    # Copy other assets like CNAME, setup.sh, etc.
-    %w[CNAME setup.sh].each do |file|
+    # Copy other assets like CNAME, etc.
+    %w[CNAME].each do |file|
       FileUtils.cp(file, @output_dir) if File.exist?(file)
     end
   end
