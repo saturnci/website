@@ -1,1 +1,19 @@
-This is the README for the Saturn CI website.
+# SaturnCI Website
+
+## Setup
+
+```bash
+bundle install
+```
+
+## Build
+
+```bash
+ruby build.rb
+```
+
+## Development
+
+```bash
+./serve.sh
+```
