@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= page_title ? "#{page_title} - #{title}" : title %></title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="stars.css">
 </head>
 
 <body>
 
 <nav class="navbar">
-  <a href="index.html" class="nav-link<%= active_nav == 'index' ? ' active' : '' %>">Home</a>
-  <a href="docs.html" class="nav-link<%= active_nav == 'docs' ? ' active' : '' %>">Docs</a>
-  <a href="about.html" class="nav-link<%= active_nav == 'about' ? ' active' : '' %>">About</a>
+  <a href="./index.html" class="nav-link<%= active_nav == 'index' ? ' active' : '' %>">Home</a>
+  <a href="./docs.html" class="nav-link<%= active_nav == 'docs' ? ' active' : '' %>">Docs</a>
+  <a href="./about.html" class="nav-link<%= active_nav == 'about' ? ' active' : '' %>">About</a>
 </nav>
 
 <%= content %>
