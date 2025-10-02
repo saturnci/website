@@ -9,6 +9,13 @@ on:
       - 'lib/**'
       - 'build.rb'
       - '*.css'
+      - 'Gemfile'
+      - 'Gemfile.lock'
+      - '.github/workflows/build.yml'
+
+concurrency:
+  group: pages-deployment
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -41,7 +48,6 @@ jobs:
 
         # Copy other assets if they exist
         cp public/CNAME . 2>/dev/null || true
-        cp public/setup.sh . 2>/dev/null || true
 
     - name: Commit and push changes
       run: |
@@ -49,7 +55,7 @@ jobs:
         git config --local user.name "GitHub Action"
 
         # Add all generated files
-        git add *.html *.css CNAME setup.sh 2>/dev/null || true
+        git add *.html *.css CNAME 2>/dev/null || true
 
         # Only commit if there are changes
         if ! git diff --staged --quiet; then
