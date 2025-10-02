@@ -48,9 +48,6 @@ class StaticSiteBuilder
     %w[CNAME setup.sh].each do |file|
       FileUtils.cp(file, @output_dir) if File.exist?(file)
     end
-
-    # Copy templates directory
-    FileUtils.cp_r('templates', @output_dir)
   end
 
   def load_pages
