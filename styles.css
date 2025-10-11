@@ -36,3 +36,14 @@ p {
   display: flex;
   gap: 4px;
 }
+
+.nav-sign-up-link {
+  display: block;
+  background-color: #F00;
+  padding: 3px 5px;
+  border-radius: 5px;
+}
+
+.nav-sign-up-link, .nav-sign-up-link:visited {
+  color: #FFF;
+}
