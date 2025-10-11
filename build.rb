@@ -80,7 +80,7 @@ class StaticSiteBuilder
 
       # Create context for ERB template
       context = OpenStruct.new(
-        title: page[:frontmatter]['title'] || 'SaturnCI',
+        title: page[:frontmatter]['title'] || 'SaturnCI - Continuous Integration for Ruby on Rails',
         page_title: page[:frontmatter]['page_title'],
         active_nav: page[:frontmatter]['nav'] || page[:filename],
         content: content,

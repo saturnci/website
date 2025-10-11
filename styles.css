@@ -15,3 +15,7 @@
 .highlight .pi { color: #f8f8f2; } /* Punctuation */
 .highlight .m { color: #ae81ff; } /* Numbers */
 .highlight .nv { color: #fd971f; } /* Variables */
+
+p {
+  max-width: 600px;
+}

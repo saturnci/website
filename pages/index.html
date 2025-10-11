@@ -7,6 +7,68 @@
   </div>
 
   <p>
-    <a class="sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request Invite</a>
+    <a class="sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request SaturnCI Invite</a>
+  </p>
+
+  <h2>What is SaturnCI and why was it created?</h2>
+
+  <p>
+    I'm Jason Swett, the creator of SaturnCI.
+    I built SaturnCI because I was frustrated with existing CI tools like CircleCI, GitHub Actions, GitLab Pipelines, TeamCity and Jenkins.
+  </p>
+
+  <h3>Don't hide the most important thing from me!</h3>
+
+  <p>
+    What frustrated me about these other products?
+    When a test run fails, I want to know exactly one thing: <i>what went wrong</i>.
+    You would think that CI tools would make this easy. But no! Most of leading tools make you <i>dig</i> to find the failure message.
+    You have to click around to different pages, scroll through logs, and manually scan log output, with your eyeballs, to separate signal from noise.
+    Why? Why are these tools making us do all this manual work that a computer could automate?
+    I find it stupid, quite frankly. In fact, I'm personally offended by it.
+  </p>
+
+  <p>
+    I created SaturnCI because I wanted a CI product that followed the rules of common sense.
+    Since I know that the failure message is what you want to see when a test suite fails, that's the first thing SaturnCI shows you.
+    No digging, no scrolling, no manual searching with your eyeballs.
+    SaturnCI automates the things a computer should automate.
+  </p>
+
+  <h3>Fuck executable YAML!</h3>
+
+  <p>
+    Another thing that I <i>hate hate hate</i> about most CI products is the concept of configuration-as-quasi-executable-YAML.
+    What's even worse is that most YAML configurations also contain a non-trivial amount of shell scripting.
+    I think the fact that as an industry we've arrived at shell-scripting-inside-of-YAML as the de-facto standard for CI configuration is...what's the expression?
+    Oh yeah, FUCKING INSANE.
+  </p>
+
+  <p>
+    So if SaturnCI doesn't use executable YAML for configuration, what does it use?
+    It doesn't use a product-specific configuration format like other CI products do.
+    In order to learn CircleCI's configuration for example, you have to rely solely on CircleCI's own documentation,
+    and any third-party CircleCI documentation that may happen to exist, which, in my experience, tends to be low in volume and, sadly, often unclear and out-of-date.
+    That's why SaturnCI takes advantage of the existing technology of Docker Compose.
+    That way you don't have to rely solely on the SaturnCI documentation.
+    You have all the world's Docker documentation to rely on.
+    And of course, many developers already know Docker and Docker Compose, and if you're one of them, you'll hardly have to learn anything new at all.
+  </p>
+
+  <h3>Designed specifically for Rails + RSpec</h3>
+
+  <p>
+    A big part of the reason the leading CI products lack what seem to be commonsense features is the fact that they're so generic.
+    They give you more or less a blank canvas on which you can paint whatever you want.
+    But that means that the product can't make any assumptions about what you want.
+  </p>
+
+  <p>
+    SaturnCI is designed explicitly and exclusively (for now) for Ruby on Rails and RSpec.
+    This means that SaturnCI can make a lot of assumptions about your project's structure, shifting the setup burden from you to the computer and allowing SaturnCI to interpret your test results in a way that would be very difficult for a technology-agnostic CI product.
+  </p>
+
+  <p>
+    <a class="sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request SaturnCI Invite</a>
   </p>
 </div>
