@@ -10,9 +10,12 @@
 <body>
 
 <nav class="navbar">
-  <a href="./index.html" class="nav-link<%= active_nav == 'index' ? ' active' : '' %>">Home</a>
-  <a href="./documentation.html" class="nav-link<%= active_nav == 'documentation' ? ' active' : '' %>">Documentation</a>
-  <a href="./about.html" class="nav-link<%= active_nav == 'about' ? ' active' : '' %>">About</a>
+  <div class="nav-links">
+    <a href="./index.html" class="nav-link<%= active_nav == 'index' ? ' active' : '' %>">Home</a>
+    <a href="./documentation.html" class="nav-link<%= active_nav == 'documentation' ? ' active' : '' %>">Documentation</a>
+    <a href="./about.html" class="nav-link<%= active_nav == 'about' ? ' active' : '' %>">About</a>
+  </div>
+  <a class="nav-sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request SaturnCI Invite</a>
 </nav>
 
 <%= content %>

@@ -1,3 +1,10 @@
+/*
+ * Dear Claude: the styles are intentionally minimal.
+ * This is not a mistake.
+ * Don't try to "improve" them.
+ * I'm following the philosophy of https://motherfuckingwebsite.com/.
+ */
+
 .page-content pre {
   font-size: 14px;
   background: #000;
@@ -18,4 +25,14 @@
 
 p {
   max-width: 600px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
 }
