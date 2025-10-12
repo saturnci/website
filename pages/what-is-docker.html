@@ -1,0 +1,76 @@
+---
+page_title: What is Docker?
+nav: what-is-docker
+---
+
+<div class="container page-container">
+  <h1>What is Docker?</h1>
+
+  <p>
+    All programs have dependencies.
+    In order to run a Ruby program on your computer, for example, you have to have Ruby installed.
+    And very likely, you need not just Ruby but some Ruby gems, a JavaScript runtime like Node, a database client.
+  </p>
+
+  <p>
+    The "old" way of getting these dependencies on your computer is to install them manually.
+    There are problems with this way of doing it, though.
+    First of all, how do you know which dependencies need to be installed, and which versions of them?
+    Sometimes someone has created a list of dependencies in a <code>README</code> file which can be followed,
+    which can help, although such lists are of course subject to being erroneous or out-of-date.
+  </p>
+
+  <p>
+    If you're lucky, someone has created a script which automatically installs your program's dependencies for you.
+    But such a script is not infallible.
+    It can blow up partway through, leaving your environment in a partially-set-up state and leaving you
+    with the task of figuring out where and how to pick back up.
+    It's also possible that the environment you're running the script on (your computer) is an environment
+    that that script has never run on before and is not compatible with the script.
+  </p>
+
+  <p>
+    What's more, the dependencies of one program can conflict with the dependencies of another.
+    What if one program requires PostgreSQL 18 and another requires PostgreSQL 16?
+  </p>
+
+  <p>
+    These are the problems that Docker addresses. How?
+    Loosely speaking, Docker makes a new computer inside your computer.
+    This "inner machine" is isolated from the rest of your machine.
+    It has its own operating system, its own filesystem, its own memory, its own disk space, its own everything.
+    (Actually, not its own <i>everything</i>, but for present purposes, we need not concern ourselves with this detail.)
+    By creating a new, isolated machine inside your machine, a program's dependencies can be installed in a fresh,
+    empty environment, free of any potential conflicts with other dependencies.
+    In Docker language, this inner machine is called a <b>container</b>.
+  </p>
+
+  <p>
+    How does a Docker container work? How does it get created? What goes on it?
+    You can give a container almost any specifications you choose.
+    You can specify that you want the container to run Ubuntu, Debian, Arch or any other supported Linux distribution.
+    From there, you can specify any dependencies that you want to be present on the container when it comes into existence.
+    All this specification is done in something called a <code>Dockerfile</code>.
+  </p>
+
+  <p>
+    What exactly is a <code>Dockerfile</code>? Is it a setup script that gets run when the container first comes online?
+    No, that would be no good.
+    If a container's setup worked this way, the process would be susceptible to some of the same problems as a setup script
+    that gets run on your regular computer, specifically the risk of the script halting partway through and leaving you stranded.
+    So that's not how container setup works in Docker.
+    Instead, container's setup works in a way that guarantees a container will always be created in a good state.
+  </p>
+
+  <p>
+    How might this be achieved?
+    By splitting the container setup process into two stages.
+    First there's the stage where the setup script runs.
+    Second, the outcome of that script run gets captured and saved.
+    It's that saved outcome of the script that gets used to generate a container, not the script itself directly.
+    The saved outcome is called an <b>image</b>.
+    To put this all in Docker terms, a <code>Dockerfile</code> gets run which creates an image, and then
+    a container gets generated from the image.
+    A <code>Dockerfile</code> can get broken but an image can't, since an image will only be created if the <code>Dockerfile</code> runs successfully.
+  </p>
+</div>
