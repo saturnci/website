@@ -23,6 +23,9 @@
 .highlight .m { color: #ae81ff; } /* Numbers */
 .highlight .nv { color: #fd971f; } /* Variables */
 
+h1,
+h2,
+h3,
 p {
   max-width: 600px;
 }

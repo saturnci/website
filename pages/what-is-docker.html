@@ -6,71 +6,192 @@ nav: what-is-docker
 <div class="container page-container">
   <h1>What is Docker?</h1>
 
-  <p>
-    All programs have dependencies.
-    In order to run a Ruby program on your computer, for example, you have to have Ruby installed.
-    And very likely, you need not just Ruby but some Ruby gems, a JavaScript runtime like Node, a database client.
-  </p>
+  <div class="page-content">
+    <p>
+      Today is your first day at your new job at the hottest startup in your town, DumpsterRental.ninja.
+      Your boss, Scott, has given you your first assignment which is to get the DumpsterRental.ninja app set up on your laptop.
+    </p>
 
-  <p>
-    The "old" way of getting these dependencies on your computer is to install them manually.
-    There are problems with this way of doing it, though.
-    First of all, how do you know which dependencies need to be installed, and which versions of them?
-    Sometimes someone has created a list of dependencies in a <code>README</code> file which can be followed,
-    which can help, although such lists are of course subject to being erroneous or out-of-date.
-  </p>
+    <h2>The rocky road to getting onboarded at DumpsterRental.ninja</h2>
 
-  <p>
-    If you're lucky, someone has created a script which automatically installs your program's dependencies for you.
-    But such a script is not infallible.
-    It can blow up partway through, leaving your environment in a partially-set-up state and leaving you
-    with the task of figuring out where and how to pick back up.
-    It's also possible that the environment you're running the script on (your computer) is an environment
-    that that script has never run on before and is not compatible with the script.
-  </p>
+    <p>
+      Scott told you there's a <code>README</code> file you can use to help you get your development environment set up,
+      and if you have any questions, Justin, the lead developer, will be happy to help you.
+      According to the <code>README</code>, you that you need to install Ruby 3.3.5, PostgreSQL, Node, and Redis.
+      Once those are installed you'll need to start the Redis, PostgreSQL and Ruby on Rails servers.
+      You're familiar with Rails, so you know that your setup will be complete when you're able to pull up the DumpsterRental.ninja home page at <code>localhost:3000</code>.
+    </p>
 
-  <p>
-    What's more, the dependencies of one program can conflict with the dependencies of another.
-    What if one program requires PostgreSQL 18 and another requires PostgreSQL 16?
-  </p>
+    <p>
+      Four hours later, you're unfortunately still not in business.
+      First you got an error saying that one of the gems failed to install because it needed a different version of OpenSSL than what's on your system.
+    </p>
 
-  <p>
-    These are the problems that Docker addresses. How?
-    Loosely speaking, Docker makes a new computer inside your computer.
-    This "inner machine" is isolated from the rest of your machine.
-    It has its own operating system, its own filesystem, its own memory, its own disk space, its own everything.
-    (Actually, not its own <i>everything</i>, but for present purposes, we need not concern ourselves with this detail.)
-    By creating a new, isolated machine inside your machine, a program's dependencies can be installed in a fresh,
-    empty environment, free of any potential conflicts with other dependencies.
-    In Docker language, this inner machine is called a <b>container</b>.
-  </p>
+    <p>
+      Once you got past the OpenSSL issue, you discovered that DumpsterRental.ninja requires Redis 7.2, but you have a personal project which uses Redis 6.0.
+      You can't have both versions installed at the same time.
+      You spent a while trying to figure out how to get DumpsterRental.ninja working while keeping your personal project working,
+      but finally you decided to just uninstall Redis 6.0 and deal with your personal project being broken for now.
+    </p>
 
-  <p>
-    How does a Docker container work? How does it get created? What goes on it?
-    You can give a container almost any specifications you choose.
-    You can specify that you want the container to run Ubuntu, Debian, Arch or any other supported Linux distribution.
-    From there, you can specify any dependencies that you want to be present on the container when it comes into existence.
-    All this specification is done in something called a <code>Dockerfile</code>.
-  </p>
+    <p>
+      Now Rails starts successfully but you get a raw error when you try to load any page because the ImageMagick library isn't installed.
+      DumpsterRental.ninja? More like DumpsterFIRE.ninja, right???
+    </p>
 
-  <p>
-    What exactly is a <code>Dockerfile</code>? Is it a setup script that gets run when the container first comes online?
-    No, that would be no good.
-    If a container's setup worked this way, the process would be susceptible to some of the same problems as a setup script
-    that gets run on your regular computer, specifically the risk of the script halting partway through and leaving you stranded.
-    So that's not how container setup works in Docker.
-    Instead, container's setup works in a way that guarantees a container will always be created in a good state.
-  </p>
+    <p>
+      You ask Justin for help (the lead developer) but he's been pulled into an incident.
+      Over the last couple weeks there have been alerts warning that both the two production servers are occasionally bumping against their resource limits,
+      but there hasn't been time to do anything about it because a security-related upgrade project took even higher priority.
+      Now the resource limit issue has become so frequent that it can't be put off any longer, and a third (and preferably fourth) production server instance is needed, urgently.
+    </p>
 
-  <p>
-    How might this be achieved?
-    By splitting the container setup process into two stages.
-    First there's the stage where the setup script runs.
-    Second, the outcome of that script run gets captured and saved.
-    It's that saved outcome of the script that gets used to generate a container, not the script itself directly.
-    The saved outcome is called an <b>image</b>.
-    To put this all in Docker terms, a <code>Dockerfile</code> gets run which creates an image, and then
-    a container gets generated from the image.
-    A <code>Dockerfile</code> can get broken but an image can't, since an image will only be created if the <code>Dockerfile</code> runs successfully.
-  </p>
+    <p>
+      Unfortunately, setting up new production server instances is not so easy.
+      The production servers were provisioned three years ago, and the guy who did it is no longer with the company.
+      Justin has been able to get a new production server <i>almost</i> working, but each time he thinks he has solved the final issue, a new problem comes up.
+      What a nightmare.
+    </p>
+
+    <p>
+      Sadly, DumpsterRental.ninja is a bit behind the times when it comes to environment setup.
+      Setting up a new environment, whether it be a development or production environment, doesn't have to be a slow and painful experience.
+      Your development environment could have been set up in about five minutes with just one command.
+      Provisioning two new production servers could have been as simple as changing a 2 to a 4 in a configuration file.
+    </p>
+
+    <p>
+      Shortly we'll look at the modern way of setting up development and production environments.
+      But first let's be sure to understand the specific weaknesses of DumpsterRental.ninja's manual setup approach.
+    </p>
+
+    <h2>The downsides of manual setup</h2>
+    <p>
+      When you set up an environment manually,
+      there's no way to be absolutely sure what the right setup configuration is and what all the environment's dependencies are.
+      A <code>README</code> file, as in the DumpsterRental.ninja example, can help of course,
+      but there's no guarantee that such a file will be in sync with reality.
+    </p>
+
+    <p>
+      Manual setup is subject to human error.
+      Perhaps you've experienced instances where an installation process doesn't work as advertised for you and then you discover you've
+      missed some crucial step.
+    </p>
+
+    <p>
+      When a machine is set up manually, the steps that led to the machine's configuration state are unknowable.
+      This is true even if the setup steps are carefully documented, since it's always possible that the steps that were
+      carried out on the machine didn't exactly match what was documented.
+    </p>
+
+    <p>
+      And of course, manual setup is toil.
+      It's a waste of engineer time which could be better spent creating business value.
+      Better if this setup work is automated.
+    </p>
+
+    <h2>A step toward reliable automation: setup scripts</h2>
+    <p>
+      Instead of performing setup work manually, which after all is usually just a series of shell commands, it can be automated.
+      This is a great step in the right direction.
+      A good setup script can reduce the entire setup process to a single command, saving a huge amount of toil.
+      This approach is not perfect, however, and in reality it's usually not one flawless command.
+      There are two problems.
+    </p>
+
+    <p>
+      The first problem is that setup scripts are <i>imperative</i>.
+      In other words, setup scripts describe a series of executable steps rather than a desired end state.
+      (A specification which describes a desired end state is <i>declarative</i>.)
+      Because a setup script is imperative and its commands are executed serially, it can fail partway through,
+      leaving your environment in a partially-set-up state and leaving you
+      with the task of figuring out where and how to pick back up.
+    </p>
+
+    <p>
+      The second problem with a setup script (or manual setup for that matter)
+      is that the machine where the environment is always subject to incompatibilities with the script.
+      We saw this in the DumpsterRental.ninja example where two different environments needed two different versions of Redis.
+    </p>
+
+    <h2>Even better than setup scripts</h2>
+
+    <p>
+      The execution of a setup script is kind of like a live performance given by a band of musicians reading sheet music.
+      Each musical note is an instruction.
+      Even if the instructions are flawless, the performance may not be.
+      The sheet music could contain a mistake&mdash;a flaw in the instructions.
+      Or an external phenomenon, like an ambulance driving by, could disturb the listening experience.
+    </p>
+
+    <p>
+      There is a way to guarantee a flawless listening experience, though, which is to record the performance and then play back the recording.
+      If there's a mistake in the sheet music, it can be corrected and the band can try again.
+      If an ambulance drives by the recording studio, the band can record another take.
+      In this way, the listening experience is insulated from any problems that may have occurred during the recording process.
+    </p>
+
+    <p>
+      Just as a recorded piece of music insulates the listener from any possible performance problems,
+      Docker's design insulates the environment from any snags that may have arisen during the setup process.
+      How does Docker accomplish this?
+    </p>
+
+    <h2>How Docker works</h2>
+
+    <p>
+      Analogous to a band's studio recording session is Docker's <b>build</b> process.
+      During a build process, Docker will read and execute lines of a setup script, just as musicians will read and play notes on sheet music.
+    </p>
+
+    <p>
+      The "sheet music" Docker reads (the setup script) comes from something called a <code>Dockerfile</code>.
+      (To be honest, I don't think <code>Dockerfile</code> is a very good name.
+      "What should we call the setup script?"
+      "Um...well this is Docker...and it's a file...so how about the Docker...file?"
+      "Perfect!"
+      I wish they would have given it a name that reflects what it is, like <code>setup</code> for example, but <code>Dockerfile</code> is what we get.)
+    </p>
+
+    <p>
+      Just as a piece of sheet music can contain a mistake, such as an off-key note that sounds bad, the setup instructions in a <code>Dockerfile</code>
+      can contain code that won't execute.
+      In this case the build process will halt and the result won't be kept.
+      Same thing if an external factor causes the build process to fail, such as a network failure.
+      The end result will only be kept if the build process completes successfully.
+      In this event, the artifact produced is called an <b>image</b>.
+      An image is like a master recording, the source from which where all the listening experiences originated.
+    </p>
+
+    <p>
+      Here is where we must part from our musical analogy.
+      When a recording gets played, all that's produced are very ephemeral sound waves in the air.
+      When a Docker image gets "played", what happens is not so comparable to a musical recording being played.
+      A Docker image is basically a specification of an environment.
+      More precisely, a Docker image is a specification of an environment <i>and</i> the hardware and software the environment is running on.
+      When a Docker image is "played", it brings into existence an entire (virtual) computer, pre-loaded with the software and filesystem that resulted from the build process.
+      This virtual computer is called a <b>container</b>.
+    </p>
+
+    <p>
+      Now let's take a look at an example Dockerfile.
+      <pre><code class="language-dockerfile"># Start with Ubuntu 22.04 as the base operating system
+# This gives us a clean Linux environment to work with
+FROM ubuntu:22.04
+
+# Update the package list and install Ruby
+# The -y flag automatically answers "yes" to prompts
+# The && chains commands together so they run as one step
+RUN apt-get update && apt-get install -y ruby
+
+# Copy the app.rb file from your computer into the container
+# The first path is on your computer, the second is in the container
+COPY app.rb /app.rb
+
+# Define what command runs when the container starts
+# This tells the container to execute our Ruby script
+CMD ["ruby", "/app.rb"]</code></pre>
+    </p>
+  </div>
 </div>
