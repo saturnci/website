@@ -169,29 +169,66 @@ nav: what-is-docker
       When a recording gets played, all that's produced are very ephemeral sound waves in the air.
       When a Docker image gets "played", what happens is not so comparable to a musical recording being played.
       A Docker image is basically a specification of an environment.
-      More precisely, a Docker image is a specification of an environment <i>and</i> the hardware and software the environment is running on.
+      More precisely, a Docker image is a specification of an environment <i>and</i> the operating system the environment is running on.
       When a Docker image is "played", it brings into existence an entire (virtual) computer, pre-loaded with the software and filesystem that resulted from the build process.
       This virtual computer is called a <b>container</b>.
+      Just as the entire reason a band hits the studio is to offer a listening experience for its fans,
+      the entire point of a <code>Dockerfile</code> and a build process is to produce a container.
     </p>
 
     <p>
-      Now let's take a look at an example Dockerfile.
-      <pre><code class="language-dockerfile"># Start with Ubuntu 22.04 as the base operating system
-# This gives us a clean Linux environment to work with
+      In fact, why don't we create a container of our own right now.
+    </p>
+
+    <h2>A concrete container example</h2>
+
+    <p>
+      Below is some "sheet music", a real <code>Dockerfile</code>.
+      As we saw, a Docker image is a specification not only of what software a container runs but also what operating system it runs.
+      In this instance the operating system we're running is Ubuntu Linux, version 22.04.
+    </p>
+
+    <p>
+      The software we want on our environment includes the Ruby language.
+      We're using the <a href="https://help.ubuntu.com/kubuntu/desktopguide/C/apt-get.html">APT</a> package management system to install Ruby on our container.
+      Docker's <code>RUN</code> command can run arbitrary shell commands.
+    </p>
+
+    <p>
+      The instructions in our <code>Dockerfile</code> presuppose the existence of a Ruby file called <code>app.rb</code>, which you can see below, after the <code>Dockerfile</code>.
+      The <code>COPY</code> command says "copy from the source <code>app.rb</code> on the <b>host machine</b> (your computer) to the destination <code>/app.rb</code> on the container".
+    </p>
+
+    <p>
+      The final command, <code>CMD</code>, specifies the command that should run when the container starts.
+      <code>CMD</code> takes a list of arguments, which in this case are <code>ruby</code>, the Ruby interpreter, and <code>/app.rb</code>, the file that the Ruby interpreter is to interpret.
+      Below is our complete <code>Dockerfile</code>.
+    </p>
+
+    <pre><code class="language-dockerfile"># Dockerfile
+
+# Use Ubuntu Linux 22.04 as the container's operating system.
 FROM ubuntu:22.04
 
-# Update the package list and install Ruby
-# The -y flag automatically answers "yes" to prompts
-# The && chains commands together so they run as one step
+# Update the package list and install Ruby.
+# The -y flag automatically answers "yes" to prompts.
+# The && chains commands together so they run as one step.
 RUN apt-get update && apt-get install -y ruby
 
-# Copy the app.rb file from your computer into the container
-# The first path is on your computer, the second is in the container
+# Copy the app.rb file from the host machine (your computer)
+# onto the container.
 COPY app.rb /app.rb
 
-# Define what command runs when the container starts
-# This tells the container to execute our Ruby script
+# When the container starts, run the Ruby interpreter
+# on our app.rb file.
 CMD ["ruby", "/app.rb"]</code></pre>
+
+    <p>
+      In the spirit of providing the simplest possible example, our Ruby script does nothing more than output the classic expression "Hello, world!".
     </p>
+
+    <pre><code class="language-ruby"># app.rb
+
+puts "Hello, world!"</code></pre>
   </div>
 </div>
