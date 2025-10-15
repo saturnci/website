@@ -1,0 +1,45 @@
+---
+page_title: The pernicious evils of RSpec shared examples
+nav: rspec-shared-examples
+---
+
+<div class="container page-container">
+  <h1>The pernicious evils of RSpec shared examples</h1>
+
+  <div class="page-content">
+    <pre><code class="language-ruby">describe 'GET /devices' do
+  let!(:resource) { FactoryBot.create :device, created_from: user.id }
+  let!(:uri)      { '/devices' }
+
+  context 'when shows all resources' do
+    let!(:not_owned) { FactoryBot.create factory }
+
+    it 'shows all owned resources' do
+      page.driver.get uri
+      expect(page.status_code).to be(200)
+      contains_owned_resource resource
+      does_not_contain_resource not_owned
+    end
+  end
+
+  describe '?start=:uri' do
+    it 'shows the next page' do
+      page.driver.get uri, start: resource.uri
+      expect(page.status_code).to be(200)
+      contains_resource resources.first
+      expect(page).to_not have_content resource.id.to_s
+    end
+  end
+end</code></pre>
+
+<pre><code class="language-ruby">describe 'GET /devices' do
+  let!(:resource) { FactoryBot.create :device, created_from: user.id }
+  let!(:uri)       { '/devices' }
+
+  it_behaves_like 'a listable resource'
+  it_behaves_like 'a paginable resource'
+  it_behaves_like 'a searchable resource'
+  it_behaves_like 'a filterable list'
+end</code></pre>
+  </div>
+</div>
