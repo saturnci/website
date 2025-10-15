@@ -1,0 +1,482 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SaturnCI: Continuous Integration for Ruby on Rails and RSpec">
+  <title>What is Docker? - SaturnCI - Continuous Integration for Ruby on Rails</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="syntax-highlighting.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C687RN9MVF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C687RN9MVF');
+  </script>
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="nav-links">
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./documentation.html" class="nav-link">Documentation</a>
+    <a href="./about.html" class="nav-link">About</a>
+  </div>
+  <a class="nav-sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request SaturnCI Invite</a>
+</nav>
+
+<div class="container page-container">
+  <h1>What is Docker?</h1>
+
+  <div class="page-content">
+    <p>
+      Today is your first day at your new job at the hottest startup in your town, DumpsterRental.ninja.
+      Your boss, Scott, has given you your first assignment which is to get the DumpsterRental.ninja app set up on your laptop.
+    </p>
+
+    <h2>The rocky road to getting onboarded at DumpsterRental.ninja</h2>
+
+    <p>
+      Scott told you there's a <code>README</code> file you can use to help you get your development environment set up,
+      and if you have any questions, Justin, the lead developer, will be happy to help you.
+      According to the <code>README</code>, you that you need to install Ruby 3.3.5, PostgreSQL, Node, and Redis.
+      Once those are installed you'll need to start the Redis, PostgreSQL and Ruby on Rails servers.
+      You're familiar with Rails, so you know that your setup will be complete when you're able to pull up the DumpsterRental.ninja home page at <code>localhost:3000</code>.
+    </p>
+
+    <p>
+      Four hours later, you're unfortunately still not in business.
+      First you got an error saying that one of the gems failed to install because it needed OpenSSL 1.1.1 but
+      on your computer you have OpenSSL 3.0.2.
+    </p>
+
+    <p>
+      Once you got past the OpenSSL issue, you discovered that DumpsterRental.ninja requires PostgreSQL 14, but you have a personal project which uses PostgreSQL 16.
+      You can't have both versions running at the same time without complex configuration.
+      You spent a while trying to figure out how to get DumpsterRental.ninja working while keeping your personal project working,
+      but finally you decided to just uninstall PostgreSQL 16 and deal with your personal project being broken for now.
+    </p>
+
+    <p>
+      Now Rails starts successfully but you get a raw error when you try to load any page because the ImageMagick library isn't installed.
+      DumpsterRental.ninja? More like DumpsterFIRE.ninja, right???
+    </p>
+
+    <p>
+      You ask Justin for help (the lead developer) but he's been pulled into an incident.
+      Over the last couple weeks there have been alerts warning that both the two production servers are occasionally bumping against their resource limits,
+      but there hasn't been time to do anything about it because a security-related upgrade project took even higher priority.
+      Now the resource limit issue has become so frequent that it can't be put off any longer, and a third (and preferably fourth) production server instance is needed, urgently.
+    </p>
+
+    <p>
+      Unfortunately, setting up new production server instances is not so easy.
+      The production servers were provisioned three years ago, and the guy who did it is no longer with the company.
+      Justin has been able to get a new production server <i>almost</i> working, but each time he thinks he has solved the final issue, a new problem comes up.
+      What a nightmare.
+    </p>
+
+    <p>
+      Sadly, DumpsterRental.ninja is a bit behind the times when it comes to environment setup.
+      Setting up a new environment, whether it be a development or production environment, doesn't have to be a slow and painful experience.
+      Your development environment could have been set up in about five minutes with just one command.
+      Provisioning two new production servers could have been as simple as changing a 2 to a 4 in a configuration file.
+    </p>
+
+    <p>
+      Shortly we'll look at the modern way of setting up development and production environments.
+      But first let's be sure to understand the specific weaknesses of DumpsterRental.ninja's manual setup approach.
+    </p>
+
+    <h2>The downsides of manual setup</h2>
+    <p>
+      When you set up an environment manually,
+      there's no way to be absolutely sure what the right setup configuration is and what all the environment's dependencies are.
+      A <code>README</code> file, as in the DumpsterRental.ninja example, can help of course,
+      but there's no guarantee that such a file will be in sync with reality.
+    </p>
+
+    <p>
+      Manual setup is subject to human error.
+      Perhaps you've experienced instances where an installation process doesn't work as advertised for you and then you discover you've
+      missed some crucial step.
+    </p>
+
+    <p>
+      When a machine is set up manually, the steps that led to the machine's configuration state are unknowable.
+      This is true even if the setup steps are carefully documented, since it's always possible that the steps that were
+      carried out on the machine didn't exactly match what was documented.
+    </p>
+
+    <p>
+      And of course, manual setup is toil.
+      It's a waste of engineer time which could be better spent creating business value.
+      Better if this setup work is automated.
+    </p>
+
+    <h2>A step toward reliable automation: setup scripts</h2>
+    <p>
+      Instead of performing setup work manually, which after all is usually just a series of shell commands, it can be automated.
+      This is a great step in the right direction.
+      A good setup script can reduce the entire setup process to a single command, saving a huge amount of toil.
+      This approach is not perfect, however, and in reality it's usually not one flawless command.
+      There are two problems.
+    </p>
+
+    <p>
+      The first problem is that setup scripts can fail partway through,
+      leaving your environment in a partially-set-up state and leaving you
+      with the task of figuring out where and how to pick back up.
+    </p>
+
+    <p>
+      The second problem with a setup script (or manual setup for that matter)
+      is that the machine where the environment is always subject to incompatibilities with the script.
+      We saw this in the DumpsterRental.ninja example where two different environments needed two different versions of PostgreSQL.
+    </p>
+
+    <h2>Even better than setup scripts</h2>
+
+    <p>
+      The execution of a setup script is kind of like a live performance given by a band of musicians reading sheet music.
+      Each musical note is an instruction.
+      Even if the instructions are flawless, the performance may not be.
+      The sheet music could contain a mistake&mdash;a flaw in the instructions.
+      Or an external phenomenon, like an ambulance driving by, could disturb the listening experience.
+    </p>
+
+    <p>
+      There is a way to guarantee a flawless listening experience, though, which is to record the performance and then play back the recording.
+      If there's a mistake in the sheet music, it can be corrected and the band can try again.
+      If an ambulance drives by the recording studio, the band can record another take.
+      In this way, the listening experience is insulated from any problems that may have occurred during the recording process.
+    </p>
+
+    <p>
+      Just as a recorded piece of music insulates the listener from any possible performance problems,
+      Docker's design insulates the environment from any snags that may have arisen during the setup process.
+      How does Docker accomplish this?
+    </p>
+
+    <h2>How Docker works</h2>
+
+    <p>
+      Analogous to a band's studio recording session is Docker's <b>build</b> process.
+      During a build process, Docker will read and execute lines of a setup script, just as musicians will read and play notes on sheet music.
+    </p>
+
+    <p>
+      The "sheet music" Docker reads (the setup script) comes from something called a <code>Dockerfile</code>.
+      (To be honest, I don't think <code>Dockerfile</code> is a very good name.
+      "What should we call the setup script?"
+      "Um...well this is Docker...and it's a file...so how about the Docker...file?"
+      "Perfect!"
+      I wish they would have given it a name that reflects what it is, like <code>setup</code> for example, but <code>Dockerfile</code> is what we get.)
+    </p>
+
+    <p>
+      Just as a piece of sheet music can contain a mistake, such as an off-key note that sounds bad, the setup instructions in a <code>Dockerfile</code>
+      can contain code that won't execute.
+      In this case the build process will halt and the result won't be kept.
+      Same thing if an external factor causes the build process to fail, such as a network failure.
+      The end result will only be kept if the build process completes successfully.
+      In this event, the artifact produced is called an <b>image</b>.
+      An image is like a master recording, the source from which where all the listening experiences originated.
+    </p>
+
+    <p>
+      Here is where we must part from our musical analogy.
+      When a recording gets played, all that's produced are very ephemeral sound waves in the air.
+      When a Docker image gets "played", what happens is not so comparable to a musical recording being played.
+      A Docker image is basically a specification of an environment.
+      More precisely, a Docker image is a specification of an environment <i>and</i> the operating system the environment is running on.
+      When a Docker image is "played", it brings into existence an entire (virtual) computer, pre-loaded with the software and filesystem that resulted from the build process.
+      This virtual computer is called a <b>container</b>.
+      Just as the entire reason a band hits the studio is to offer a listening experience for its fans,
+      the entire point of a <code>Dockerfile</code> and a build process is to produce a container.
+    </p>
+
+    <h2>What is a container?</h2>
+
+    <p>
+      <b>A container is an isolated environment running on your computer that packages an application together with all its dependencies.</b>
+      It's the fundamental idea behind Docker.
+    </p>
+
+    <p>
+      The concept of containerization is not unique to Docker.
+      Docker containerization is based on an older and more fundamental technology
+      called <a href="https://en.wikipedia.org/wiki/LXC">Linux Containers</a> (LXC) which came out five years before Docker did.
+      Docker adds a layer of abstraction on top of LXC so that you don't have to have the deep Linux knowledge that
+      would be required to use LXC directly.
+    </p>
+
+    <p>
+      Now let's create a container of our own.
+    </p>
+
+    <h2>A concrete container example</h2>
+
+    <p>
+      Below is some "sheet music", a real <code>Dockerfile</code>.
+      As we saw, a Docker image is a specification not only of what software a container runs but also what operating system it runs.
+      In this instance the operating system we're running is Ubuntu Linux, version 22.04.
+      The <code>FROM</code> command is what specifies the <b>base image</b> that our image will be based on.
+    </p>
+
+    <p>
+      The software we want on our environment includes the Ruby language.
+      We're using the <a href="https://help.ubuntu.com/kubuntu/desktopguide/C/apt-get.html">APT</a> package management system to install Ruby on our container.
+      Docker's <code>RUN</code> command can run arbitrary shell commands.
+    </p>
+
+    <p>
+      The instructions in our <code>Dockerfile</code> presuppose the existence of a Ruby file called <code>app.rb</code>, which you can see below, after the <code>Dockerfile</code>.
+      The <code>COPY</code> command says "copy from the source <code>app.rb</code> on the <b>host machine</b> (your computer) to the destination <code>/app.rb</code> on the container".
+    </p>
+
+    <p>
+      The final command, <code>CMD</code>, specifies the command that should run when the container starts.
+      <code>CMD</code> takes a list of arguments, which in this case are <code>ruby</code>, the Ruby interpreter, and <code>/app.rb</code>, the file that the Ruby interpreter is to interpret.
+      Below is our complete <code>Dockerfile</code>.
+    </p>
+
+    <pre class="highlight"><code><span class="c"># Dockerfile</span>
+
+<span class="c"># Use Ubuntu Linux 22.04 as the container's operating system.</span>
+<span class="k">FROM</span><span class="s"> ubuntu:22.04</span>
+
+<span class="c"># Update the package list and install Ruby.</span>
+<span class="c"># The -y flag automatically answers "yes" to prompts.</span>
+<span class="c"># The &amp;&amp; chains commands together so they run as one step.</span>
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> ruby
+
+<span class="c"># Copy the app.rb file from the host machine (your computer)</span>
+<span class="c"># onto the container.</span>
+<span class="k">COPY</span><span class="s"> app.rb /app.rb</span>
+
+<span class="c"># When the container starts, run the Ruby interpreter</span>
+<span class="c"># on our app.rb file.</span>
+<span class="k">CMD</span><span class="s"> ["ruby", "/app.rb"]</span></code></pre>
+
+    <p>
+      In the spirit of providing the simplest possible example, our Ruby script does nothing more than output the classic expression "Hello, world!".
+    </p>
+
+    <pre class="highlight"><code><span class="c1"># app.rb</span>
+
+<span class="nb">puts</span> <span class="s2">"Hello, world!"</span></code></pre>
+
+    <p>
+      Now let's build our image and run our container.
+      Running the <code>docker build .</code> command gives the following output.
+    </p>
+
+    <pre class="highlight"><code>$ docker build .
+[+] Building 151.2s (9/9) FINISHED                                                                                    
+ =&gt; [internal] load build definition from Dockerfile                                                                    0.0s
+ =&gt; =&gt; transferring dockerfile: 533B                                                                                    0.0s
+ =&gt; [internal] load .dockerignore                                                                                       0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                         0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:22.04                                                         4.0s
+ =&gt; [auth] sharing credentials for registrycache.saturnci.com:5000                                                      0.0s
+ =&gt; [1/3] FROM docker.io/library/ubuntu:22.04@sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3  58.9s
+ =&gt; =&gt; resolve docker.io/library/ubuntu:22.04@sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3   0.0s
+ =&gt; =&gt; sha256:f85691aa4b9092cbb48212c835b78068e3321656ba2c306dae491e1a02d1b4d3 27.38MB / 27.38MB                       57.6s
+ =&gt; =&gt; sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3 6.69kB / 6.69kB                          0.0s
+ =&gt; =&gt; sha256:40c5d6cde65809ff9d47ce06d1dd01d428a9af388a8918fc7a3310a55a4c39cb 424B / 424B                              0.0s
+ =&gt; =&gt; sha256:37711cf832d3f462205c1ca68ff571e3947cbe3fdeb380a6e51fdd75421eddb9 2.31kB / 2.31kB                          0.0s
+ =&gt; =&gt; extracting sha256:f85691aa4b9092cbb48212c835b78068e3321656ba2c306dae491e1a02d1b4d3                               1.0s
+ =&gt; [internal] load build context                                                                                       0.2s
+ =&gt; =&gt; transferring context: 54B                                                                                        0.2s
+ =&gt; [2/3] RUN apt-get update &amp;&amp; apt-get install -y ruby                                                                87.7s
+ =&gt; [3/3] COPY app.rb /app.rb                                                                                           0.0s
+ =&gt; exporting to image                                                                                                  0.4s
+ =&gt; =&gt; exporting layers                                                                                                 0.4s
+ =&gt; =&gt; writing image sha256:7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834</code></pre>
+
+    <p>
+      The final line shows that the id of our image is <code>7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834</code>.
+      We can start a container based on this image using the <code>docker run</code> command.
+    </p>
+
+    <pre class="highlight"><code>$ docker run 7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834
+Hello, world!</code></pre>
+
+    <p>
+      Actually, we don't have to use the full id every time.
+      Docker allows an abbreviated version for convenience.
+    </p>
+
+    <pre class="highlight"><code>$ docker run 7b2f82a21fd8
+Hello, world!</code></pre>
+    7b2f82a21fd8
+
+    <p>
+      To show that this Docker container is running its own operating system, we can run the <code>uname -a</code> command,
+      which will show Linux even though my computer, the host machine, is a Mac.
+    </p>
+
+    <pre class="highlight"><code>$ docker run 7b2f82a21fd8 uname -a
+Linux bce33c9caf30 5.10.76-linuxkit #1 SMP PREEMPT Mon Nov 8 11:22:26 UTC 2021 aarch64 aarch64 aarch64 GNU/Linux</code></pre>
+
+    <p>
+      See? It's a little computer on your computer.
+      To me, there's something magical about that.
+      Now let's tie all this back to your troubles at DumpsterRental.ninja.
+    </p>
+
+    <h2>Running additional services</h2>
+    <p>
+      What if your development environment needs an additional service in order to run, like PostgreSQL for example?
+      You might think that you would put PostgreSQL in your <code>Dockerfile</code> but this is not how it works.
+      In Docker there's a principle of "one container, one process".
+      Why does this principle exist?
+    </p>
+
+    <p>
+      My interpretation of the "one container, one process" principle is that the small benefit (if any)
+      that would be gained by stuffing multiple processes (PostgreSQL, Redis, Elasticsearch, etc.)
+      into one container would be far outweighed by the downsides of these processes being so tightly coupled together.
+      From a configuration perspective, it wouldn't be simpler to stick two processes in the same container,
+      in fact it would be more complicated because the container would be serving two masters, and the container's configuration
+      would be confusing because it would be a mix of the needs of its two different processes.
+      And for what benefit?
+      Containers are cheap.
+      Virtually nothing is saved by putting multiple processes into one container.
+      When each container is dedicated to just one process, the design of the system as a whole can be more modular and easier to understand.
+    </p>
+
+    <p>
+      When you create a <code>Dockerfile</code>, you're creating one setup configuration for one container serving one process.
+      If an addition to your main (let's say) Ruby application your development environment requires a PostgreSQL server,
+      then that will be a separate container running a separate process.
+    </p>
+
+    <p>
+      Does this mean you create two <code>Dockerfile</code>s, one for your Ruby application and one for PostgreSQL?
+      No. Since PostgreSQL is a very common dependency, you can find ready-made images for it.
+      All you have to do is download a PostgreSQL image of your choice and then run a container based on that image.
+      Then your Ruby application can connect to your PostgreSQL container just as if it were a PostgreSQL server running
+      natively on your host machine.
+    </p>
+
+    <p>
+      To make it easier to manage multi-process development environment, Docker offers a tool called <b>Docker Compose</b>,
+      which allows you to compose an environment that runs multiple services.
+      Compose is an extremely useful and feature-rich tool&mdash;so much so that I'll be covering it in detail in a separate post.
+      For our present purposes, all you need to remember is that a <code>Dockerfile</code> specifies a single container and service,
+      whereas Docker Compose specifies an entire multi-service environment.
+    </p>
+
+    <h2>How does this all help you at DumpsterRental.ninja?</h2>
+
+    <p>
+      Let's fast-forward to a hypothetical future where DumpsterRental.ninja has fully embraced Docker for both its
+      development and production environments.
+      What would this change?
+    </p>
+
+    <h3>Development environment setup</h3>
+    <p>
+      When you tried to set up DumpsterRental.ninja's development environment manually,
+      you ran into a conflict between the OpenSSL version that DumpsterRental.ninja needs (1.1.1)
+      and the OpenSSL version you already have on your computer (3.0.2).
+      With Docker this is a non-issue.
+      Since the DumpsterRental.ninja application runs in a Docker container, there's no need to install
+      OpenSSL 1.1.1 on your computer, only the container.
+      The OpenSSL 1.1.1 dependency can be specified in DumpsterRental.ninja's <code>Dockerfile</code>.
+    </p>
+
+    <p>
+      That troublesome ImageMagick dependency&mdash;the one you didn't know you needed because it
+      was missing from the <code>README</code>&mdash;can be included in the Dockerfile as well.
+      Below is an illustration of what that part of the <code>Dockerfile</code> could look like.
+    </p>
+
+    <pre class="highlight"><code><span class="k">FROM</span><span class="s"> ubuntu:22.04</span>
+
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\
+</span>  ruby <span class="se">\
+</span>  imagemagick <span class="se">\
+</span>  <span class="nv">openssl</span><span class="o">=</span>1.1.1f-1ubuntu2.20</code></pre>
+
+    <p>
+      The <code>Dockerfile</code> can handle the Ruby dependency as well.
+      Instead of using the <code>ubuntu</code> base image, we can use the <code>ruby</code>
+      base image, which itself is based on a different Linux-based base image.
+      (You can poke around in the Ruby base image source code <a href="https://github.com/docker-library/ruby/tree/master">here</a>.)
+    </p>
+
+    <pre class="highlight"><code><span class="k">FROM</span><span class="s"> ruby:3.3.5</span>
+
+<span class="k">RUN </span>apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\
+</span>  imagemagick <span class="se">\
+</span>  <span class="nv">openssl</span><span class="o">=</span>1.1.1f-1ubuntu2.20</code></pre>
+
+    <p>
+      There's no conflict between DumpsterRental.ninja's PostgreSQL 14 and your local PostgreSQL 16,
+      because you don't have to install PostgreSQL 14 on your computer.
+      That can be run from a Docker container.
+    </p>
+
+    <h3>Production infrastructure</h3>
+
+    <p>
+      Before DumpsterRental.ninja started using Docker, provisioning a new production server that had
+      the same configuration as the original two was difficult if not impossible.
+      Now that there's a <code>Dockerfile</code> that specifies exactly what the production
+      server should look like (which may or may not match the development <code>Dockerfile</code>),
+      creating a new instance can be trivial.
+    </p>
+
+    <p>
+      DumpsterRental.ninja happens to be using <a href="https://kubernetes.io/">Kubernetes</a> for its production infrastructure,
+      although that's only one of many options.
+      As it so happens, the number of production instances can be scaled by changing
+      the <code>replicas</code> setting in a Kubernetes config file.
+      Here's what the relevant part of the file looked like before:
+    </p>
+
+    <pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">dumpsterrental:latest</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="s">2</span></code></pre>
+
+    <p>
+      And here's what it looks like after:
+    </p>
+
+    <pre class="highlight"><code><span class="na">services</span><span class="pi">:</span>
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">dumpsterrental:latest</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="s">4</span></code></pre>
+
+    <p>
+      Because the production server specifications are already captured in a static Docker image,
+      there's no need to run a setup script each time a new server instance is needed.
+      The image gets plopped onto the server, a container gets initialized based on the image, and that's all there is to it.
+      That means you and Scott and Justin can spend a lot less time fiddling with environment setup
+      and a bit more time helping people rent dumpsters.
+    </p>
+  </div>
+</div>
+
+<br>
+<hr>
+
+<div>SaturnCI</div>
+<div><a href="mailto:jason@saturnci.com">jason@saturnci.com</a></div>
+
+<div>
+  16601 Myers Lake Ave<br>
+  Sand Lake, Michigan 49343
+</div>
+
+</body>
+</html>

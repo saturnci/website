@@ -1,0 +1,86 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SaturnCI: Continuous Integration for Ruby on Rails and RSpec">
+  <title>The pernicious evils of RSpec shared examples - SaturnCI - Continuous Integration for Ruby on Rails</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="syntax-highlighting.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C687RN9MVF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C687RN9MVF');
+  </script>
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="nav-links">
+    <a href="./index.html" class="nav-link">Home</a>
+    <a href="./documentation.html" class="nav-link">Documentation</a>
+    <a href="./about.html" class="nav-link">About</a>
+  </div>
+  <a class="nav-sign-up-link" href="https://docs.google.com/forms/d/e/1FAIpQLSf98Bpdibk65RnXCWZtiwKQxnSu5mUgqLBSZeVZHVXXsUye4g/viewform?usp=dialog">Request SaturnCI Invite</a>
+</nav>
+
+<div class="container page-container">
+  <h1>The pernicious evils of RSpec shared examples</h1>
+
+  <div class="page-content">
+    <pre class="highlight"><code><span class="n">describe</span> <span class="s1">'GET /devices'</span> <span class="k">do</span>
+  <span class="n">let!</span><span class="p">(</span><span class="ss">:resource</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryBot</span><span class="p">.</span><span class="nf">create</span> <span class="ss">:device</span><span class="p">,</span> <span class="ss">created_from: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span> <span class="p">}</span>
+  <span class="n">let!</span><span class="p">(</span><span class="ss">:uri</span><span class="p">)</span>      <span class="p">{</span> <span class="s1">'/devices'</span> <span class="p">}</span>
+
+  <span class="n">context</span> <span class="s1">'when shows all resources'</span> <span class="k">do</span>
+    <span class="n">let!</span><span class="p">(</span><span class="ss">:not_owned</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryBot</span><span class="p">.</span><span class="nf">create</span> <span class="n">factory</span> <span class="p">}</span>
+
+    <span class="n">it</span> <span class="s1">'shows all owned resources'</span> <span class="k">do</span>
+      <span class="n">page</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">get</span> <span class="n">uri</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">.</span><span class="nf">status_code</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+      <span class="n">contains_owned_resource</span> <span class="n">resource</span>
+      <span class="n">does_not_contain_resource</span> <span class="n">not_owned</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s1">'?start=:uri'</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s1">'shows the next page'</span> <span class="k">do</span>
+      <span class="n">page</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">get</span> <span class="n">uri</span><span class="p">,</span> <span class="ss">start: </span><span class="n">resource</span><span class="p">.</span><span class="nf">uri</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">.</span><span class="nf">status_code</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+      <span class="n">contains_resource</span> <span class="n">resources</span><span class="p">.</span><span class="nf">first</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to_not</span> <span class="n">have_content</span> <span class="n">resource</span><span class="p">.</span><span class="nf">id</span><span class="p">.</span><span class="nf">to_s</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre>
+
+<pre class="highlight"><code><span class="n">describe</span> <span class="s1">'GET /devices'</span> <span class="k">do</span>
+  <span class="n">let!</span><span class="p">(</span><span class="ss">:resource</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryBot</span><span class="p">.</span><span class="nf">create</span> <span class="ss">:device</span><span class="p">,</span> <span class="ss">created_from: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span> <span class="p">}</span>
+  <span class="n">let!</span><span class="p">(</span><span class="ss">:uri</span><span class="p">)</span>       <span class="p">{</span> <span class="s1">'/devices'</span> <span class="p">}</span>
+
+  <span class="n">it_behaves_like</span> <span class="s1">'a listable resource'</span>
+  <span class="n">it_behaves_like</span> <span class="s1">'a paginable resource'</span>
+  <span class="n">it_behaves_like</span> <span class="s1">'a searchable resource'</span>
+  <span class="n">it_behaves_like</span> <span class="s1">'a filterable list'</span>
+<span class="k">end</span></code></pre>
+  </div>
+</div>
+
+<br>
+<hr>
+
+<div>SaturnCI</div>
+<div><a href="mailto:jason@saturnci.com">jason@saturnci.com</a></div>
+
+<div>
+  16601 Myers Lake Ave<br>
+  Sand Lake, Michigan 49343
+</div>
+
+</body>
+</html>
