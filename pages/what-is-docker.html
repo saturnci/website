@@ -24,14 +24,15 @@ nav: what-is-docker
 
     <p>
       Four hours later, you're unfortunately still not in business.
-      First you got an error saying that one of the gems failed to install because it needed a different version of OpenSSL than what's on your system.
+      First you got an error saying that one of the gems failed to install because it needed OpenSSL 1.1.1 but
+      on your computer you have OpenSSL 3.0.2.
     </p>
 
     <p>
-      Once you got past the OpenSSL issue, you discovered that DumpsterRental.ninja requires Redis 7.2, but you have a personal project which uses Redis 6.0.
-      You can't have both versions installed at the same time.
+      Once you got past the OpenSSL issue, you discovered that DumpsterRental.ninja requires PostgreSQL 14, but you have a personal project which uses PostgreSQL 16.
+      You can't have both versions running at the same time without complex configuration.
       You spent a while trying to figure out how to get DumpsterRental.ninja working while keeping your personal project working,
-      but finally you decided to just uninstall Redis 6.0 and deal with your personal project being broken for now.
+      but finally you decided to just uninstall PostgreSQL 16 and deal with your personal project being broken for now.
     </p>
 
     <p>
@@ -186,6 +187,7 @@ nav: what-is-docker
       Below is some "sheet music", a real <code>Dockerfile</code>.
       As we saw, a Docker image is a specification not only of what software a container runs but also what operating system it runs.
       In this instance the operating system we're running is Ubuntu Linux, version 22.04.
+      The <code>FROM</code> command is what specifies the <b>base image</b> that our image will be based on.
     </p>
 
     <p>
@@ -230,5 +232,198 @@ CMD ["ruby", "/app.rb"]</code></pre>
     <pre><code class="language-ruby"># app.rb
 
 puts "Hello, world!"</code></pre>
+
+    <p>
+      Now let's build our image and run our container.
+      Running the <code>docker build .</code> command gives the following output.
+    </p>
+
+    <pre><code class="language-plaintext">$ docker build .
+[+] Building 151.2s (9/9) FINISHED                                                                                    
+ => [internal] load build definition from Dockerfile                                                                    0.0s
+ => => transferring dockerfile: 533B                                                                                    0.0s
+ => [internal] load .dockerignore                                                                                       0.0s
+ => => transferring context: 2B                                                                                         0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:22.04                                                         4.0s
+ => [auth] sharing credentials for registrycache.saturnci.com:5000                                                      0.0s
+ => [1/3] FROM docker.io/library/ubuntu:22.04@sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3  58.9s
+ => => resolve docker.io/library/ubuntu:22.04@sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3   0.0s
+ => => sha256:f85691aa4b9092cbb48212c835b78068e3321656ba2c306dae491e1a02d1b4d3 27.38MB / 27.38MB                       57.6s
+ => => sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3 6.69kB / 6.69kB                          0.0s
+ => => sha256:40c5d6cde65809ff9d47ce06d1dd01d428a9af388a8918fc7a3310a55a4c39cb 424B / 424B                              0.0s
+ => => sha256:37711cf832d3f462205c1ca68ff571e3947cbe3fdeb380a6e51fdd75421eddb9 2.31kB / 2.31kB                          0.0s
+ => => extracting sha256:f85691aa4b9092cbb48212c835b78068e3321656ba2c306dae491e1a02d1b4d3                               1.0s
+ => [internal] load build context                                                                                       0.2s
+ => => transferring context: 54B                                                                                        0.2s
+ => [2/3] RUN apt-get update && apt-get install -y ruby                                                                87.7s
+ => [3/3] COPY app.rb /app.rb                                                                                           0.0s
+ => exporting to image                                                                                                  0.4s
+ => => exporting layers                                                                                                 0.4s
+ => => writing image sha256:7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834</code></pre>
+
+    <p>
+      The final line shows that the id of our image is <code>7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834</code>.
+      We can start a container based on this image using the <code>docker run</code> command.
+    </p>
+
+    <pre><code class="language-plaintext">$ docker run 7b2f82a21fd8ec2c1dbef89249245e1572863bd391e431cc4ea8c5473ca1a834
+Hello, world!</code></pre>
+
+    <p>
+      Actually, we don't have to use the full id every time.
+      Docker allows an abbreviated version for convenience.
+    </p>
+
+    <pre><code class="language-plaintext">$ docker run 7b2f82a21fd8
+Hello, world!</code></pre>
+    7b2f82a21fd8
+
+    <p>
+      To show that this Docker container is running its own operating system, we can run the <code>uname -a</code> command,
+      which will show Linux even though my computer, the host machine, is a Mac.
+    </p>
+
+    <pre><code class="language-plaintext">$ docker run 7b2f82a21fd8 uname -a
+Linux bce33c9caf30 5.10.76-linuxkit #1 SMP PREEMPT Mon Nov 8 11:22:26 UTC 2021 aarch64 aarch64 aarch64 GNU/Linux</code></pre>
+
+    <p>
+      See? It's a little computer on your computer.
+      To me, there's something magical about that.
+      Now let's tie all this back to your troubles at DumpsterRental.ninja.
+    </p>
+
+    <h2>Running additional services</h2>
+    <p>
+      What if your development environment needs an additional service in order to run, like PostgreSQL for example?
+      You might think that you would put PostgreSQL in your <code>Dockerfile</code> but this is not how it works.
+      In Docker there's a principle of "one container, one process".
+      Why does this principle exist?
+    </p>
+
+    <p>
+      My interpretation of the "one container, one process" principle is that the small benefit (if any)
+      that would be gained by stuffing multiple processes (PostgreSQL, Redis, Elasticsearch, etc.)
+      into one container would be far outweighed by the downsides of these processes being so tightly coupled together.
+      From a configuration perspective, it wouldn't be simpler to stick two processes in the same container,
+      in fact it would be more complicated because the container would be serving two masters, and the container's configuration
+      would be confusing because it would be a mix of the needs of its two different processes.
+      And for what benefit?
+      Containers are cheap.
+      Virtually nothing is saved by putting multiple processes into one container.
+      When each container is dedicated to just one process, the design of the system as a whole can be more modular and easier to understand.
+    </p>
+
+    <p>
+      When you create a <code>Dockerfile</code>, you're creating one setup configuration for one container serving one process.
+      If an addition to your main (let's say) Ruby application your development environment requires a PostgreSQL server,
+      then that will be a separate container running a separate process.
+    </p>
+
+    <p>
+      Does this mean you create two <code>Dockerfile</code>s, one for your Ruby application and one for PostgreSQL?
+      No. Since PostgreSQL is a very common dependency, you can find ready-made images for it.
+      All you have to do is download a PostgreSQL image of your choice and then run a container based on that image.
+      Then your Ruby application can connect to your PostgreSQL container just as if it were a PostgreSQL server running
+      natively on your host machine.
+    </p>
+
+    <p>
+      To make it easier to manage multi-process development environment, Docker offers a tool called <b>Docker Compose</b>,
+      which allows you to compose an environment that runs multiple services.
+      Compose is an extremely useful and feature-rich tool&mdash;so much so that I'll be covering it in detail in a separate post.
+      For our present purposes, all you need to remember is that a <code>Dockerfile</code> specifies a single container and service,
+      whereas Docker Compose specifies an entire multi-service environment.
+    </p>
+
+    <h2>How does this all help you at DumpsterRental.ninja?</h2>
+
+    <p>
+      Let's fast-forward to a hypothetical future where DumpsterRental.ninja has fully embraced Docker for both its
+      development and production environments.
+      What would this change?
+    </p>
+
+    <h3>Development environment setup</h3>
+    <p>
+      When you tried to set up DumpsterRental.ninja's development environment manually,
+      you ran into a conflict between the OpenSSL version that DumpsterRental.ninja needs (1.1.1)
+      and the OpenSSL version you already have on your computer (3.0.2).
+      With Docker this is a non-issue.
+      Since the DumpsterRental.ninja application runs in a Docker container, there's no need to install
+      OpenSSL 1.1.1 on your computer, only the container.
+      The OpenSSL 1.1.1 dependency can be specified in DumpsterRental.ninja's <code>Dockerfile</code>.
+    </p>
+
+    <p>
+      That troublesome ImageMagick dependency&mdash;the one you didn't know you needed because it
+      was missing from the <code>README</code>&mdash;can be included in the Dockerfile as well.
+      Below is an illustration of what that part of the <code>Dockerfile</code> could look like.
+    </p>
+
+    <pre><code class="language-dockerfile">FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+  ruby \
+  imagemagick \
+  openssl=1.1.1f-1ubuntu2.20</code></pre>
+
+    <p>
+      The <code>Dockerfile</code> can handle the Ruby dependency as well.
+      Instead of using the <code>ubuntu</code> base image, we can use the <code>ruby</code>
+      base image, which itself is based on a different Linux-based base image.
+      (You can poke around in the Ruby base image source code <a href="https://github.com/docker-library/ruby/tree/master">here</a>.)
+    </p>
+
+    <pre><code class="language-dockerfile">FROM ruby:3.3.5
+
+RUN apt-get update && apt-get install -y \
+  imagemagick \
+  openssl=1.1.1f-1ubuntu2.20</code></pre>
+
+    <p>
+      There's no conflict between DumpsterRental.ninja's PostgreSQL 14 and your local PostgreSQL 16,
+      because you don't have to install PostgreSQL 14 on your computer.
+      That can be run from a Docker container.
+    </p>
+
+    <h3>Production infrastructure</h3>
+
+    <p>
+      Before DumpsterRental.ninja started using Docker, provisioning a new production server that had
+      the same configuration as the original two was difficult if not impossible.
+      Now that there's a <code>Dockerfile</code> that specifies exactly what the production
+      server should look like (which may or may not match the development <code>Dockerfile</code>),
+      creating a new instance can be trivial.
+    </p>
+
+    <p>
+      DumpsterRental.ninja happens to be using <a href="https://kubernetes.io/">Kubernetes</a> for its production infrastructure,
+      although that's only one of many options.
+      As it so happens, the number of production instances can be scaled by changing
+      the <code>replicas</code> setting in a Kubernetes config file.
+      Here's what the relevant part of the file looked like before:
+    </p>
+
+    <pre><code class="language-yaml">services:
+  web:
+    image: dumpsterrental:latest
+    replicas: 2</code></pre>
+
+    <p>
+      And here's what it looks like after:
+    </p>
+
+    <pre><code class="language-yaml">services:
+  web:
+    image: dumpsterrental:latest
+    replicas: 4</code></pre>
+
+    <p>
+      Because the production server specifications are already captured in a static Docker image,
+      there's no need to run a setup script each time a new server instance is needed.
+      The image gets plopped onto the server, a container gets initialized based on the image, and that's all there is to it.
+      That means you and Scott and Justin can spend a lot less time fiddling with environment setup
+      and a bit more time helping people rent dumpsters.
+    </p>
   </div>
 </div>
