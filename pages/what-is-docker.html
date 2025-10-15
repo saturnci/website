@@ -102,10 +102,7 @@ nav: what-is-docker
     </p>
 
     <p>
-      The first problem is that setup scripts are <i>imperative</i>.
-      In other words, setup scripts describe a series of executable steps rather than a desired end state.
-      (A specification which describes a desired end state is <i>declarative</i>.)
-      Because a setup script is imperative and its commands are executed serially, it can fail partway through,
+      The first problem is that setup scripts can fail partway through,
       leaving your environment in a partially-set-up state and leaving you
       with the task of figuring out where and how to pick back up.
     </p>
@@ -113,7 +110,7 @@ nav: what-is-docker
     <p>
       The second problem with a setup script (or manual setup for that matter)
       is that the machine where the environment is always subject to incompatibilities with the script.
-      We saw this in the DumpsterRental.ninja example where two different environments needed two different versions of Redis.
+      We saw this in the DumpsterRental.ninja example where two different environments needed two different versions of PostgreSQL.
     </p>
 
     <h2>Even better than setup scripts</h2>
