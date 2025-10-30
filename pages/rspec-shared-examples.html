@@ -1,12 +1,70 @@
 ---
-page_title: The pernicious evils of RSpec shared examples
+page_title: RSpec shared examples unmasked
 nav: rspec-shared-examples
 ---
 
 <div class="container page-container">
-  <h1>The pernicious evils of RSpec shared examples</h1>
-
   <div class="page-content">
+    <h1>RSpec shared examples unmasked</h1>
+
+    <p>
+      <a href="https://www.betterspecs.org/">Better Specs</a> is a popular
+      source of guidance for writing RSpec tests. Unfortunately, much of the
+      advice there is dubious, and some of it is downright bad.
+    </p>
+
+    <p>
+      One of these pieces of bad advice has to do with RSpec's <b>shared examples</b> feature.
+      This section reads:
+      <blockquote>
+        Making tests is great and you get more confident day after day. But in
+        the end you will start to see code duplication coming up everywhere. Use
+        shared examples to DRY your test suite up.
+        [DRY = Don't Repeat Yourself]
+      </blockquote>
+    </p>
+
+    <p>
+      "Use shared examples to DRY your test suite up." Hmm. Is this a good
+      idea? Is test code supposed to be DRY? Why or why not? We'll discuss this
+      question in a moment, but first let's look at Better Specs' supposed
+      "bad" and "good" (their terms) way to write a test. I'll actually show
+      the two examples in reverse order because I find them easier to
+      understand that way.
+    </p>
+
+    <h3>Better Specs' "good" way</h3>
+    <p>
+      In the following test, which is obviously a very brief one, we can see
+      that we're apparently testing a listable resource, a paginable resource,
+      a searchable resource and a filterable list. At the beginning of the test
+      we're defining a <code>resource</code> and a
+      <code>uri</code>. If you're not sure what the meaning of this test is, me
+      neither. But let's just hold this in memory for a moment and try to
+      understand it once we've seen both examples.
+    </p>
+    <pre><code class="language-ruby">describe 'GET /devices' do
+  let!(:resource) { FactoryBot.create :device, created_from: user.id }
+  let!(:uri)       { '/devices' }
+
+  it_behaves_like 'a listable resource'
+  it_behaves_like 'a paginable resource'
+  it_behaves_like 'a searchable resource'
+  it_behaves_like 'a filterable list'
+end</code></pre>
+    <p>
+      So that's the good way. What does the bad way look like?
+    </p>
+
+    <h3>Better Specs' "bad" way</h3>
+    <p>
+      We can see that the first couple lines of this second example are the
+      same, the lines that define a <code>resource</code> and a
+      <code>uri</code>. After that it gets a little less clear (at least to me)
+      what the relationship is between the good version and the bad version. It
+      seems like maybe the test below has to do with pagination. Other than
+      that I'm not too sure.
+    </p>
     <pre><code class="language-ruby">describe 'GET /devices' do
   let!(:resource) { FactoryBot.create :device, created_from: user.id }
   let!(:uri)      { '/devices' }
@@ -31,15 +89,115 @@ nav: rspec-shared-examples
     end
   end
 end</code></pre>
+    <p>
+      Honestly, there are so many things wrong with these examples from a
+      technical perspective, and so much wrong with this "lesson" from a
+      pedagogical perspective, that I'm not even sure where to begin. Let's
+      start with the supposition that it's a good idea to DRY up your test
+      suite.
+    </p>
 
-<pre><code class="language-ruby">describe 'GET /devices' do
-  let!(:resource) { FactoryBot.create :device, created_from: user.id }
-  let!(:uri)       { '/devices' }
+    <h3>Duplication in tests: okay or not okay?</h3>
 
-  it_behaves_like 'a listable resource'
-  it_behaves_like 'a paginable resource'
-  it_behaves_like 'a searchable resource'
-  it_behaves_like 'a filterable list'
-end</code></pre>
+    <p>
+      The essence of
+      <a href="https://www.codewithjason.com/duplication/">Don't Repeat Yourself</a>
+      is that if you have a piece of knowledge or behavior that appears in a
+      codebase multiple times, that means that one of the copies of that
+      behavior could get changed without the others getting changed, leading to
+      inconsistencies and therefore bugs.
+    </p>
+
+    <p>
+      Some programmers take DRY too far and apply it in ways that don't make
+      sense, unifying things that actually make more sense to be separate. Many
+      people have spotted these misguided attempts to "DRY" up code and
+      erroneously concluded that the DRY principle itself is to blame. In fact,
+      there has been a whole mini-movement against DRY, which is where we get
+      hare-brained ideas like <a
+      href="https://dev.to/wuz/stop-trying-to-be-so-dry-instead-write-everything-twice-wet-5g33">Write
+    Everything Twice</a> (WET) and the <a
+    href="https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)">Rule
+  of Three</a>. But misapplications of the DRY principle are not the fault of
+the DRY principle itself. Inexperienced or unthoughtful people misunderstanding
+a good idea does not turn the good idea into a bad idea.
+    </p>
+
+    <p>
+      "Tolerate some duplication, and go easy on the DRY" is more or less the
+      message of the backlash against DRY, which is a bit like saying "tolerate
+      some poison in your food, and try not to be overly healthy". This
+      misguided advice has unfortunately taken particularly strong hold in the
+      realm of testing. A commonly-given reason is that, in testing, "clarity
+      is more important than DRY". Okay, well if that's true, why isn't clarity
+      more important than DRY everywhere? What's different about test code that
+      makes DRY apply differently? This explanation doesn't address this
+      question, and it's false.
+    </p>
+
+    <p>
+      DRY does indeed apply to test code differently from application code, but
+      not because clarity is more important than DRY in testing. The meaningful
+      difference is that, generally, <b>test code is arbitrary whereas
+      application code is not</b>. Tests (also called <i>executable
+      specifications</i>) specify the desired behavior of the application code.
+      In order for the application code to be correct, it must adhere to the
+      specifications described in the tests. Tests (which are, again,
+      executable specifications) are subject to no such constraint. Whatever
+      the tests say the correct behavior is, that's what the correct behavior
+      is. This is the sense in which test code is arbitrary. Because test code
+      is arbitrary, two pieces of identical test code don't necessarily
+      constitute duplication.
+    </p>
+
+    <p>
+      If one piece of duplicated code changes but its twin does not, does that
+      constitute a bug? If the duplicated code is application code, there's an
+      easy way to tell (and let's assume full test coverage for the sake of the
+      example): if the change causes a test to fail, then the change created a
+      bug. In other words, if the change causes the program no longer to
+      conform to its specifications, then the change caused a bug.
+    </p>
+
+    <p>
+      But if the piece of duplicated code is test code, there's no way to
+      tell whether changing one copy creates a bug or not, other than to ask
+      the author of the change what their intention was. The change that
+      created the inconsistency could be a mistake, or it could be that the
+      requirements changed and what used to be one behavior has now branched
+      into two different behaviors.
+    </p>
+
+    <p>
+      (One brief nuance before we move on: in test <i>helper</i> code, because
+      test helpers are not specifications, the same principles of DRY apply to
+      helpers as to application code.)
+    </p>
+
+    <p>
+      All this is to say that Better Specs' assertion that you can "use shared
+      examples to DRY your test suite up" is questionable at best. There is
+      still an unanswered question to content with, though. What about cases
+      where several features share a large amount of identical behavior? It
+      feels dumb to write a large number of identical tests. The options we're
+      left with are to write extremely duplicative tests or to write just one
+      such test and then accept gaping holes in our test coverage. What's one
+      to do?
+    </p>
+
+    <p>
+      This is when it's important to remember that there's not a "right" and
+      "wrong" way to do testing, there's only what's rational and irrational
+      and what's advantageous and disadvantageous. The goal is to get a
+      positive return on the investment made in the tests. When there are
+      several features which share similar behavior, going from zero tests
+      to one makes a huge difference. The behavior in those features used to
+      not be covered at all, and now it is. Going from one test to two makes
+      a smaller difference. You've gained a bit more assurance, but if the code
+      that the second test covers shares most of the some code with what the
+      first test covers (as it of course should), then the gain is not that
+      great. The gain for the third test written is even smaller, and so on.
+    </p>
   </div>
+
 </div>
