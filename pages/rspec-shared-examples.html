@@ -10,12 +10,9 @@ nav: rspec-shared-examples
     <p>
       <a href="https://www.betterspecs.org/">Better Specs</a> is a popular
       source of guidance for writing RSpec tests. Unfortunately, much of the
-      advice there is dubious, and some of it is downright bad.
-    </p>
-
-    <p>
-      One of these pieces of bad advice has to do with RSpec's <b>shared examples</b> feature.
-      This section reads:
+      advice there is dubious, and some of it is downright bad. One of these
+      pieces of bad advice has to do with RSpec's <b>shared examples</b>
+      feature. The shared example section reads:
       <blockquote>
         Making tests is great and you get more confident day after day. But in
         the end you will start to see code duplication coming up everywhere. Use
@@ -28,21 +25,20 @@ nav: rspec-shared-examples
       "Use shared examples to DRY your test suite up." Hmm. Is this a good
       idea? Is test code supposed to be DRY? Why or why not? We'll discuss this
       question in a moment, but first let's look at Better Specs' supposed
-      "bad" and "good" (their terms) way to write a test. I'll actually show
-      the two examples in reverse order because I find them easier to
-      understand that way.
+      "bad" and "good" way to write a test.
     </p>
 
     <h3>Better Specs' "good" way</h3>
     <p>
-      In the following test, which is obviously a very brief one, we can see
-      that we're apparently testing a listable resource, a paginable resource,
-      a searchable resource and a filterable list. At the beginning of the test
-      we're defining a <code>resource</code> and a
-      <code>uri</code>. If you're not sure what the meaning of this test is, me
-      neither. But let's just hold this in memory for a moment and try to
-      understand it once we've seen both examples.
+      In the following test, a very brief one, we can see that we're apparently
+      testing a listable resource, a paginable resource, a searchable resource
+      and a filterable list. At the beginning of the test we're defining a
+      <code>resource</code> and a <code>uri</code>. If you're not sure what the
+      meaning of this test is, me neither. But let's just hold this test in
+      memory for a moment and try to understand it once we've seen both
+      examples.
     </p>
+
     <pre><code class="language-ruby">describe 'GET /devices' do
   let!(:resource) { FactoryBot.create :device, created_from: user.id }
   let!(:uri)       { '/devices' }
@@ -52,18 +48,20 @@ nav: rspec-shared-examples
   it_behaves_like 'a searchable resource'
   it_behaves_like 'a filterable list'
 end</code></pre>
+
     <p>
-      So that's the good way. What does the bad way look like?
+      So that's apparently the good way to write such a test, using shared
+      examples. What does the bad way look like?
     </p>
 
     <h3>Better Specs' "bad" way</h3>
     <p>
-      We can see that the first couple lines of this second example are the
-      same, the lines that define a <code>resource</code> and a
-      <code>uri</code>. After that it gets a little less clear (at least to me)
-      what the relationship is between the good version and the bad version. It
-      seems like maybe the test below has to do with pagination. Other than
-      that I'm not too sure.
+      We can see that the first couple of lines of this second example are the
+      same as the first example, the lines that define a <code>resource</code>
+      and a <code>uri</code>. After that it gets a little less clear (at least
+      to me) what the relationship between the good version and the bad version
+      is. It seems like maybe the test below has to do with pagination. Other
+      than that I'm not too sure.
     </p>
     <pre><code class="language-ruby">describe 'GET /devices' do
   let!(:resource) { FactoryBot.create :device, created_from: user.id }
@@ -93,8 +91,9 @@ end</code></pre>
       Honestly, there are so many things wrong with these examples from a
       technical perspective, and so much wrong with this "lesson" from a
       pedagogical perspective, that I'm not even sure where to begin. Let's
-      start with the supposition that it's a good idea to DRY up your test
-      suite.
+      start with the mistaken supposition that it's a good idea to DRY up your
+      test suite, and then let's take a closer look at what shared examples
+      actually are.
     </p>
 
     <h3>Duplication in tests: okay or not okay?</h3>
@@ -123,6 +122,8 @@ the DRY principle itself. Inexperienced or unthoughtful people misunderstanding
 a good idea does not turn the good idea into a bad idea.
     </p>
 
+    <h3>Why test code is different</h3>
+
     <p>
       "Tolerate some duplication, and go easy on the DRY" is more or less the
       message of the backlash against DRY, which is a bit like saying "tolerate
@@ -139,7 +140,7 @@ a good idea does not turn the good idea into a bad idea.
       DRY does indeed apply to test code differently from application code, but
       not because clarity is more important than DRY in testing. The meaningful
       difference is that, generally, <b>test code is arbitrary whereas
-      application code is not</b>. Tests (also called <i>executable
+      application code is not</b>. Tests (also known to some as <i>executable
       specifications</i>) specify the desired behavior of the application code.
       In order for the application code to be correct, it must adhere to the
       specifications described in the tests. Tests (which are, again,
@@ -149,6 +150,8 @@ a good idea does not turn the good idea into a bad idea.
       is arbitrary, two pieces of identical test code don't necessarily
       constitute duplication.
     </p>
+
+    <h3>How to identify real duplication in tests</h3>
 
     <p>
       If one piece of duplicated code changes but its twin does not, does that
@@ -175,9 +178,10 @@ a good idea does not turn the good idea into a bad idea.
     </p>
 
     <p>
-      All this is to say that Better Specs' assertion that you can "use shared
-      examples to DRY your test suite up" is questionable at best. There is
-      still an unanswered question to content with, though. What about cases
+      All this is to say that Better Specs' assertion that you can use shared
+      examples "to DRY your test suite up" is questionable at best.
+
+      There is still an unanswered question to content with, though. What about cases
       where several features share a large amount of identical behavior? It
       feels dumb to write a large number of identical tests. The options we're
       left with are to write extremely duplicative tests or to write just one
@@ -187,7 +191,7 @@ a good idea does not turn the good idea into a bad idea.
 
     <p>
       This is when it's important to remember that there's not a "right" and
-      "wrong" way to do testing, there's only what's rational and irrational
+      "wrong" way to do testing, there's only what's smart and less smart
       and what's advantageous and disadvantageous. The goal is to get a
       positive return on the investment made in the tests. When there are
       several features which share similar behavior, going from zero tests
@@ -198,6 +202,152 @@ a good idea does not turn the good idea into a bad idea.
       first test covers (as it of course should), then the gain is not that
       great. The gain for the third test written is even smaller, and so on.
     </p>
-  </div>
 
+    <p>
+    </p>
+
+    <h2>What's behind the mask?</h2>
+
+    <p>
+      What exactly is a shared example, anyway? Would you believe me if I told
+      you it's a <i>function</i>?
+      I don't mean literally, but for all practical purposes that's what it is.
+      Let's take another look at the Better Specs example:
+    </p>
+
+    <pre><code class="language-ruby">describe 'GET /devices' do
+  let!(:resource) { FactoryBot.create :device, created_from: user.id }
+  let!(:uri)       { '/devices' }
+
+  it_behaves_like 'a listable resource'
+  it_behaves_like 'a paginable resource'
+  it_behaves_like 'a searchable resource'
+  it_behaves_like 'a filterable list'
+end</code></pre>
+
+    <p>
+      What's effectively happening, from the perspective of how easy the code
+      is to understand, is that we're <b>assigning values to global
+      variables</b> and then <b>calling a function that uses those
+      variables</b>. Here's an illustration of code that's <i>conceptually</i>
+      equivalent to the shared example above.
+    </p>
+
+    <pre><code class="language-ruby">$resource = FactoryBot.create :device, created_from: user.id
+$uri = '/devices'
+
+it_behaves_like('a listable resource')
+it_behaves_like('a paginable resource')
+it_behaves_like('a searchable resource')
+it_behaves_like('a filterable resource')</code></pre>
+
+    <p>
+      Again, to be clear, I'm not saying that my illustration is what the shared
+      example is doing behind the scenes or anything like that. I'm only saying
+      that using a shared example is, from a code understandability perspective,
+      <i>just as bad as</i> defining global variables and then calling functions
+      that use those variables. Of course we've all been taught that global
+      variables are bad, but it's worth reviewing why. Why are global variables
+      bad again?
+    </p>
+
+    <h3>The cost of global variables</h3>
+
+    <p>
+      Just like with duplication, it's not exactly that global variables are bad,
+      it's just that they have a cost. The cost, in this case, is that the in
+      the place the global variables are <b>defined</b>, you can't see all the
+      places where they're used, and so you don't know if it's safe to change
+      anything about the global variable definitions. And in the place where the
+      global variables are <b>used</b>, you can't see where they're defined, and
+      you also don't know everything that might happen to them in between where
+      they've been defined and where they're used. Basically the scope is wide
+      open. It's the opposite of encapsulation.
+    </p>
+
+    <p>
+      When, conversely, variables are narrowly scoped, it's easy to trace their
+      entire lifecycle. You can see where the variable is defined and where it's
+      used. It's easy to predict the consequences of any particular change, and
+      easy to be justifiably confident that your change won't have any surprising
+      side effects.
+    </p>
+
+    <h3>It gets worse</h3>
+
+    <p>
+      The design of shared examples, where you define global variables, then use
+      them in some distant place later, is already bad enough, but on top of that
+      is the maddening way that the tests for shared behavior are called. Instead
+      of defining a function and then calling it, shared examples get "called" by
+      passing a string into the <code>it_behaves_like</code> method. Below is an
+      example that I got from
+      <a href="https://railsware.com/blog/using-configurable-shared-examples-in-rspec/">this blog post</a>,
+      which I've slightly modified for clarity.
+    </p>
+
+      <pre><code class="language-ruby">describe 'Dogs behavior' do
+  context 'Snuff' do
+    # Assignment of global variable
+    let!(:snuff) { Dog.new(true, true, false, true) }
+
+    # Call to "global function" called "a normal dog"
+    it_behaves_like 'a normal dog'
+  end
+end
+
+# Definition of "a normal dog" "function"
+shared_examples 'a normal dog' do
+  it { is_expected.to be_able_to_growl }
+  it { is_expected.to be_able_to_bark }
+  it { is_expected.to be_able_to_jump }
+  it { is_expected.to be_able_to_flee }
+end</code></pre>
+
+    <p>
+      The reason this design choice is so frustrating is that when people choose
+      not-very-unique names like <code>shared_examples "login"</code>, it becomes
+      surprisingly difficult to find the shared examples you're looking for.
+      Shared example bring all these compromises and frustration for what
+      benefit? To DRY up your test suite, an idea that doesn't even make sense in
+      the first place. No thank you!
+    </p>
+
+    <h3>Alternatives to shared examples</h3>
+
+    <p>
+      Even though shared examples are a bad solution, and even though it's not a
+      good idea to try to de-duplicate code that's not actually duplication in
+      the first place, there is still a real problem that remains to be solved.
+      What do you do when you have the choice between writing the same tests
+      repeatedly and leaving holes in your test coverage?
+    </p>
+
+    <p>
+      As I alluded to earlier, the aim of testing is not to achieve 100% test
+      coverage for its own sake or to piously observe religious rules, but to
+      enjoy the practical benefits that testing brings. If there are two areas
+      of an application that are slightly different but share most of the same
+      code, then a test for one area exercises most of the code for the other
+      area too. So one approach to testing multiple similar features is to
+      choose to test a "representative sample" of the features and decide that
+      that's good enough.
+    </p>
+
+    <p>
+      Sometimes the bulk of (apparent or real) duplication in tests takes the
+      form of CSS selectors and such, not only creating duplication but also
+      obscuring the meaning of the test with noise. Such annoyances can be
+      mitigated using Page Objects, a topic I've written about
+      <a href="https://www.codewithjason.com/page-objects-rails/">here</a>,
+      which can be used to raise the level of abstraction in tests, allowing
+      the tests to read more easily and achieve the same thing with less code.
+      Applying this technique has the happy side effect of reducing the amount
+      of duplicative code in tests, but without obscuring the meaning the way
+      shared examples do. The RSpec library contains a mix of decent and
+      questionable ideas, but I think some of its features are purely rotten
+      and deserve to go straight in the garbage. The worst idea of them all,
+      which I would undoubtedly toss in the trash first, is shared examples.
+    </p>
+  </div>
 </div>
