@@ -14,19 +14,64 @@ end
 
 require_relative 'lib/syntax_highlighter'
 
-class StaticSiteBuilder
-  include SyntaxHighlighter
-  def initialize
-    @layouts_dir = 'layouts'
-    @pages_dir = 'pages'
-    @output_dir = 'public'
-    @pages = []
+class SiteSource
+  def initialize(path)
+    @path = path
+    @layouts_dir = File.join(path, 'layouts')
+    @pages_dir = File.join(path, 'pages')
   end
 
-  def build
+  def pages
+    @pages ||= load_pages
+  end
+
+  def layout(name)
+    File.read(File.join(@layouts_dir, "#{name}.html.erb"))
+  end
+
+  def assets
+    Dir.glob(File.join(@path, '*.css')) +
+    Dir.glob(File.join(@path, 'CNAME')).select { |f| File.exist?(f) }
+  end
+
+  private
+
+  def load_pages
+    pages = []
+    Dir.glob(File.join(@pages_dir, '*.html')).each do |file|
+      content = File.read(file)
+      if content.start_with?('---')
+        parts = content.split('---', 3)
+        frontmatter = YAML.load(parts[1])
+        body = parts[2].strip
+      else
+        frontmatter = {}
+        body = content
+      end
+
+      filename = File.basename(file, '.html')
+      pages << {
+        filename: filename,
+        frontmatter: frontmatter,
+        content: body,
+        path: file
+      }
+    end
+    pages
+  end
+end
+
+class SiteBuild
+  include SyntaxHighlighter
+
+  def initialize(source, output_dir)
+    @source = source
+    @output_dir = output_dir
+  end
+
+  def execute
     clean_output_dir
     copy_assets
-    load_pages
     generate_pages
     puts "Site built successfully in #{@output_dir}/"
   end
@@ -39,43 +84,15 @@ class StaticSiteBuilder
   end
 
   def copy_assets
-    # Copy CSS files and other assets
-    Dir.glob('*.css').each do |file|
-      FileUtils.cp(file, @output_dir)
-    end
-
-    # Copy other assets like CNAME, etc.
-    %w[CNAME].each do |file|
-      FileUtils.cp(file, @output_dir) if File.exist?(file)
-    end
-  end
-
-  def load_pages
-    Dir.glob("#{@pages_dir}/*.html").each do |file|
-      content = File.read(file)
-      if content.start_with?('---')
-        parts = content.split('---', 3)
-        frontmatter = YAML.load(parts[1])
-        body = parts[2].strip
-      else
-        frontmatter = {}
-        body = content
-      end
-
-      filename = File.basename(file, '.html')
-      @pages << {
-        filename: filename,
-        frontmatter: frontmatter,
-        content: body,
-        path: file
-      }
+    @source.assets.each do |asset|
+      FileUtils.cp(asset, @output_dir)
     end
   end
 
   def generate_pages
-    layout_template = load_layout('default')
+    layout_template = @source.layout('default')
 
-    @pages.each do |page|
+    @source.pages.each do |page|
       content = highlight_code_blocks(page[:content])
 
       # Create context for ERB template
@@ -84,27 +101,23 @@ class StaticSiteBuilder
         page_title: page[:frontmatter]['page_title'],
         active_nav: page[:frontmatter]['nav'] || page[:filename],
         content: content,
-        pages: @pages
+        pages: @source.pages
       )
 
       # Render the page
       html = ERB.new(layout_template).result(context.instance_eval { binding })
 
       # Write to output
-      output_file = "#{@output_dir}/#{page[:filename]}.html"
+      output_file = File.join(@output_dir, "#{page[:filename]}.html")
       File.write(output_file, html)
       puts "Generated: #{output_file}"
     end
   end
-
-  def load_layout(name)
-    File.read("#{@layouts_dir}/#{name}.html.erb")
-  end
-
 end
 
 # Build the site
 if __FILE__ == $0
-  builder = StaticSiteBuilder.new
-  builder.build
+  source = SiteSource.new('.')
+  build = SiteBuild.new(source, 'public')
+  build.execute
 end
