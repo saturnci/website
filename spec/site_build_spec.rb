@@ -1,13 +1,7 @@
-require_relative '../build'
+require_relative '../lib/site_build'
+require_relative '../lib/site_source'
 require 'tmpdir'
 require 'fileutils'
-
-RSpec.describe SiteSource do
-  it "can be instantiated" do
-    source = SiteSource.new('.')
-    expect(source).to be_a(SiteSource)
-  end
-end
 
 RSpec.describe SiteBuild do
   it "generates a complete HTML page from source files" do
