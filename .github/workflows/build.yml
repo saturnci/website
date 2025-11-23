@@ -14,15 +14,17 @@ on:
       - '.github/workflows/build.yml'
 
 concurrency:
-  group: pages-deployment
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -31,36 +33,26 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
+        bundler-cache: true
 
-    - name: Install dependencies
-      run: bundle install
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
 
     - name: Build site
       run: bundle exec ruby build.rb
 
-    - name: Deploy built files to root
-      run: |
-        # Copy HTML files
-        cp public/*.html .
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./public
 
-        # Copy CSS files
-        cp public/*.css .
-
-        # Copy other assets if they exist
-        cp public/CNAME . 2>/dev/null || true
-
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-
-        # Add all generated files
-        git add *.html *.css CNAME 2>/dev/null || true
-
-        # Only commit if there are changes
-        if ! git diff --staged --quiet; then
-          git commit -m "Auto-build site from source [skip ci]"
-          git push
-        else
-          echo "No changes to commit"
-        fi
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
