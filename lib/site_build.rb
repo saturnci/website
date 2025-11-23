@@ -50,7 +50,10 @@ class SiteBuild
   def generate_pages
     layout_template = @source.layout('default')
     all_pages = @source.pages
-    formatted_endpoints = @source.formatted_endpoints
+
+    require_relative 'api_documentation'
+    openapi_file = File.join(@source.path, 'openapi.yml')
+    formatted_endpoints = APIDocumentation.new(openapi_file).formatted_endpoints
 
     all_pages.each do |page|
       content = page[:content]
