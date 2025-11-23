@@ -1,9 +1,14 @@
 require 'yaml'
+require 'json'
 require_relative 'curl_command'
 
 class APIEndpoint
   def initialize(endpoint_yaml)
     @data = YAML.load(endpoint_yaml)
+  end
+
+  def format_response(response_data)
+    JSON.pretty_generate(response_data)
   end
 
   def to_html
@@ -13,8 +18,8 @@ class APIEndpoint
       @data['auth']
     ).to_s
 
-    response_yaml = YAML.dump(@data['response']).sub(/\A---\n/, '')
+    response_json = format_response(@data['response'])
 
-    "<hr>\n\n<h2>#{@data['description']}</h2>\n<p><code>#{@data['endpoint_key']}</code></p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
+    "<hr>\n\n<h2>#{@data['description']}</h2>\n<p><code>#{@data['endpoint_key']}</code></p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-json\">#{response_json}</code></pre>"
   end
 end
