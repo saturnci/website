@@ -63,7 +63,7 @@ class SiteSource
       description = endpoint_value['description']
       response_yaml = YAML.dump(endpoint_value['response'])
 
-      "<h3>#{endpoint_key}</h3>\n<p>#{description}</p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
+      "<hr>\n\n<h2>#{description}</h2>\n<p><code>#{endpoint_key}</code></p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
     end.join("\n\n")
   end
 
