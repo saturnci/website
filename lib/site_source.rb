@@ -35,6 +35,21 @@ class SiteSource
     File.exist?(openapi_file) ? File.read(openapi_file) : nil
   end
 
+  def curl_examples
+    openapi_file = File.join(@path, 'openapi.yml')
+    return nil unless File.exist?(openapi_file)
+
+    require_relative 'curl_command'
+    data = YAML.load_file(openapi_file)
+
+    examples = data['endpoints'].map do |endpoint_key, endpoint_value|
+      endpoint_data = { endpoint_key => endpoint_value }
+      CurlCommand.new(endpoint_data, data['base_url'], data['auth']).to_s
+    end
+
+    examples.join("\n\n")
+  end
+
   private
 
   def load_pages
