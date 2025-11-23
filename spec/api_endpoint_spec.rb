@@ -24,5 +24,6 @@ RSpec.describe APIEndpoint do
     expect(html).to include("<code>GET /test_suite_runs</code>")
     expect(html).to include("curl -u USER_ID:USER_API_TOKEN")
     expect(html).to include("https://app.saturnci.com/api/v1/test_suite_runs")
+    expect(html).not_to include("<code>---\n")
   end
 end

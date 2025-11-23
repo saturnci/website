@@ -13,7 +13,7 @@ class APIEndpoint
       @data['auth']
     ).to_s
 
-    response_yaml = YAML.dump(@data['response'])
+    response_yaml = YAML.dump(@data['response']).sub(/\A---\n/, '')
 
     "<hr>\n\n<h2>#{@data['description']}</h2>\n<p><code>#{@data['endpoint_key']}</code></p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
   end
