@@ -34,16 +34,19 @@ class SiteSource
     openapi_file = File.join(@path, 'openapi.yml')
     return nil unless File.exist?(openapi_file)
 
-    require_relative 'curl_command'
+    require_relative 'api_endpoint'
     data = YAML.load_file(openapi_file)
 
     data['endpoints'].map do |endpoint_key, endpoint_value|
-      endpoint_data = { endpoint_key => endpoint_value }
-      curl = CurlCommand.new(endpoint_data, data['base_url'], data['auth']).to_s
-      description = endpoint_value['description']
-      response_yaml = YAML.dump(endpoint_value['response'])
+      endpoint_yaml = YAML.dump({
+        'endpoint_key' => endpoint_key,
+        'description' => endpoint_value['description'],
+        'base_url' => data['base_url'],
+        'auth' => data['auth'],
+        'response' => endpoint_value['response']
+      })
 
-      "<hr>\n\n<h2>#{description}</h2>\n<p><code>#{endpoint_key}</code></p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
+      APIEndpoint.new(endpoint_yaml).to_html
     end.join("\n\n")
   end
 
