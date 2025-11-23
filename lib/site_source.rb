@@ -1,8 +1,9 @@
 require 'yaml'
 
 class SiteSource
-  def initialize(path, environment: 'development')
+  def initialize(path, environment: 'development', root_path: '.')
     @path = path
+    @root_path = root_path
     @environment = environment
     @layouts_dir = File.join(path, 'layouts')
     @pages_dir = File.join(path, 'pages')
@@ -24,7 +25,7 @@ class SiteSource
 
   def assets
     Dir.glob(File.join(@assets_dir, '*.css')) +
-    Dir.glob(File.join(@path, 'CNAME')).select { |f| File.exist?(f) }
+    Dir.glob(File.join(@root_path, 'CNAME')).select { |f| File.exist?(f) }
   end
 
   private
