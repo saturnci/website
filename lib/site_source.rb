@@ -6,6 +6,7 @@ class SiteSource
     @environment = environment
     @layouts_dir = File.join(path, 'layouts')
     @pages_dir = File.join(path, 'pages')
+    @assets_dir = File.join(path, 'assets')
   end
 
   def pages
@@ -22,7 +23,7 @@ class SiteSource
   end
 
   def assets
-    Dir.glob(File.join(@path, '*.css')) +
+    Dir.glob(File.join(@assets_dir, '*.css')) +
     Dir.glob(File.join(@path, 'CNAME')).select { |f| File.exist?(f) }
   end
 
