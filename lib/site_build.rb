@@ -50,9 +50,14 @@ class SiteBuild
   def generate_pages
     layout_template = @source.layout('default')
     all_pages = @source.pages
+    openapi_content = @source.openapi_content
 
     all_pages.each do |page|
-      html = render_page(page, layout_template, all_pages)
+      content = page[:content]
+      content = content.gsub('{{openapi}}', "<pre>#{openapi_content}</pre>") if openapi_content
+
+      page_with_content = page.merge(content: content)
+      html = render_page(page_with_content, layout_template, all_pages)
 
       # Write to output
       output_file = File.join(@output_dir, "#{page[:filename]}.html")

@@ -1,0 +1,12 @@
+base_url: https://app.saturnci.com/api/v1
+auth: Basic Auth (USER_ID / USER_API_TOKEN)
+
+endpoints:
+  PATCH /test_suite_runs/{id}:
+    description: Update a test suite run
+    request:
+      dry_run_example_count: 150
+    response:
+      id: 12345
+      dry_run_example_count: 150
+      status: "Running"

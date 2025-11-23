@@ -1,6 +1,8 @@
 require 'yaml'
 
 class SiteSource
+  attr_reader :path
+
   def initialize(path, environment: 'development', root_path: '.')
     @path = path
     @root_path = root_path
@@ -26,6 +28,11 @@ class SiteSource
   def assets
     Dir.glob(File.join(@assets_dir, '*.css')) +
     Dir.glob(File.join(@root_path, 'CNAME')).select { |f| File.exist?(f) }
+  end
+
+  def openapi_content
+    openapi_file = File.join(@path, 'openapi.yml')
+    File.exist?(openapi_file) ? File.read(openapi_file) : nil
   end
 
   private
