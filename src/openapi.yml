@@ -2,11 +2,14 @@ base_url: https://app.saturnci.com/api/v1
 auth: Basic Auth (USER_ID / USER_API_TOKEN)
 
 endpoints:
-  PATCH /test_suite_runs/{id}:
-    description: Update a test suite run
-    request:
-      dry_run_example_count: 150
+  GET /test_suite_runs:
+    description: List test suite runs
     response:
-      id: 12345
-      dry_run_example_count: 150
-      status: "Running"
+      - id: "550e8400-e29b-41d4-a716-446655440000"
+        status: "Running"
+        branch: "main"
+        commit_sha: "abc123"
+      - id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        status: "Passed"
+        branch: "main"
+        commit_sha: "def456"
