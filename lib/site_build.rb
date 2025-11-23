@@ -18,6 +18,22 @@ class SiteBuild
     puts "Site built successfully in #{@output_dir}/"
   end
 
+  def render_page(page, layout_template, all_pages)
+    content = highlight_code_blocks(page[:content])
+
+    # Create context for ERB template
+    context = OpenStruct.new(
+      title: page[:frontmatter]['title'] || 'SaturnCI - Continuous Integration for Ruby on Rails',
+      page_title: page[:frontmatter]['page_title'],
+      active_nav: page[:frontmatter]['nav'] || page[:filename],
+      content: content,
+      pages: all_pages
+    )
+
+    # Render the page
+    ERB.new(layout_template).result(context.instance_eval { binding })
+  end
+
   private
 
   def clean_output_dir
@@ -33,21 +49,10 @@ class SiteBuild
 
   def generate_pages
     layout_template = @source.layout('default')
+    all_pages = @source.pages
 
-    @source.pages.each do |page|
-      content = highlight_code_blocks(page[:content])
-
-      # Create context for ERB template
-      context = OpenStruct.new(
-        title: page[:frontmatter]['title'] || 'SaturnCI - Continuous Integration for Ruby on Rails',
-        page_title: page[:frontmatter]['page_title'],
-        active_nav: page[:frontmatter]['nav'] || page[:filename],
-        content: content,
-        pages: @source.pages
-      )
-
-      # Render the page
-      html = ERB.new(layout_template).result(context.instance_eval { binding })
+    all_pages.each do |page|
+      html = render_page(page, layout_template, all_pages)
 
       # Write to output
       output_file = File.join(@output_dir, "#{page[:filename]}.html")
