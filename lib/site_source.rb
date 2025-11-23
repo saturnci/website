@@ -50,6 +50,23 @@ class SiteSource
     examples.join("\n\n")
   end
 
+  def formatted_endpoints
+    openapi_file = File.join(@path, 'openapi.yml')
+    return nil unless File.exist?(openapi_file)
+
+    require_relative 'curl_command'
+    data = YAML.load_file(openapi_file)
+
+    data['endpoints'].map do |endpoint_key, endpoint_value|
+      endpoint_data = { endpoint_key => endpoint_value }
+      curl = CurlCommand.new(endpoint_data, data['base_url'], data['auth']).to_s
+      description = endpoint_value['description']
+      response_yaml = YAML.dump(endpoint_value['response'])
+
+      "<h3>#{endpoint_key}</h3>\n<p>#{description}</p>\n<pre><code>#{curl}</code></pre>\n<p>Response:</p>\n<pre><code class=\"language-yaml\">#{response_yaml}</code></pre>"
+    end.join("\n\n")
+  end
+
   private
 
   def load_pages

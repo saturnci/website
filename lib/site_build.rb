@@ -50,13 +50,11 @@ class SiteBuild
   def generate_pages
     layout_template = @source.layout('default')
     all_pages = @source.pages
-    openapi_content = @source.openapi_content
-    curl_examples = @source.curl_examples
+    formatted_endpoints = @source.formatted_endpoints
 
     all_pages.each do |page|
       content = page[:content]
-      content = content.gsub('{{openapi}}', "<pre><code class=\"language-yaml\">#{openapi_content}</code></pre>") if openapi_content
-      content = content.gsub('{{curl_examples}}', "<pre><code>#{curl_examples}</code></pre>") if curl_examples
+      content = content.gsub('{{endpoints}}', formatted_endpoints) if formatted_endpoints
 
       page_with_content = page.merge(content: content)
       html = render_page(page_with_content, layout_template, all_pages)
