@@ -13,11 +13,11 @@ RSpec.describe CurlCommand do
   end
 
   let(:base_url) { "https://app.saturnci.com/api/v1" }
-  let(:auth) { "Basic Auth (USER_ID / USER_API_TOKEN)" }
+  let(:auth) { "Basic Auth (SATURNCI_USER_ID / SATURNCI_USER_API_TOKEN)" }
 
   it "generates a curl command for a GET endpoint" do
     curl = CurlCommand.new(endpoint_data, base_url, auth)
-    expected = "curl -u USER_ID:USER_API_TOKEN https://app.saturnci.com/api/v1/test_suite_runs"
+    expected = "curl -u SATURNCI_USER_ID:SATURNCI_USER_API_TOKEN https://app.saturnci.com/api/v1/test_suite_runs"
 
     expect(curl.to_s).to eq(expected)
   end

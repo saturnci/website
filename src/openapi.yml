@@ -1,5 +1,5 @@
 base_url: https://app.saturnci.com/api/v1
-auth: Basic Auth (USER_ID / USER_API_TOKEN)
+auth: Basic Auth (SATURNCI_USER_ID / SATURNCI_USER_API_TOKEN)
 
 endpoints:
   GET /test_suite_runs:
