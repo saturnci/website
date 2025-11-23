@@ -1,14 +1,20 @@
 require 'yaml'
 
 class SiteSource
-  def initialize(path)
+  def initialize(path, environment: 'development')
     @path = path
+    @environment = environment
     @layouts_dir = File.join(path, 'layouts')
     @pages_dir = File.join(path, 'pages')
   end
 
   def pages
-    @pages ||= load_pages
+    @pages ||= filter_pages(load_pages)
+  end
+
+  def filter_pages(pages)
+    return pages unless @environment == 'production'
+    pages.reject { |page| page[:frontmatter]['draft'] }
   end
 
   def layout(name)
