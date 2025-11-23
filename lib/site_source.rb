@@ -30,11 +30,6 @@ class SiteSource
     Dir.glob(File.join(@root_path, 'CNAME')).select { |f| File.exist?(f) }
   end
 
-  def openapi_content
-    openapi_file = File.join(@path, 'openapi.yml')
-    File.exist?(openapi_file) ? File.read(openapi_file) : nil
-  end
-
   def formatted_endpoints
     openapi_file = File.join(@path, 'openapi.yml')
     return nil unless File.exist?(openapi_file)
