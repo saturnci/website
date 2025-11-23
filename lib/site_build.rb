@@ -54,7 +54,7 @@ class SiteBuild
 
     all_pages.each do |page|
       content = page[:content]
-      content = content.gsub('{{openapi}}', "<pre>#{openapi_content}</pre>") if openapi_content
+      content = content.gsub('{{openapi}}', "<pre><code class=\"language-yaml\">#{openapi_content}</code></pre>") if openapi_content
 
       page_with_content = page.merge(content: content)
       html = render_page(page_with_content, layout_template, all_pages)
