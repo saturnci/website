@@ -9,6 +9,6 @@ class CurlCommand
     endpoint_key = @endpoint_data.keys.first
     method, path = endpoint_key.split(' ', 2)
 
-    "curl -u SATURNCI_USER_ID:SATURNCI_USER_API_TOKEN #{@base_url}#{path}"
+    "curl -u USER_ID:USER_API_TOKEN #{@base_url}#{path}"
   end
 end
