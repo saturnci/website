@@ -1,0 +1,334 @@
+---
+page_title: SaturnCI software development principles
+nav: saturnci-software-development-principles
+draft: true
+---
+
+<div class="container page-container">
+  <h1>SaturnCI software development principles</h1>
+
+  <div class="page-content">
+    <h2>Stay in touch with reality</h2>
+    <p>
+      Time is finite and precious. To blow one's limited budget on work which
+      is mistakenly believed to be impactful, but is actually not, is a grave
+      error. A clear and thorough understanding of the customer's world is a
+      prerequisite to judging the merits of any prospective project. Such
+      understanding is gained not mainly through telemetrics or "data" (a
+      catch-all word whose meaning has been diluted to the point of near
+      uselessness), but through face-to-face conversations with real people.
+      Qualitative information is almost always more valuable than quantitative
+      data.
+    </p>
+
+    <h2>Fall in love with the customer</h2>
+    <p>
+      To paraphrase Jay Abraham, don't fall in love with your business, don't
+      fall in love with your product, fall in love with your customer. If you
+      treat the business or the product as the central entity, then your
+      business activities are liable to drift away from what customers are
+      actually interested in, and business will likely decline.
+    </p>
+
+    <h2>Favor safe bets</h2>
+    <p>
+      Every software organization always has a long list of tasks and projects
+      that they know for absolute certain need to be done. This work is usually
+      boring, like fixing a bug or performing an upgrade. There is also always
+      a constant flow of ideas which <i>might</i> yield a positive return on
+      investment. There are of course exceptions, but in general, it's smarter
+      to favor the safe bets over the riskier ones. It's better to work for a
+      paycheck than to wait to win the lottery.
+    </p>
+
+    <h2>No speculation</h2>
+    <p>
+      This is very closely related to the "favor safe bets" principle. What I
+      define as speculation is a feature or a piece of code which is not only
+      not a safe bet but which has <i>no</i> concrete justification for
+      existing. A classic example of speculative code is a parameter which has
+      a default value but which will never be missing.
+    </p>
+
+    <p>
+      The value of speculative code is less than zero. It's all liability and
+      no benefit. Not only does speculative code add accidental complexity and
+      possible confusion to a system but the time spent writing the speculative
+      code incurs an opportunity cost since that time could have been used to
+      build something valuable instead.
+    </p>
+
+    <h2>Have high standards</h2>
+    <p>
+      To build something excellent is more fun and satisfying than to build something mediocre.
+    </p>
+
+    <h2>Usability is paramount</h2>
+    <p>
+      Software isn't good unless it's easy to use.
+    </p>
+
+    <h2>No jank</h2>
+    <p>
+      There are a few software behaviors that I encounter over and over which I
+      positively despise. One is when a page loads in a "popcorn" fashion,
+      causing the text I'm reading to jerk up or down while I'm reading it,
+      causing me to lose my place.
+    </p>
+
+    <p>
+      Another behavior I hate is when a form field starts validating my input
+      not when I submit the form or when I blur the field, but <i>when I start
+      typing</i>. I type the first digit of my phone number and it complains
+      that that single digit is not a valid phone number. Well, no shit it's not
+      a valid phone number. How about you wait until I stop typing in the field
+      before you try to validate it? Such behavior makes the form feel
+      half-broken.
+    </p>
+
+    <p>
+      Pagination is not a new or complicated kind of feature, yet some sites
+      manage to fuck it up spectacularly. My biggest pet peeve is when I scroll
+      to the bottom of one page, then click the button to advance to the next
+      page, and it does so, but keeps me scrolled to the bottom of the page.
+      What did you think, that I wanted to read page 1 from the top down but
+      page 2 from the bottom up or something? Such behavior makes the feature
+      feel half-baked and ill-thought-out. I will never not be mad about it.
+    </p>
+
+    <p>
+      And then there are some things which are merely not good: unstyled
+      flashes when a page loads, blurry/aliased images, buttons which take a
+      little too long to respond.
+      All these things are <i>jank</i>. In SaturnCI I want none of it.
+    </p>
+
+    <h2>Don't tolerate defects</h2>
+    <p>
+      One of the twelve questions on the famous
+      <a href="https://www.joelonsoftware.com/2000/08/09/the-joel-test-12-steps-to-better-code/">Joel Test</a>
+      (a rough checklist to evaluate the quality of a software team) is "Do you
+      fix bugs before writing new code?" If we don't fix bugs before writing
+      new code, then we're building on a shaky foundation, and the bugs are
+      liable to multiply.
+    </p>
+
+    <p>
+      But actually, the rule of thumb "fix bugs before writing new code" is a
+      bit overly simplistic. There are three types of <i>defects</i> in
+      software of which bugs are only one. The other two types are <i>design
+      defects</i> and <i>missing features</i>. Often times a design defect or a
+      missing feature constitutes a worse problem than a bug. For example, at the
+      time of this writing, SaturnCI has a small bug where users are
+      illogically allowed to add the same repository twice. This behavior is
+      obviously wrong but it's not a showstopper. At the same time, there's a
+      missing feature where users have no way to create API authentication
+      tokens; the only way one can be created is for me personally to manually
+      create in in the database, meaning that no user can use the API (or
+      rotate their tokens) without manual work on my part. Obviously, the
+      missing API token creation feature constitutes a worse problem than the
+      duplicate repository bug, and I'm certainly going to give the token issue
+      priority. So my rule is: "in general, fix defects before writing new
+      code".
+    </p>
+
+    <p>
+      <i>Side note: from here on out, when I say "bug", I mean "bug worth
+      fixing". Every system has many small bugs which will never be
+      worth fixing. For our purposes we can ignore these.</i>
+    </p>
+
+    <p>
+      Another question in The Joel Test is "Do you have a bug database?"
+      I don't really like the sound of this idea. Obviously it's a good idea for
+      software teams to use some sort of issue tracking for bugs and features,
+      but the term <i>bug database</i> to me implies not just a dozen or two
+      bugs but a lot.
+    </p>
+
+    <p>
+      Every program has bugs. You could say that every program has a
+      <i>queue</i> of bugs. New bugs are constantly arriving and existing bugs
+      are constantly getting fixed. If new bugs arise at a faster rate than
+      they get fixed, then the queue will grow indefinitely. If bugs get fixed
+      at a faster rate than they arise, then the queue will shrink to a
+      definite size and never grow larger. In my experience, most organizations
+      have a bug queue of the always-growing type. When this is the case, it's
+      a mathematical necessity that <i>most</i> of the bugs in the queue will
+      <i>never</i> get fixed. If a team maintains a backlog of bugs, most of
+      which will never get fixed, then what's the point of the backlog? The
+      only function it serves is to help maintain the self-deception that the
+      bugs will all get fixed at some point. But they will not.
+    </p>
+
+    <p>
+      The only way to keep the queue of bugs (or, to use my preferred approach,
+      defects) from growing indefinitely is to fix defects at a faster rate
+      than they appear. This is a hard law of reality. There is no other way.
+      In my experience this means spending a lot of time fixing defects, often
+      more than what might seem "reasonable". But if keeping the defect queue
+      from growing requires an unreasonable time investment, it does not
+      logically follow that making only a "reasonable" time investment in
+      fixing bugs is a smarter approach. Still, this is the approach that most
+      organizations take. New changes "need" to be made, and so existing
+      defects go unfixed, with the overall effect being that development slows
+      as the system grows more fragile and convoluted, to the point where,
+      eventually, it's excruciatingly hard to make any meaningful change to the
+      system at all. I prefer to just fix the damn defects.
+    </p>
+
+    <h2>No epicycles</h2>
+    <p>
+      In ancient times, before astronomers figured out than the Sun rather than
+      the Earth is at the center of the solar system, astronomers tried to
+      figure out how to model the motions of the planets under the premise of
+      geocentrism. Because their geocentric model of the solar system was
+      fundamentally wrong, the models they came up with for planetary motion
+      weren't simple and elegant like Newton's helicentric, elliptical models
+      are; they were complicated and convoluted. You can see a wonderful video
+      illustration of the difference between heliocentric and geocentric
+      planetary motion
+      <a href="https://www.youtube.com/watch?v=ZeS8h1t-uMA">here</a>.
+    </p>
+
+    <p>
+      From the perspective of Earth, the motion of a planet can be roughly (or
+      extremely roughly, depending on the planet) approximated by a circle. But
+      there's a problem in that some planets appear to occasionally reverse
+      direction for a bit, then reverse direction again, a phenomenon called
+      retrograde motion. Some clever ancient astronomers figured out that
+      retrograde motion could be accounted for by putting smaller circular
+      orbits on top of the bigger circular orbits, as though each planet were
+      a moon orbiting around some other, invisible planet. These smaller orbits
+      were called
+      <a href="https://en.wikipedia.org/wiki/Deferent_and_epicycle">epicycles</a>.
+    </p>
+
+    <p>
+      Epicycles actually predicted the positions of planets quite well. So in
+      that sense I suppose they were a good answer to the problem. But of
+      course, they were a fudge. They existed solely to compensate for the
+      fundamental unsoundness of the geocentric model. Once the heliocentric
+      model was discovered, a dramatically simpler model of planetary motion
+      snapped into place.
+    </p>
+
+    <p>
+      Many software projects are full of metaphorical epicycles. Instead of
+      fixing a fundamental defect, the developers "add an epicycle" to paper
+      over the defect's weaknesses. Often, the epicycles end up needing
+      epicycles of their own. What could have been modeled simply ends up being
+      modeled in a very convoluted way. Adding to the problem is that unlike
+      science, which is self-correcting by nature, software tends to be what
+      you might call self-ossifying. Once a poor model gets a layer or two of
+      epicycles piled on top of it, the weight of the epicycles is so great
+      that the model is unable to change. Because of the grave risk that
+      epicycles pose, they should be avoided completely.
+    </p>
+
+    <h2>Don't cut with dull blades</h2>
+    <p>
+      Ancient astronomers had their broken model of geocentrism. Modern
+      software developers have a broken model called technical debt. One of the
+      biggest weaknesses of the technical debt metaphor is that it allows the
+      belief that technical debt can be taken on "strategically", the way that
+      financial debt can. The reality is that "strategic" technical debt gets
+      paid back approximately never. Another big flaw with the technical debt
+      metaphor is that unlike financial debt which can be taken on or avoided
+      by choice, technical debt accumulates naturally, by default. So-called
+      "technical debt" isn't debt, it's something else. What is it?
+    </p>
+
+    <p>
+      The fact that software gets worse over time by default, and that it takes
+      a lot of careful work to reverse the deterioration, suggests that this
+      deterioration phenomenon has something to do with <i>entropy</i>, the
+      tendency for the amount of disorder in a system to increase over time.
+      There are many more ways for things to go wrong than right. If you
+      completely disassemble a car, there are infinite ways to reassemble the
+      pieces that would <i>not</i> result in a working automobile, and just a
+      few that would. Since entropy is a fundamental aspect of reality and acts
+      on everything all the time (tires and brake pads wear down, oil gets
+      dirty, weeds grow in gardens, old people get dementia, security exploits
+      are found in libraries, etc.), constant work is needed in order to stave
+      off entropy's deleterious effects. Software is subject to entropy not
+      metaphorically but quite literally. However, since entropy is far from a
+      universally-understood concept, we would benefit from a metaphor that's a
+      bit more easily graspable to the average person.
+    </p>
+
+    <p>
+      Blades&mdash;kitchen knives, saw blades, etc.&mdash;are subject to
+      entropy just like everything else. Unless entropy is constantly combatted
+      via sharpening, the blades will get increasingly dull until they're quite
+      unsuitable for their purpose. Not only is a dull blade less effective and
+      efficient than a sharp one, it's more dangerous.
+    </p>
+
+    <p>
+      Software is the same. Unless entropy is constantly combatted via
+      refactoring, the system will get increasingly hard to understand and
+      change. Each area of a software system (any way you choose to slice it
+      up) can be thought of as an individual blade. An area that's easy to
+      change is a sharp blade; if it's hard to change then it's a dull blade.
+      In general, the more a certain area gets changed without refactoring,
+      the worse the code gets. The blade dulls with use.
+    </p>
+
+    <p>
+      In general, it's not a good idea to cut with dull blades. If you start
+      using a blade and you discover that it's dull, it's almost certainly
+      worthwhile to spend a bit of time making the blade sharper, at least
+      sharp enough so your current cutting task isn't miserable. Or perhaps you
+      find, after using an originally sharp blade, that it is now dull. That
+      also tends to be a good time to do some sharpening.
+    </p>
+
+    <h2>Don't sharpen blades speculatively</h2>
+    <p>
+      That it's better to cut with sharp blades than dull ones does not mean
+      that every possible act of sharpening is worthwhile. Every act of
+      sharpening is an investment and a bet. When you sharpen a blade, you're
+      saying, "I'm investing in sharpening this blade now because I <i>bet</i>
+      the investment will pay off in the future." (Note carefully that you
+      can't know in advance whether any particular bet will pay off, and to try
+      to only make 100% sure bets and never lose bets is a fool's errand. The
+      goal is for the investment portfolio as a whole to yield a positive
+      return on investment.)
+    </p>
+
+    <p>
+      Sharpening a blade right before you use it is an excellent bet. The
+      payoff will be realized within hours or minutes! Sharpening a blade right
+      after using it can also make for a very good bet, since you've just
+      experienced that the blade is dull and you have good evidence that this
+      blade is in fact one that sometimes gets used.
+    </p>
+
+    <p>
+      What's generally never a good idea is to grab some blade that's just
+      lying around and sharpen it speculatively, on the expectation that that
+      blade <i>might</i> be used someday. Doing so incurs an opportunity cost.
+      The price you paid to sharpen this idle blade could have gone toward
+      making a surer investment in sharpening a more heavily-used blade, or it
+      could have gone toward cutting. A blade that's never used does no harm in
+      being dull.
+    </p>
+
+    <h2>The authoritative source of truth for the system's behavior is not the application code but the test code</h2>
+    <p>
+    </p>
+
+    <h2>Cut scope to the bone</h2>
+
+    <h2>Work on one thing at a time</h2>
+
+    <h2>Minimize work-in-process</h2>
+
+    <h2>Keep everything working all the time</h2>
+
+    <h2>Keep all work atomic</h2>
+
+    <h2>Maintain exceptionally good performance</h2>
+  </div>
+</div>
