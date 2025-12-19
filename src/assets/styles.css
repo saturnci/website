@@ -7,8 +7,21 @@
 
 body {
   font-family: "Lucida Grande", sans-serif;
+  color: #666;
   line-height: 1.5;
+  font-size: 16px;
   background-color: #EEE;
+}
+
+h1 {
+  font-size: 36px;
+  border-bottom: 4px solid #BBB;
+  margin-bottom: 60px !important;
+  padding: 0 0 6px 0;
+}
+
+h2 {
+  font-size: 24px;
 }
 
 .page-content pre {
@@ -27,12 +40,20 @@ p code {
   border-radius: 5px;
 }
 
-
 h1,
 h2,
 h3,
 p {
   max-width: 600px;
+}
+
+h1,
+h2,
+h3 {
+  color: #000;
+  font-family: 'Palatino';
+  line-height: 1.2;
+  margin: 40px 0 0 0;
 }
 
 blockquote {
