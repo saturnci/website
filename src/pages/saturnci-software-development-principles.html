@@ -8,6 +8,20 @@ draft: true
   <h1>SaturnCI software development principles</h1>
 
   <div class="page-content">
+    <p>
+      As soon as I discovered Claude Code, I became an enthusiastic user.
+      Having an AI agent which I interact with on my terminal, which is aware
+      of all my code, and which can edit files and execute commands on my
+      behalf, is so much better than switching between my editor and the
+      browser and copy/pasting code and responses. To me the old way of
+      interacting with AI now seems comically quaint.
+    </p>
+
+    <p>
+      Even though Claude Code is in some ways spectacularly impressive, in
+      other ways it's frustratingly stupid.
+    </p>
+
     <h2>Stay in touch with reality</h2>
     <p>
       Time is finite and precious. To blow one's limited budget on work which
@@ -21,24 +35,16 @@ draft: true
       data.
     </p>
 
-    <h2>Fall in love with the customer</h2>
-    <p>
-      To paraphrase Jay Abraham, don't fall in love with your business, don't
-      fall in love with your product, fall in love with your customer. If you
-      treat the business or the product as the central entity, then your
-      business activities are liable to drift away from what customers are
-      actually interested in, and business will likely decline.
-    </p>
-
     <h2>Favor safe bets</h2>
     <p>
       Every software organization always has a long list of tasks and projects
       that they know for absolute certain need to be done. This work is usually
       boring, like fixing a bug or performing an upgrade. There is also always
-      a constant flow of ideas which <i>might</i> yield a positive return on
-      investment. There are of course exceptions, but in general, it's smarter
-      to favor the safe bets over the riskier ones. It's better to work for a
-      paycheck than to wait to win the lottery.
+      a constant flow of fun and exciting ideas which <i>might</i> yield a
+      positive return on investment but also might not. There are of course
+      exceptions, but in general, it's smarter to favor the safe bets over the
+      riskier ones. It's better to work for a paycheck than to wait to win the
+      lottery.
     </p>
 
     <h2>No speculation</h2>
@@ -63,10 +69,28 @@ draft: true
       To build something excellent is more fun and satisfying than to build something mediocre.
     </p>
 
-    <h2>Usability is paramount</h2>
+    <h2>Have a high tolerance for mistakes, but correct them diligently</h2>
+    <p>
+      Don't be afraid to make mistakes. Mistakes are inevitable. The question
+      isn't how good you are at avoiding mistakes (which is impossible anyway),
+      it's how good you are at detecting and correcting them.
+    </p>
+
+    <h2>Fall in love with the customer</h2>
+    <p>
+      To paraphrase Jay Abraham, don't fall in love with your business, don't
+      fall in love with your product, fall in love with your customer. If you
+      treat the business or the product as the central entity, then your
+      business activities are liable to drift away from what customers are
+      actually interested in, and business will likely decline.
+    </p>
+
+    <h2>Maintain high usability</h2>
     <p>
       Software isn't good unless it's easy to use.
     </p>
+
+    <h2>Maintain conceptual soundness and integrity</h2>
 
     <h2>No jank</h2>
     <p>
@@ -184,7 +208,7 @@ draft: true
       figure out how to model the motions of the planets under the premise of
       geocentrism. Because their geocentric model of the solar system was
       fundamentally wrong, the models they came up with for planetary motion
-      weren't simple and elegant like Newton's helicentric, elliptical models
+      weren't simple and elegant like Newton's heliocentric, elliptical models
       are; they were complicated and convoluted. You can see a wonderful video
       illustration of the difference between heliocentric and geocentric
       planetary motion
@@ -317,18 +341,147 @@ draft: true
 
     <h2>The authoritative source of truth for the system's behavior is not the application code but the test code</h2>
     <p>
+      In a system with no tests, the application code does two jobs: it both a)
+      determines the behavior of the system and b) serves as the authoritative
+      specifications the system. Conversely, in a system with a complete test
+      suite, the application code still determines the behavior of the system
+      but it doesn't serve as the system's specifications. That role is now
+      filled by the tests.
     </p>
 
-    <h2>Cut scope to the bone</h2>
+    <p>
+      Why should we care about that? What's so great about having the roles of
+      specification and behavior played by two different entities? If the
+      application code is free from the job of having to keep track of the
+      specifications, then the code can be changed freely without disturbing
+      the specifications one bit. There's no longer pressure on the application
+      code to be correct. The tests are taking care of that. The application
+      code is now less sacred and precious. If the code becomes incorrect, it's
+      not necessarily a very big deal, because the job of worrying about the
+      correctness of the system's behavior can be left to the tests.
+    </p>
+
+    <p>
+      Working this way takes the pressure off the application code, but the
+      pressure has not been removed, merely shifted from the application code
+      to the tests. Now, since the behavior specified by the tests is what's
+      being enforced, it's critical that the specified behavior matches the
+      actual desired behavior.
+    </p>
 
     <h2>Work on one thing at a time</h2>
+    <p>
+      The fastest way to get a bunch of things done is to do one thing at a
+      time. Obviously, no one can literally do more than one piece of work at a
+      time. I've never seen someone sitting behind two laptops, typing on one
+      with their left hand and the other one with their right hand. When
+      developers multitask, they do so by switching back and forth between two
+      tasks (or, God forbid, three or more). Maybe they switch to task B while
+      they're waiting for a test run on task A or a deployment. This way, time
+      that would otherwise be idle doesn't go to waste.
+    </p>
+
+    <p>
+      There are exceptions, but in general I don't think this way of working is
+      a net win. Personally, when I switch between two programming tasks, I
+      tend to find myself forgetting which one is the "primary" task and which
+      one is secondary. Perhaps I started task B mainly to fill time during
+      idle time of task A, even though task A is much more essential than B.
+      But then I inevitably find myself focusing on task B, at times, at the
+      expense of task A.
+    </p>
+
+    <p>
+      The implicit belief behind filling idle time is that idle time is
+      <i>bad</i>. The ideal utilization rate (according to this belief) is
+      100%, and if my utilization rate is 80%, then the remaining 20% needs to
+      be filled up with some sort of work or else that time is wasted. The
+      aim is, more or less, perfect efficiency.
+    </p>
+
+    <p>
+      But as a general law of reality, perfect efficiency is not possible. If
+      you have a car wash or a restaurant or a ticket booth, there's always
+      either a line of people waiting or at least one idle worker. It would be
+      ideal to always have all workers fully utilized so you're getting your
+      money's worth, while also never making any customer wait in line, but
+      that's not possible. Either there are workers "wasting" their time being
+      idle, or customers "wasting" their time waiting in line. Waste is
+      inevitable.
+    </p>
+
+    <p>
+      A developer switching between two tasks&mdash;I'll call it "serving" two
+      tasks&mdash;is like a waiter serving two tables. Any time the waiter is
+      serving one table, he is unavailable to serve the other. If someone at
+      table A needs another gin and tonic but the waiter is currently occupied
+      with table B, the customer at table A will have to wait. If the waiter
+      were serving table A and table A only, then the waiter would be
+      "wastefully" idle some portion of the time, but any need from table A
+      could be served instantly.
+    </p>
+
+    <p>
+      Waiting on a test run or a deployment or what have you is a bit like
+      waiting for a customer to finish his food or drink. At some
+      semi-unpredictable time, the "work" will finish and your service will be
+      needed. If you go off and occupy yourself with something else to fill
+      the idle time, then there's a good chance you won't be available right
+      when you're needed again, and your "customer" will have to wait.
+    </p>
+
+    <p>
+      When all the customers are equally important, this is not a big deal, and
+      in fact, in real restaurants (except perhaps the fanciest ones), waiters
+      do of course divide themselves among multiple tables. But what if some
+      customers are higher priority than others? Let's say you're a waiter
+      serving exactly two tables. At one table is the President of the United
+      States (let's leave aside <i>which</i> president) and at the other table
+      is someone very unimportant; let's call him Larry. We want to serve the
+      president's every whim immediately, but Larry can go to hell for all we
+      care. This makes it irrational to try to fill "wasted time" by serving
+      Larry while we're not serving the president. We should have exactly two
+      modes: 1) actively serving the president and 2) attentively waiting for
+      the president's next need. If we make the president wait because we were
+      too busy serving Larry, we have failed.
+    </p>
+
+    <p>
+      An engineering organization doesn't exist for the purpose of keeping all
+      its employees fully utilized at all times. It exists to <i>get work
+      done</i>. The highest-priority work in an engineering organization is
+      metaphorically the president; all the other work is Larry. Just as it
+      doesn't make sense to serve Larry at the expense of the president, it
+      doesn't make sense to serve lower-priority work at the expense of
+      top-priority work. It might feel "wrong" for a programmer to be idle, in
+      a way that it doesn't necessarily feel wrong for a waiter, but that
+      feeling is just our unsophisticated gut instincts talking. In order to
+      achieve global efficiency, we have to be comfortable with a certain
+      amount of local inefficiency. Make peace with the waste. Work on one
+      thing at a time.
+    </p>
+
+    <h2>Don't mix jobs</h2>
 
     <h2>Minimize work-in-process</h2>
+
+    <p>
+      Nothing has value until it's running in production. Changes that have
+      been started but aren't running in production yet are changes we've paid
+      for but can't benefit from yet. Why is that bad? Consider a bakery which
+
+    </p>
 
     <h2>Keep everything working all the time</h2>
 
     <h2>Keep all work atomic</h2>
 
+    <h2>Cut scope to the bone</h2>
+
+    <h2>Minimize third-party dependencies</h2>
+
     <h2>Maintain exceptionally good performance</h2>
+
+    <h2>Test at as low a level as possible</h2>
   </div>
 </div>

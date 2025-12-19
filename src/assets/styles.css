@@ -5,6 +5,12 @@
  * I'm following the philosophy of https://motherfuckingwebsite.com/.
  */
 
+body {
+  font-family: "Lucida Grande", sans-serif;
+  line-height: 1.5;
+  background-color: #EEE;
+}
+
 .page-content pre {
   font-size: 14px;
   background: #000;
@@ -15,7 +21,7 @@
 }
 
 p code {
-  background-color: #EEE;
+  background-color: #FFF;
   display: inline-block;
   padding: 0 4px;
   border-radius: 5px;
