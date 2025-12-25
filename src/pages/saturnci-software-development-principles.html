@@ -9,68 +9,80 @@ draft: true
 
   <div class="page-content">
     <p>
-      As much as I love coding with AI, I'm often frustrated by the differences
-      between my own programming principles and the way my AI chooses to work.
-      AI is happy, for example, to write code without tests, mix unrelated
-      changes into one commit, bypass legitimate linting errors, and commit all
-      sorts of other sins ranging from merely annoying to downright criminal.
+      As much as I love coding with AI, the differences between my own
+      programming principles and the way my AI chooses to work often frustrate
+      me. For example, AI tends to be happy to write code without tests, bypass
+      legitimate linting errors, mix unrelated changes into one commit, and
+      commit all sorts of other sins ranging from merely annoying to downright
+      unconscionable.
     </p>
 
     <p>
       In order to try to help keep my AI on the straight and narrow, I listed
-      out a handful of guiding principles such as "always use atomic commits"
-      "don't needlessly abbreviate variable names". As this list grew to an
-      unreasonably large size, I realized that in addition to serving as a
-      helpful guide to my AI agent, my list of principles could also possibly
-      be of interest to my fellow human programmers. So here, roughly in order
-      of importance, is my list.
+      out a handful of guiding principles such as "always use atomic commits",
+      "don't needlessly abbreviate variable names", and so forth. The list grew
+      and grew until I found myself practically writing a book. Heck, maybe
+      someday it <i>will</i> become a book. In the meantime, I decided to share
+      my list of software development principles with you, my fellow human
+      programmer, in case you find anything worth adopting into your own
+      practices. Enjoy.
     </p>
 
     <h2>Stay in touch with reality</h2>
     <p>
       Time is finite and precious. To blow one's limited budget on work which
-      is mistakenly believed to be impactful, but is actually not, is a grave
-      error. A clear and thorough understanding of the customer's world is a
-      prerequisite to judging the merits of any prospective project. Such
-      understanding is gained not mainly through telemetrics or "data" (a
-      catch-all word whose meaning has been diluted to the point of near
-      uselessness), but through face-to-face conversations with real people.
-      Qualitative information is almost always more valuable than quantitative
-      data.
+      is erroneously believed to be impactful, but is actually not, is, I
+      think, a capital mistake. A prerequisite to judging the merits of any
+      prospective project is a clear and thorough understanding of the
+      customer's world. Such understanding is gained not mainly through
+      telemetrics or "data" (a catch-all word whose meaning in certain circles
+      has been diluted to the point of near uselessness), but through
+      face-to-face conversations with real people. Qualitative information is
+      almost always more valuable than quantitative data.
     </p>
 
     <h2>Favor safe bets</h2>
     <p>
       Every software organization always has a long list of tasks and projects
-      that they know for absolute certain need to be done. This work is usually
-      boring, like fixing a bug or performing an upgrade. There is also always
-      a constant flow of fun and exciting ideas which <i>might</i> yield a
-      positive return on investment but also might not. There are of course
-      exceptions, but in general, it's smarter to favor the safe bets over the
-      riskier ones. It's better to work for a paycheck than to wait to win the
-      lottery.
+      that they know <i>for absolute certain</i> need to be done. This work is
+      usually boring, like fixing a bug or performing an upgrade. There is also
+      always a constant inflow of fun and exciting ideas which <i>might</i>
+      yield a positive return on investment but also might not. There are of
+      course exceptions, but in general, it's wiser to favor the safe bets over
+      the riskier ones. It's better to work for a paycheck than to wait to win
+      the lottery.
     </p>
 
     <h2>No speculation</h2>
     <p>
-      This is very closely related to the "favor safe bets" principle. What I
-      define as speculation is a feature or a piece of code which is not only
-      not a safe bet but which has <i>no</i> concrete justification for
-      existing. A classic example of speculative code is a parameter which has
-      a default value but which will never be missing.
+      What I define as <i>speculation</i> is a feature or a piece of code which
+      is not only not a safe bet but which has <i>no</i> concrete justification
+      for existing. A classic example of speculative code is a parameter which
+      has a default value which will never be used because, in practice, the
+      argument for that parameter will never be missing. Such "just in case"
+      code has no benefit whatsoever, yet still has a cost. Why pay a price,
+      even a small one, for no benefit in exchange?
     </p>
 
     <p>
-      The value of speculative code is less than zero. It's all liability and
-      no benefit. Not only does speculative code add accidental complexity and
-      possible confusion to a system but the time spent writing the speculative
-      code incurs an opportunity cost since that time could have been used to
-      build something valuable instead.
+      Not only does speculative code add incidental complexity and potential
+      confusion to a system but the time spent writing the speculative code
+      poses an opportunity cost since that time could have been used to build
+      something valuable instead. Don't write speculative code; only add code
+      when you're sure it's needed.
     </p>
 
     <h2>Have high standards</h2>
     <p>
-      To build something excellent is more fun and satisfying than to build something mediocre.
+      So much crappy software is due to the mere fact that the people in charge
+      of making it chose to have low standards. How many times have you heard
+      some variation of "it doesn't have to be perfect, it just has to work"?
+      "Perfect" in these case doesn't literally mean perfect, it's a euphemism
+      for something like "not-shitty". If people said what they really meant,
+      they would say that it doesn't have to be <i>not-shitty</i>, it just has
+      to work. Or to word that more elegantly, it's okay if the feature is
+      shitty as long as it works. That, sadly, is, at least in my experience,
+      the prevailing attitude in the software industry.
     </p>
 
     <h2>Have a high tolerance for mistakes, but correct them diligently</h2>
@@ -204,6 +216,10 @@ draft: true
       eventually, it's excruciatingly hard to make any meaningful change to the
       system at all. I prefer to just fix the damn defects.
     </p>
+
+    <h2>Diagnose before you prescribe</h2>
+
+    <h2>Don't tolerate incidental complexity</h2>
 
     <h2>No epicycles</h2>
     <p>
