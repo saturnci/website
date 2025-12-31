@@ -47,6 +47,12 @@ p {
   max-width: 600px;
 }
 
+ol,
+ul {
+  max-width: 560px;
+  padding-left: 40px;
+}
+
 h1,
 h2,
 h3 {

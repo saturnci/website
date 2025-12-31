@@ -1,0 +1,255 @@
+---
+page_title: Specify, encode, fulfill
+nav: specify-encode-fulfill
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Specify-encode-fulfill: the distilled essence of test-driven development</h1>
+
+  <div class="page-content">
+    <p>
+      If there are intelligent alients on other planets, and if they've
+      achieved a level intellectual advancement at least on par with our own,
+      then these aliens surely will have independently discovered and invented
+      many of the same things that we humans have.
+    </p>
+
+    <p>
+      To start with a trivial example, they will surely have discovered basic
+      mathematical truths such as the fact that two plus two equals four. They
+      will also have discovered the Pythagorean theorem, the existence of prime
+      numbers, and so on. Since there's only one version of the truth, any
+      extraterrestrial mathematicians will not have found some variant of the
+      Pythagorean theorem or prime numbers which we consider to be factorable;
+      they will have found, by necessity, facts which agree with ours.
+    </p>
+
+    <p>
+      I would also bet that any extraterrestrial civilization that has invented
+      science has invented essentially the same scientific method as ours: take
+      a stab at the explanation for some currently-unsolved mystery (e.g. "what
+      are the stars?") and then subject your explanation to criticism to try to
+      find reasons it could be wrong, and if the criticisms fail, then your
+      explanation is tentatively accepted as true. (Side note: if this
+      description of science sounds a bit off to you, then you may share my
+      misfortune of having been taught about science by
+      schoolteachers instead of by <a href="https://www.amazon.com/Conjectures-Refutations-Growth-Scientific-Knowledge/dp/1013367723">Karl Popper</a>.)
+      The reason why all civilizations' versions of science must be very
+      similar is because the scientific method can't be varied very much and
+      still work. This is the same reason why non-scientific "ways of knowing"
+      here on Earth have failed to explain many of the phenomena that science
+      has explained successfully. There is one and only one reality, and one
+      and only one reliable method of determining what's true.
+    </p>
+
+    <p>
+      If there are exo-civilizations that have invented (or perhaps we should
+      say <i>discovered</i>) science, then they surely will have discovered
+      computation as well. Computation doesn't require a computer, of
+      course&mdash;the word <i>computer</i> originally referred to a person
+      whose job it was to carry out computations, and people have been
+      computing for millenia&mdash;but if you know about computation and you
+      know about machines then it might only be a matter of time before you put
+      the two together and create a machine which performs computations
+      automatically. A computer needs programs of course, and programs need a
+      programmer, so if there are extraterrestrial computers then there must be
+      extraterrestrial programmers.
+    </p>
+
+    <p>
+      The same way that alien mathematicians must have discovered essential
+      mathematical ideas like arithmetic and prime numbers and such, alien
+      programmers must have discovered essential ideas in programming like
+      loops, conditionals, version control, and&mdash;hear me
+      out&mdash;test-driven development. I realize that this proposition might
+      sound unserious and fanciful, but give me some rope and read on.
+    </p>
+
+    <p>
+      To be clear, I don't think there are aliens out there doing specifically
+      Kent Beck's red-green-refactor TDD, not any more than I might imagine
+      there might be aliens practicing specifically Leibniz' flavor of
+      calculus. The TDD we do here on Earth (and calculus for that matter) is a
+      mix the <i>essential</i> and the <i>incidental</i>. I want to turn our
+      attention now to what some of those essential and incidental ingredients
+      are.
+    </p>
+
+    <h2>Kent Beck's Canon TDD</h2>
+
+    <p>
+      If one is looking for the authoritative definition of test-driven
+      development, one could surely do worse than to consult the version
+      designated canonical by the foremost progenitor of the practice. Here's
+      the definition Kent Beck gives in a post called
+      <a href="https://tidyfirst.substack.com/p/canon-tdd">Canon TDD</a>.
+    </p>
+
+    <ol>
+      <li>Write a list of the test scenarios you want to cover</li>
+      <li>Turn exactly one item on the list into an actual, concrete, runnable test</li>
+      <li>Change the code to make the test (&amp; all previous tests) pass (adding items to the list as you discover them)</li>
+      <li>Optionally refactor to improve the implementation design</li>
+      <li>Until the list is empty, go back to #2</li>
+    </ol>
+
+    <p>
+      When I teach TDD, I used to teach red-green-refactor, a version of
+      red-green-refactor which matches Kent Beck's Canon TDD almost exactly.
+      But I no longer do&mdash;or rather, that's not where I start (even though
+      I agree with it heartily). There are three reasons for this.
+    </p>
+
+    <p>
+      The first is that I think Canon TDD contains certain details which,
+      although essential and correct in themselves, are not necessary in order
+      to understand the top-level essence of TDD, and in fact I feel that these
+      details distract from this essence and create possible points of
+      confusion. (Soon we'll touch on what exactly these details are.)
+    </p>
+
+    <p>
+      The second reason is because I think Canon TDD contains a certain element
+      (refactoring) which is not essential to TDD, or at least, whose
+      essentiality is debatable. If extraterrestrial civilizations have
+      discovered TDD, it's hard to imagine that <i>all</i> of them would
+      consider refactoring to be an essential part of it. To be clear, I think
+      taking out the optional refactoring step would make TDD significantly
+      <i>worse</i>, but I don't think doing so would take away anything
+      <i>essential</i>.
+    </p>
+
+    <p>
+      Lastly, I think Canon TDD's third step (change the code to make the tests
+      pass) is slightly mistaken (or at least imprecise) in a way that we'll
+      look at more closely later. None of this is to say that I think Canon TDD
+      is <i>wrong</i> (except for perhaps the small imprecision in step 3),
+      it's just not what I personally choose to <i>teach first</i>. When I
+      teach TDD, I aim to convey the minimal essence of TDD, and at a high
+      level of abstraction. I want as little room for misunderstanding as
+      possible.
+    </p>
+
+    <h2>The specify-encode-fulfill loop</h2>
+
+    <p>
+      My preferred way of conveying the essence of test-driven development, the
+      <i>specify-encode-fulfill loop</i>, goes like this:
+    </p>
+
+    <ol>
+      <li><b>Specify:</b> Decide on the specifications for what you want to build</li>
+      <li><b>Encode:</b> Encode your specifications in the form of automated tests</li>
+      <li><b>Fulfill:</b> Implement the behavior to fulfill those specifications</li>
+      <li>Repeat</li>
+    </ol>
+
+    <p>
+      Clearly, specify-encode-fulfill (SEF) is not that different from Canon
+      TDD. My aim here is not to create something revolutionarily different,
+      only to present the stripped-down essence of TDD in a way that's easy to
+      understand. Think of it like a new photograph of the same subject, but
+      from a slightly different angle and with different lighting. I'm not
+      trying to create a new idea, only to present an existing idea in a new
+      way.
+    </p>
+
+    <p>
+      Another aim of SEF is to build into the definition of TDD the
+      <i>rationale behind it</i>, so that instead of being a mystery, the
+      rationale behind the process can hardly be missed. Many people are
+      confused by red-green-refactor's seemingly counterintuitive practice of
+      writing a failing test before writing the code to make it pass. To some
+      it seems like a superstitious, quasi-religious ritual. By omitting the
+      relatively abstract "red" and "green" steps as well as the (in my view)
+      non-essential "refactor" step, I hope to show that starting with a
+      failing test is really starting with an <i>unfulfilled specification</i>.
+      Of <i>course</i> each specification starts off unfulfilled. How could it
+      be any other way? And of course the specification comes first and the
+      fulfillment of the specification comes after. How could it be any other
+      way? It's not superstition, it's natural, logical common sense.
+    </p>
+
+    <p>
+      But just because we start high-level doesn't mean we have to stay there.
+      Specify-encode-fulfill is compatible with lower levels of abstraction. We
+      can go down a level and change it from an explanation to an algorithm:
+    </p>
+
+    <ol>
+      <li><b>Specify:</b> Decide on the specifications for what you want to build</li>
+      <li><b>Encode:</b> Encode exactly one of your specifications in the form of an automated test</li>
+      <li><b>Fulfill:</b> Implement the (absolute bare minimum) behavior to fulfill that specification</li>
+      <li>Until the list is empty, go back to #2</li>
+    </ol>
+
+    <p>
+      In fact, we can map specify-encode-fulfill directly onto Kent Beck's Canon TDD:
+    </p>
+
+    <ol>
+      <li><b>Specify:</b> Write a list of the test scenarios you want to cover</li>
+      <li><b>Encode:</b> Turn exactly one item on the list into an actual, concrete, runnable test</li>
+      <li><b>Fulfill:</b> Change the code to make the test (&amp; all previous tests) pass (adding items to the list as you discover them)</li>
+      <li>Until the list is empty, go back to #2</li>
+    </ol>
+
+    <h2>Specify</h2>
+
+    <p>
+      One of the most common mistakes I see from programmers and even managers
+      is a failure to decide what to do before they do it. Nobody wants to
+      waste time deciding <i>what</i> to do, they just want to <i>do</i> it.
+      These impatient programmers and managers often even dish out
+      wise-sounding "advice" as a counterargument such as "don't get stuck in
+      analysis paralysis" and "perfect is the enemy of the good". They then
+      proceed to waste weeks or months of expensive engineering time in order
+      to save a few days' worth of planning. It's madness, but it's the norm.
+    </p>
+
+    <p>
+      <i>Test</i> is a bit of an unfortunate name for a test. It has given a
+      lot of programmers the notion that the main idea behind testing is
+      <i>inspection</i> or <i>verification</i>, which it's not. The main idea
+      behind testing is to force our programs' behavior to conform to our
+      desired specifications. In fact, some people, including myself, often
+      refer to tests as <i>executable specifications</i>. I think this is a
+      much better name than <i>test</i>. Another, perhaps even better term
+      might be <i>automated assertions</i>. We're making assertions about our
+      programs' behavior, and doing so in an automated way. From here on I'll
+      use "test", "executable specification" and "automated assertion"
+      interchangeably.
+    </p>
+
+    <p>
+      In science and philosophy (and in general), the creation of knowledge
+      involves conjectures and refutations. Someone makes a hypothesis, and
+      then someone else (or the same person) makes attempts via argument or
+      experiment to refute the hypothesis, and if the attempts at refutation
+      succeed, then the hypothesis is proven false. The inverse is not true; if
+      attempts to refute a hypothesis fail, that does not necessarily mean that
+      the hypothesis is true. If the hypothesis seems like a good explanation
+      and all attempts to refute it fail, then it is accepted as true, but only
+      tentatively, since we can never definitively prove a hypothesis true, we
+      can only fail to to prove it false.
+    </p>
+
+    <p>
+      In science, we start with gold-speckled dirt and we pass it through a
+      filter to find the gold, and then we throw out the dirt. In programming
+      it's the reverse: we <i>start</i> with the gold, our sacred
+      specifications, which are correct and authoritative simply because we say
+      they are. The challenge isn't to get the gold out of the dirt; the
+      challenge is to keep the dirt off of our clean white sheet of
+      specifications. What's the dirt in this scenario? It's anything we
+      <i>didn't</i> specify. In the same way that a hypothesis can be proven
+      false but never true, automated tests can prove the presence of the right
+      behavior but never the absence of the wrong behavior.
+    </p>
+
+    <h2>Encode</h2>
+
+    <h2>Fulfill</h2>
+  </div>
+</div>
