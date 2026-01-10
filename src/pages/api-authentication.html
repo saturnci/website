@@ -1,0 +1,35 @@
+---
+page_title: API Authentication
+nav: docs
+---
+
+<div class="container page-container">
+  <h1>API Authentication</h1>
+
+  <div class="page-content">
+    <h2>Getting an access token</h2>
+
+    <ol>
+      <li>Sign into SaturnCI</li>
+      <li>Click on your name in the top right</li>
+      <li>Click "Personal Access Tokens"</li>
+      <li>Click "Generate personal access token"</li>
+      <li>Copy the token</li>
+    </ol>
+
+    <h2>Getting your user ID</h2>
+
+    <ol>
+      <li>Sign into SaturnCI</li>
+      <li>Click on your name in the top right</li>
+      <li>Copy your user ID</li>
+    </ol>
+
+    <h2>Using your access token</h2>
+
+    Example:
+
+    <pre>curl -u USER_ID:PERSONAL_ACCESS_TOKEN https://saturnci.com/api/v1/test_suite_runs</pre>
+
+  </div>
+</div>
