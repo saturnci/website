@@ -14,6 +14,13 @@
 .highlight .no { color: #66d9ef; } /* Constants */
 .highlight .nf { color: #a6e22e; } /* Function names */
 
+/* HTML/ERB syntax highlighting */
+.highlight .nt { color: #f92672; } /* HTML tags */
+.highlight .na { color: #a6e22e; } /* HTML attributes */
+.highlight .cp { color: #f92672; } /* ERB delimiters <%= %> */
+.highlight .vi { color: #fd971f; } /* Instance variables @foo */
+.highlight .nb { color: #66d9ef; } /* Built-in names (require) */
+
 /* Dockerfile syntax highlighting (vim-style) */
 .highlight .c { color: #888; } /* Comments - gray */
 .highlight .k { color: #4A90E2; } /* Keywords - blue */
