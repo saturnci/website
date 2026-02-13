@@ -1,0 +1,134 @@
+---
+page_title: How I use AI to build features for SaturnCI (February 2026)
+nav: how-i-use-ai-february-2026
+draft: true
+---
+
+<div class="container page-container">
+  <h1>How I use AI to build features for SaturnCI (February 2026)</h1>
+
+  <div class="page-content">
+    <h2>How AI changes programming for me</h2>
+
+    <p>
+      Programming involves a lot of sticking points. Learning a new technology
+      is a sticking point. Looking up a bit of syntax that I can't remember is
+      a sticking point. All these little sticking points slow me down.
+      They can even sometimes make programming less fun.
+    </p>
+
+    <p>
+      AI is like a mental lubricant. It lets me glide right through these
+      sticking points. Not all of them, of course, but a lot of them. For
+      example, I never write tests by hand anymore. Why would I? I just tell
+      Claude Code my high-level behavior specifications, let it figure out the
+      syntax for me, and then make any necessary adjustments. Then I let Claude
+      Code run the tests for me and then write the code to make the tests pass.
+      It's a dream.
+    </p>
+
+    <p>
+      One of the ways AI helps me, naturally, is that it allows me to carry out
+      my work faster. It also helps me work at "lower RPMs", doing the same
+      work as before but will less mental exertion per unit of time. Just as
+      important, and often more so, AI gives me the gumption to take on
+      ambitious projects that I never even would have attempted in the pre-AI
+      world because they seemed too hard or too time-consuming.
+    </p>
+
+    <p>
+      Even though AI was already quite useful in its "primitive form" when we
+      had to tab back and forth between a chat window and the editor, the
+      arrival of agentic tools like Claude Code was a distinct inflection point
+      for me. Today I open my editor fairly seldom, and usually only to read a
+      piece of code or make a minor tweak. I've found that whenever I want to
+      make a code change, it's usually cheaper to tell Claude to make the
+      change than to type it out myself. I rarely write code directly anymore;
+      I prefer the higher level of abstraction that AI affords.
+    </p>
+
+    <h2>How AI doesn't change programming for me</h2>
+
+    <p>
+      Even though AI has radically transformed my day-to-day programming work,
+      it obviously hasn't changed the natural facts of reality. To use an
+      extreme example, the existence of AI doesn't mean that the benefits of
+      version control have gone away, of course. I doubt many people would
+      argue with me on that one. I think most other programming principles
+      retain their benefits as well, such as atomic commits, small units of
+      work, tight feedback loops, continuous integration/continuous delivery,
+      single-piece flow, easily-changeable code, evolutionary design,
+      refactoring, user research, usability testing, modularity, loose
+      coupling, test-driven development and so on. We can get an illusion of
+      higher productivity for a while by skipping these practices and just
+      "vibe coding", but that will just make our
+      <a href="https://www.codewithjason.com/sharp-blades-and-dull-blades/">blades get duller faster</a> 
+      (messy code equals dull blade) and bring us very quickly to the point
+      where our blades are too dull to cut with at all.
+    </p>
+
+    <p>
+      Test-driven development was at the center of my development workflow
+      before AI and it still is now. Let's make a brief review of what TDD
+      is and then look at how I practice TDD with AI.
+    </p>
+
+    <h2>How I TDD using Claude Code</h2>
+
+    <p>
+      Before I explain how I TDD with Claude Code I want to clarify what TDD
+      actually is. Kent Beck wrote a blog post called
+      <a href="https://tidyfirst.substack.com/p/canon-tdd">Canon TDD</a>
+      which is about the closest thing to an "official" explanation of TDD that
+      I know of. Here's the formula from Kent's post:
+    </p>
+
+    <ol>
+      <li>Write a list of the test scenarios you want to cover</li>
+      <li>Turn exactly one item on the list into an actual, concrete, runnable test</li>
+      <li>Change the code to make the test (&amp; all previous tests) pass (adding items to the list as you discover them)</li>
+      <li>Optionally refactor to improve the implementation design</li>
+      <li>Until the list is empty, go back to #2</li>
+    </ol>
+
+    <p>
+      If you're familiar with the <b>red-green-refactor loop</b> (write a
+      failing test, make it pass, then optionally refactor) then you might
+      recognize the algorithm above as basically the same thing. I personally
+      prefer a certain different formulation of the TDD process, one you can
+      think of as being spiritually the same thing as red-green-refactor, just
+      "shot from a different angle". I call it the
+      <b>specify-encode-fulfill</b> loop, and the reason I prefer it is that I
+      think a) it's easier to explain and b) it's more self-evidently
+      compelling. It goes like this:
+    </p>
+
+    <ol>
+      <li>Come up with the <b>specifications</b> for what you want to build</li>
+      <li><b>Encode</b> those specifications as automated tests (aka executable specifications)</li>
+      <li>Write the code to <b>fulfill</b> the specifications</li>
+    </ol>
+
+    <p>
+      Since I believe specify-encode-fulfill to be easier than
+      red-green-refactor for <i>humans</i> to grasp, I figure it should be
+      easier for <i>machines</i> to grasp as well. Below is how I present TDD
+      and specify-encode-fulfill to Claude Code.
+    </p>
+
+    <pre># ~/.claude/skills/tdd/SKILL.md
+
+</pre>
+
+    <p>Example
+
+      <pre>/tdd to the task "instrumentation" tab, add an hh:mm:ss duration indicator.</pre>
+
+      Here's the response:
+    </p>
+
+    <pre class="ai-response">
+    </pre>
+  </div>
+
+</div>

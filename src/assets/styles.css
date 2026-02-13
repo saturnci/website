@@ -98,3 +98,15 @@ blockquote {
 .nav-sign-up-link, .nav-sign-up-link:visited {
   color: #FFF;
 }
+
+pre.ai-response {
+  background: #FFF;
+  border: 1px solid #BBB;
+  color: #666;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 600px;
+  white-space: pre-wrap;
+}
