@@ -6,6 +6,16 @@ RSpec.describe SiteSource do
     expect(source).to be_a(SiteSource)
   end
 
+  describe "#pages" do
+    it "returns the pages it was initialized with" do
+      pages = [
+        { filename: 'about', frontmatter: { 'page_title' => 'About' }, content: '<p>About</p>' }
+      ]
+      source = SiteSource.new('.', pages: pages)
+      expect(source.pages).to eq(pages)
+    end
+  end
+
   describe "#filter_pages" do
     let(:published_page) do
       {
