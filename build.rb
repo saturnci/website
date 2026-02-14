@@ -32,7 +32,7 @@ end
 # Build the site
 if __FILE__ == $0
   environment = ENV['SITE_ENV'] || 'production'
-  pages = pages_from_directory('src/pages')
+  pages = pages_from_directory('src/pages') + pages_from_directory('src/blog')
   source = SiteSource.new('src', environment: environment, root_path: '.', pages: pages)
   build = SiteBuild.new(source, 'public')
   build.execute
