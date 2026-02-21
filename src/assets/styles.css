@@ -10,7 +10,7 @@ body {
   color: #666;
   line-height: 1.5;
   font-size: 16px;
-  background-color: #EEE;
+  background-color: #FFF;
   padding: 5px 20px;
 }
 
@@ -75,7 +75,7 @@ blockquote {
   margin: 0;
   padding: 0 0 0 12px;
   font-style: italic;
-  color: #666;
+  color: #888;
 }
 
 .navbar {

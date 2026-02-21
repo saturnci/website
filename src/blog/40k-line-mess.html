@@ -1,0 +1,105 @@
+---
+page_title: What I'd do with a 40K line mess
+nav: 40k-line-mess
+draft: true
+---
+
+<div class="container page-container">
+  <h1>What I'd Do with a 40K Line Mess</h1>
+
+  <p>
+    I found a post on /r/rails titled
+    <a href="https://www.reddit.com/r/rails/comments/1r1h22u/how_do_i_properly_understand_a_40k_loc_codebase/">How do I properly understand a 40k LOC codebase?</a>
+    which reads as follows:
+  </p>
+
+  <blockquote>
+    <p>I've recently inherited a ~40k LOC Rails 8 codebase and would like to know what's the best way to properly get to grips with the structure and the code patterns it uses. I've got a bit of Rails experience, but there are a number of things which make it a bit challenging to work on this codebase (at least for me lol):</p>
+    <ul>
+      <li>Lack of tests</li>
+      <li>A lot (not all) of it is vibecoded and so there's a good bit of verbosity and code duplication</li>
+      <li>There aren't many developer docs beyond getting <code>bin/dev</code> to work and running migrations/Swagger regeneration</li>
+    </ul>
+    <p>Right now, I've kind of been using AI as a crutch to implement the things I need to add, but I can already tell that this is definitely not going to be a sustainable way of working on the project. I also can't break any behaviour, since there are a fair few users of this service and having this break would be catastrophic.</p>
+  </blockquote>
+
+  <p>
+    Sounds like trouble. Here's the first and most highly upvoted comment:
+  </p>
+
+  <blockquote>
+    <p>
+      Whenever you are looking to make a change, add tests. If you are fixing a bug, add tests for the "normal" way that doesn't show the bug. This should pass without any changes required. Then add a test for the specific way that causes the bug. This should fail at first. Then fix the bug and ensure both tests pass.
+    </p>
+
+    <p>
+      Repeat a few hundred times and baby you've got a test suite going.
+    </p>
+  </blockquote>
+
+  <p>
+    I appreciate the Carl Weathers reference, and this commenter's heart is in
+    the right place, with this advice is not without problems. We'll get to
+    that shortly. First, here's another piece of advice, written by someone I
+    happen to know and respect:
+  </p>
+
+  <blockquote>
+    Write tests for behavior before you change it. Yes, this is a pain and
+    requires understanding what the behavior is and/or is supposed to be (which
+    will likely involve talking to users/stakeholders too). Figuring that out
+    will give you some understanding. There is no other way to work where
+    having something break would be catastrophic, it is non-negotiable. (and
+    it's still going to be risky -- you probably want to have a test/staging
+    server too).
+  </blockquote>
+
+  <p>
+    Now let's talk about why this advice isn't quite as great as it might
+    sound.
+  </p>
+
+  <h2>Adding tests to legacy code: what does it take?</h2>
+
+  <p>
+    Testing is hard. Even writing tests for your own greenfield projects is
+    hard. Most people don't do it. If writing tests for your own code is like
+    algebra, adding tests to legacy code is like calculus. Telling someone to
+    get a grip on a legacy codebase by adding tests is good advice in
+    principle, but it's good advice like it's good advice to tell a terrorist
+    hostage to kung fu his captors to death. It's a fine idea in theory, but it
+    assumes a certain skillset on the advice-receiver's part which is probably
+    not fully developed just yet.
+  </p>
+
+  <p>
+    Why is adding tests to legacy code so hard? In order to test something,
+    it's necessary to instantiate it a test environment, in some degree of
+    isolation. The more dependencies something has, the harder it is to
+    instantiate in isolation, because instantiating it requires instantiating
+    its dependencies, and its dependencies' dependencies, and so on.
+  </p>
+
+  <p>
+    Building a project using testing from the start requires everything that's
+    tested to be instantiable in some degree of isolation. Tests force loose
+    coupling between the entities under test and their dependencies. In a
+    project built without any tests, there's nothing to prevent deep
+    entanglements between entities and their dependencies, making it hard and
+    often impossible to instantiate a piece of code in isolation. Stubbing can
+    help, but dependencies are often so deeply lodged that getting a stub in
+    can require advanced gymnastics. It really is a whole different ballgame
+    from just adding tests to greenfield code.
+  </p>
+
+  <h2>Seek first to understand</h2>
+
+  <p>
+    What most of the 30+ comments on this Reddit post have in common is that
+    they confidently dish out advice without asking a single question. What's
+    OP's comfort level with testing? What's their comfort level adding tests to
+    existing code? Is OP working with a team on this project or solo? How does
+    OP's boss view the state of the project and what should be done about it?
+    All these things matter.
+  </p>
+</div>
