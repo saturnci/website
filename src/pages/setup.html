@@ -19,25 +19,18 @@ nav: docs
       must be hosted on GitHub.
     </p>
 
-    <h2>GitHub integration</h2>
+    <h2>Sign up and connect your repository</h2>
 
     <ol>
-      <li>Visit <a href="https://app.saturnci.com/">https://app.saturnci.com</a></li>
-      <li>Click "Sign in with GitHub"</li>
-      <li>Connect your GitHub account with SaturnCI</li>
+      <li>Visit <a href="https://app.saturnci.com/">https://app.saturnci.com</a> and sign up with GitHub</li>
+      <li>Install the SaturnCI GitHub App when prompted</li>
+      <li>Select your repository</li>
     </ol>
 
-    <h2>Adding your repository to SaturnCI</h2>
-
-    <ol>
-      <li>In SaturnCI, go to <b>GitHub Accounts</b> &gt; <b>Add GitHubAccount</b></li>
-      <li>In SaturnCI, go to <b>Repositories</b> &gt; <b>Add Repository</b></li>
-      <li>Choose your repository</li>
-      <li>Follow the instructions below</li>
-    </ol>
+    <h2>Configure your application</h2>
 
     <p>
-      To configure your Rails application for SaturnCI, run the following command from your application's root directory:
+      Run the following command from your application's root directory:
     </p>
 
     <pre><code class="language-bash">rails app:template LOCATION=https://raw.githubusercontent.com/saturnci/saturnci-config-templates/main/rails/template.rb</code></pre>
@@ -54,10 +47,8 @@ nav: docs
 git commit -m "Add SaturnCI configuration"
 git push</code></pre>
 
-    <h2>Next Steps</h2>
-
     <p>
-      Once your configuration is pushed to GitHub, connect your repository to SaturnCI through the web interface. Your tests will run automatically on each push.
+      Your tests will run automatically on each push.
     </p>
 
   </div>
