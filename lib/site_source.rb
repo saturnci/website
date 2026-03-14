@@ -9,6 +9,7 @@ class SiteSource
     @layouts_dir = File.join(path, 'layouts')
     @pages_dir = File.join(path, 'pages')
     @assets_dir = File.join(path, 'assets')
+    @images_dir = File.join(path, 'images')
   end
 
   def pages
@@ -27,5 +28,9 @@ class SiteSource
   def assets
     Dir.glob(File.join(@assets_dir, '*.css')) +
     Dir.glob(File.join(@root_path, 'CNAME')).select { |f| File.exist?(f) }
+  end
+
+  def images
+    Dir.glob(File.join(@images_dir, '*'))
   end
 end

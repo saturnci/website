@@ -45,6 +45,12 @@ class SiteBuild
     @source.assets.each do |asset|
       FileUtils.cp(asset, @output_dir)
     end
+
+    images_output_dir = File.join(@output_dir, 'images')
+    FileUtils.mkdir_p(images_output_dir)
+    @source.images.each do |image|
+      FileUtils.cp(image, images_output_dir)
+    end
   end
 
   def generate_pages

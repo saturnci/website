@@ -50,7 +50,8 @@ p code {
 h1,
 h2,
 h3,
-p {
+p,
+.page-content img {
   max-width: 600px;
 }
 
