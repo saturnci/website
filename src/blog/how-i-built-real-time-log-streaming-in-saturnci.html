@@ -1,0 +1,65 @@
+---
+page_title: How I Built Real-Time Log Streaming in SaturnCI
+nav: how-i-built-real-time-log-streaming-in-saturnci
+draft: true
+---
+
+<div class="container page-container">
+  <h1>How I Built Real-Time Log Streaming in SaturnCI</h1>
+
+  <div class="page-content">
+    <p>
+      When you're watching a test suite run on SaturnCI, you can see the log output appear in real time &mdash; line by line, as the tests execute on a remote worker. It's like watching a terminal, complete with colors and formatting, right in your browser.
+    </p>
+
+    <h2>Challenges and decisions</h2>
+
+    <p>
+      How do you get output from a remote machine into a browser in real time? The worker is a Kubernetes pod on a different server. You need a pipeline: worker &rarr; server &rarr; browser, each hop with its own transport.
+    </p>
+
+    <ul>
+      <li><strong>Worker to server:</strong> How does the worker send output as it's generated? Does it stream continuously over a persistent connection, or send chunks periodically via HTTP? How do you handle encoding (terminal output can contain binary/ANSI data)?</li>
+      <li><strong>Server to browser:</strong> Do you use polling, Server-Sent Events, or WebSockets? Do you need Redis or can you avoid that dependency? How do you broadcast to multiple browser tabs/users watching the same run?</li>
+      <li><strong>Rendering:</strong> The output contains ANSI escape codes for colors and formatting. Do you convert to HTML on the server or in the browser?</li>
+    </ul>
+
+    <p>
+      How do you store the logs? You could append to a database text column, write to a file, or use a streaming service like Kafka. Each has tradeoffs: a database column is simple and transactional but appending means touching an increasingly large value. Files are fast for append and read but harder to manage in a multi-server environment. A streaming service like Kafka is purpose-built for this but adds significant infrastructure complexity.
+    </p>
+
+    <ul>
+      <li><strong>Append performance:</strong> If you store in a database text column, each append means writing an increasingly large value. Can you append without loading the full content into memory?</li>
+      <li><strong>Size limits:</strong> Test output can be huge. Does your storage mechanism have practical size limits? Do you need to truncate?</li>
+    </ul>
+
+    <p>
+      Do you send incremental diffs or re-render everything? There's a tradeoff between implementation simplicity and bandwidth.
+    </p>
+
+    <ul>
+      <li><strong>Incremental diffs are harder to implement:</strong> You need to track what each client has already seen. If a client disconnects and reconnects, you need to know where they left off.</li>
+      <li><strong>ANSI state spans chunks:</strong> An ANSI color code might be opened in one chunk and closed in another. If you send incremental diffs, the new chunk might lack context about which colors/styles are currently active.</li>
+      <li><strong>Full re-render is simpler but wasteful:</strong> You re-send everything on every update. For a 50,000-line test run, that's a lot of HTML flying over the wire every time a new line appears.</li>
+      <li><strong>DOM performance:</strong> If you re-render the full output each time, the browser has to rebuild a large DOM tree on every update. At what point does this become sluggish?</li>
+    </ul>
+
+    <p>
+      Scrolling.
+    </p>
+
+    <ul>
+      <li><strong>Auto-scrolling:</strong> When new output arrives, the view should automatically scroll to the bottom so the user sees the latest lines &mdash; like a real terminal.</li>
+      <li><strong>Gracefully handling manual scrolling:</strong> If the user scrolls up to read earlier output, auto-scroll should pause so new content doesn't yank them away. When they scroll back to the bottom, auto-scroll should resume.</li>
+    </ul>
+
+    <p>
+      How do you make it look and feel like a terminal in the browser? Monospace font, dark background, colored output, line wrapping.
+    </p>
+
+    <ul>
+      <li><strong>ANSI-to-HTML conversion:</strong> Terminal output uses escape codes for colors, bold, underline. You need to parse these and generate equivalent HTML/CSS. How do you handle nested or overlapping styles?</li>
+      <li><strong>Performance with large output:</strong> Thousands of lines of styled HTML. Do you virtualize the DOM (only render visible lines) or render everything?</li>
+    </ul>
+  </div>
+</div>

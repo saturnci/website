@@ -1,0 +1,83 @@
+---
+page_title: How I TDD now
+nav: how-i-tdd-now
+draft: true
+---
+
+<div class="container page-container">
+  <h1>How I TDD now</h1>
+
+  <div class="page-content">
+    <p>
+      I'm loving TDD more than ever.
+    </p>
+
+    <p>
+      To state the obvious, agentic AI has caused a massive change to the
+      programming profession over the last couple years, especially the last few
+      months, and at this point almost nobody is writing code by hand anymore.
+      (If you still are, my dear friend, I respectfully ask you what the hell
+      you're doing with your life.)
+    </p>
+
+    <p>
+      In spite of all that has changed, which is a lot, one thing most certainly
+      hasn't changed: the benefits of test-driven development.
+    </p>
+
+    <p>
+      To me, the core of TDD is what I call the <b>specify-encode-fulfill
+      loop</b>: 1) decide on the specifications for what you want to build, 2)
+      encode the first specification in the form of an automated test, then 3)
+      write the code to fulfill that specification (then repeat from step 2).
+      It's very similar to Kent Beck's
+      <a href="https://tidyfirst.substack.com/p/canon-tdd">Canon TDD</a>
+      workflow.
+    </p>
+
+    <p>
+      One of the many benefits of TDD is that it helps you separate <i>what</i>
+      you want to do from <i>how</i> you want to do it, thereby lightening the
+      cognitive load of programming and letting you work "at a lower RPM".
+    </p>
+
+    <p>
+      An even bigger benefit, and to me the main benefit of TDD, is that it
+      leads to ~100% test coverage which gives me the ability to liberally
+      refactor my code without the fear of introducing regressions. This allows
+      me to improve the design of my code, which makes the code easier to
+      understand and change, which allows me to work faster.
+    </p>
+
+    <p>
+      These benefits still apply when all the code is written by AI, which
+      doesn't change the reality that the software we build is influenced by the
+      feedback we get by putting it into production. Feedback always reveals to
+      us things we wish we had done differently, and therefore refactoring will
+      always be necessary. Test coverage is what enables that refactoring.
+    </p>
+
+    <p>
+      If you're interested in seeing the exact "skill" I use for doing TDD,
+      here's my
+      <a href="https://github.com/jasonswett/claude-code-skills/blob/main/tdd/SKILL.md">TDD skill on GitHub</a>.
+      I'll also just share the heart of it right here:
+    </p>
+
+    <ol>
+      <li>Write a list of the specifications within scope of the current TDD session</li>
+      <li>Encode one item in the list as an automated test</li>
+      <li>Change the code <i>just barely enough</i> to <i>make the current test failure go away</i>. Avoid "speculative coding" &mdash; if we write more code than necessary to make the current test failure go away, we risk having code never exercised by any test</li>
+      <li>Optionally refactor, but not before committing the behavior change. Never mix behavior changes with refactoring</li>
+      <li>Until the list is empty, go back to #2</li>
+    </ol>
+
+    <p>
+      I've found that this workflow, combined with my
+      <a href="https://github.com/jasonswett/claude-code-skills/blob/main/test-design-review/SKILL.md">test-design-review skill</a>
+      and the existing test examples in my codebase, results in pretty good
+      tests, allowing me to practice the same TDD workflow I have for years,
+      but even faster and more enjoyably now thanks to AI.
+    </p>
+  </div>
+</div>
