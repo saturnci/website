@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/blog_post_generator"
+
+print "Post title: "
+title = gets.chomp
+
+generator = BlogPostGenerator.new(title: title)
+
+print "Slug [#{generator.slug}]: "
+slug_input = gets.chomp
+slug = slug_input.empty? ? generator.slug : slug_input
+
+file_path = File.join(__dir__, "..", "src", "blog", "#{slug}.html")
+File.write(file_path, generator.frontmatter + generator.boilerplate)
+
+puts "Created #{file_path}"
