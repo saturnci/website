@@ -8,60 +8,165 @@ draft: true
   <h1>How I Built Real-Time Log Streaming in SaturnCI</h1>
 
   <div class="page-content">
+    <p>
+      When you're watching a test suite run on SaturnCI (my continuous
+      integration platform for RSpec and Rails), you can see the log output
+      appear in real time, line by line, as the tests execute on a worker
+      machine. The log output looks like this:
+    </p>
+
     <img src="/images/logs.jpg" alt="SaturnCI real-time log output">
 
     <p>
-      When you're watching a test suite run on SaturnCI, you can see the log output appear in real time &mdash; line by line, as the tests execute on a remote worker. It's like watching a terminal, complete with colors and formatting, right in your browser.
+      When your test suite is running on a CI platform, you want to be able to
+      see your log output in real time. One of the first things I had to figure
+      out when building SaturnCI, my continuous integration platform, was how
+      to make this happen.
     </p>
-
-    <h2>Challenges and decisions</h2>
 
     <p>
-      How do you get output from a remote machine into a browser in real time? The worker is a Kubernetes pod on a different server. You need a pipeline: worker &rarr; server &rarr; browser, each hop with its own transport.
+      The architecture of SaturnCI is that tests get executed on ephemeral
+      worker machines, which are separate from the web servers that host the
+      SaturnCI web application. I decided to break down the log streaming
+      challenge into two fundamental parts: One, how do I get log content from
+      the workers to the web servers? Two, how do I get log content from the
+      web server to the browser?
     </p>
-
-    <ul>
-      <li><strong>Worker to server:</strong> How does the worker send output as it's generated? Does it stream continuously over a persistent connection, or send chunks periodically via HTTP? How do you handle encoding (terminal output can contain binary/ANSI data)?</li>
-      <li><strong>Server to browser:</strong> Do you use polling, Server-Sent Events, or WebSockets? Do you need Redis or can you avoid that dependency? How do you broadcast to multiple browser tabs/users watching the same run?</li>
-      <li><strong>Rendering:</strong> The output contains ANSI escape codes for colors and formatting. Do you convert to HTML on the server or in the browser?</li>
-    </ul>
 
     <p>
-      How do you store the logs? You could append to a database text column, write to a file, or use a streaming service like Kafka. Each has tradeoffs: a database column is simple and transactional but appending means touching an increasingly large value. Files are fast for append and read but harder to manage in a multi-server environment. A streaming service like Kafka is purpose-built for this but adds significant infrastructure complexity.
+      As usual, I decided to take a <i>steel thread</i> approach with this
+      feature, meaning I wanted to get a rudimentary version of the feature
+      working end-to-end as early as possible in order to minimize the amount
+      of work-in-progress and minimize the risk of unproductively spinning my
+      wheels. For the first iteration of this feature I decided to say to heck
+      with streaming, I'll just wait until the whole test suite run is finished
+      and send the logs in one big chunk.
     </p>
-
-    <ul>
-      <li><strong>Append performance:</strong> If you store in a database text column, each append means writing an increasingly large value. Can you append without loading the full content into memory?</li>
-      <li><strong>Size limits:</strong> Test output can be huge. Does your storage mechanism have practical size limits? Do you need to truncate?</li>
-    </ul>
 
     <p>
-      Do you send incremental diffs or re-render everything? There's a tradeoff between implementation simplicity and bandwidth.
+      In the spirit of "do the simplest thing that could possibly work", I sent
+      the logs from the worker to the web server via a <code>curl</code> command
+      using Basic HTTP authentication with hard-coded credentials. On the web
+      side, I didn't use cloud storage, I just stuck the content right in the
+      database, and then I crapped out the content to the screen and wrapped it
+      in a <code>pre</code> tag. Did I expect to stick with all these solutions
+      in the long run? Obviously not. I expected to end up rewriting literally
+      all of it. The reason I started with these "stupid" solutions is that
+      doing so allowed me to get the feedback cycle started early. Prior to
+      when I saw logs in my browser for the first time, the answer to "When
+      will we see something that works?" was "Who knows!" That's not a great
+      position to be in. It reeks of uncertainty and risk. Once I had a very
+      rough version of the feature in place, the question changed from "When
+      will we see something that works?" to "When will we see something that
+      works <i>a little better</i>?" It's a bit like the difference between
+      sailing the open ocean, hoping to spot some land at some point, and
+      sailing from island to nearby island. The chances of getting lost at sea
+      are much smaller.
     </p>
-
-    <ul>
-      <li><strong>Incremental diffs are harder to implement:</strong> You need to track what each client has already seen. If a client disconnects and reconnects, you need to know where they left off.</li>
-      <li><strong>ANSI state spans chunks:</strong> An ANSI color code might be opened in one chunk and closed in another. If you send incremental diffs, the new chunk might lack context about which colors/styles are currently active.</li>
-      <li><strong>Full re-render is simpler but wasteful:</strong> You re-send everything on every update. For a 50,000-line test run, that's a lot of HTML flying over the wire every time a new line appears.</li>
-      <li><strong>DOM performance:</strong> If you re-render the full output each time, the browser has to rebuild a large DOM tree on every update. At what point does this become sluggish?</li>
-    </ul>
 
     <p>
-      Scrolling.
-    </p>
+      Here's what I had at this point:
+      <ul>
+        <li>
+          Log content gets <b>sent from worker to web server, in one single
+          chunk, using <code>curl</code> and hard-coded Basic HTTP
+          authentication</b>
+        </li>
 
-    <ul>
-      <li><strong>Auto-scrolling:</strong> When new output arrives, the view should automatically scroll to the bottom so the user sees the latest lines &mdash; like a real terminal.</li>
-      <li><strong>Gracefully handling manual scrolling:</strong> If the user scrolls up to read earlier output, auto-scroll should pause so new content doesn't yank them away. When they scroll back to the bottom, auto-scroll should resume.</li>
-    </ul>
+        <li>
+          Log content gets <b>saved to the main database by the web server</b>
+        </li>
+
+        <li>
+          Log content gets <b>shown in the browser in raw form</b>
+        </li>
+      </ul>
+    </p>
 
     <p>
-      How do you make it look and feel like a terminal in the browser? Monospace font, dark background, colored output, line wrapping.
+      In any project I always try to work on the hardest and most mysterious
+      work first. What in this picture was the most mysterious? It wasn't
+      migrating from hard-coded Basic HTTP authentication to something more
+      production-ready. It wasn't moving log storage from the database to the
+      cloud. Nor was it formatting and styling the log output. The most
+      mysterious part to me at that point was the actual <i>streaming</i> part H
+      of the log streaming. How was I going to accomplish that?
     </p>
 
-    <ul>
-      <li><strong>ANSI-to-HTML conversion:</strong> Terminal output uses escape codes for colors, bold, underline. You need to parse these and generate equivalent HTML/CSS. How do you handle nested or overlapping styles?</li>
-      <li><strong>Performance with large output:</strong> Thousands of lines of styled HTML. Do you virtualize the DOM (only render visible lines) or render everything?</li>
-    </ul>
+    <p>
+      My naive first guess at how real-time log streaming might work was
+      something like the following (in pseudo-bash):
+    </p>
+
+      <pre><code>while true; do
+  LOG_CONTENT=$(cat log.txt)
+  curl https://www.saturnci.com/api/v1/test_suite_run/123/logs $LOG_CONTENT
+  sleep 5
+done</code></pre>
+
+    <p>
+      This first pass doesn't try to be efficient. It reads in the
+      <i>entirety</i> of the logs and then sends the whole thing off to the
+      server. A nice part about doing it this way is that the server-side code
+      doesn't even immediately have to change. It will just save to the
+      database whatever log content it's given, and then I can repeatedly
+      refresh the page to see the log content come through in real time. It's
+      clunky as hell, and it's a far cry from what I ultimately want, but it's
+      a small and un-risky piece of work which can get the feature meaningfully
+      closer to the ultimate goal. As a matter of fact, even this absurdly
+      shitty implementation of real-time log streaming <b>is, in fact,
+      real-time log streaming</b>! The work from here on out doesn't consist of
+      profound mystery-solving; it merely consists making the log streaming
+      incrementally less crappy.
+    </p>
+
+    <p>
+      Time to again take stock of what we have:
+      <ul>
+        <li>
+          Log content gets sent from worker to web server, <b>the whole log
+          file being sent all at once, but at 5-second intervals during the
+          execution of the test suite run</b> instead of just once at the end
+        </li>
+
+        <li>
+          Log content gets <b>saved to the main database every 5 seconds by the
+          web server</b> (thanks to the worker hitting the web server every 5
+          seconds)
+        </li>
+
+        <li>
+          Log content gets shown in the browser in raw form and <b>requires
+          manual page refreshes in order to see current log content</b>
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      What did I do next? Frankly, I don't remember, but I can tell you what I
+      <i>would</i> do next, which is probably in fact what I <i>did</i> do
+      next: make the browser fetch log updates automatically so that new log
+      content shows up without having to refresh the page. My first solution to
+      this was to use Turbo Stream broadcasts, but I later realized that this
+      method was illogical and wasteful. The problem is that if the user has,
+      say, three test suite runs running concurrently, then my web server
+      broadcasts log updates for all three of those test suite runs every time
+      an update comes in, even though the user is usually not going to be
+      watching the real-time output of more than one test suite run at a time.
+      For a test suite run whose logs the user is not watching, any log
+      broadcast sent is a waste of resources.
+    </p>
+
+    <p>
+      The solution was simple: instead of making the web server say, "Hey, all
+      you test suite runs in the browser, I have new log content for you!" I
+      made the browser say, "Hey web server, I'm looking at test suite run X.
+      Is there any new log content specifically for test suite run X?" To put
+      it a different way, I switched from broadcasting to polling. Now a test
+      suite run's log content would be sent if and only if someone had a
+      browser tab open for that specific test suite run. Switching to polling
+      had a double advantage: it was both conceptually simpler and
+      significantly more performant.
+    </p>
   </div>
 </div>
