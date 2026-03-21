@@ -9,20 +9,13 @@ draft: true
 
   <div class="page-content">
     <p>
-      When you're watching a test suite run on SaturnCI (my continuous
-      integration platform for RSpec and Rails), you can see the log output
-      appear in real time, line by line, as the tests execute on a worker
-      machine. The log output looks like this:
-    </p>
-
-    <img src="/images/logs.jpg" alt="SaturnCI real-time log output">
-
-    <p>
       When your test suite is running on a CI platform, you want to be able to
       see your log output in real time. One of the first things I had to figure
       out when building SaturnCI, my continuous integration platform, was how
       to make this happen.
     </p>
+
+    <img src="/images/logs.jpg" alt="SaturnCI real-time log output">
 
     <p>
       The architecture of SaturnCI is that tests get executed on ephemeral
@@ -33,20 +26,21 @@ draft: true
       web server to the browser?
     </p>
 
+    <h2>"What's the simplest thing that could possibly work?"</h2>
+
     <p>
-      As usual, I decided to take a <i>steel thread</i> approach with this
-      feature, meaning I wanted to get a rudimentary version of the feature
-      working end-to-end as early as possible in order to minimize the amount
-      of work-in-progress and minimize the risk of unproductively spinning my
-      wheels. For the first iteration of this feature I decided to say to heck
-      with streaming, I'll just wait until the whole test suite run is finished
-      and send the logs in one big chunk.
+      In order to minimize the amount of work-in-progress and minimize the risk
+      of unproductively spinning my wheels, I wanted to get a rudimentary
+      end-to-end version of the feature working as early as possible. For the
+      first iteration of this feature I decided to say to heck with streaming,
+      I'll just wait until the whole test suite run is finished and send the
+      logs in one big chunk.
     </p>
 
     <p>
       In the spirit of "do the simplest thing that could possibly work", I sent
       the logs from the worker to the web server via a <code>curl</code> command
-      using Basic HTTP authentication with hard-coded credentials. On the web
+      using Basic HTTP authentication. The credentials were hard-coded. On the web
       side, I didn't use cloud storage, I just stuck the content right in the
       database, and then I crapped out the content to the screen and wrapped it
       in a <code>pre</code> tag. Did I expect to stick with all these solutions
@@ -63,6 +57,8 @@ draft: true
       sailing from island to nearby island. The chances of getting lost at sea
       are much smaller.
     </p>
+
+    <h2>How do we make the logs update in real time?</h2>
 
     <p>
       Here's what I had at this point:
@@ -120,6 +116,8 @@ done</code></pre>
       incrementally less crappy.
     </p>
 
+    <h2>Real-time updates without refreshing the page</h2>
+
     <p>
       Time to again take stock of what we have:
       <ul>
@@ -167,6 +165,65 @@ done</code></pre>
       browser tab open for that specific test suite run. Switching to polling
       had a double advantage: it was both conceptually simpler and
       significantly more performant.
+    </p>
+
+    <h2>How do we send only the new stuff?</h2>
+
+    <p>
+      Sending the entirety of the log file every five seconds technically works
+      but it's not very efficient. Here's what I did to send only the new part
+      of the content. The original code for this was actually written in bash,
+      but the entirety of the worker code eventually got complex enough that I
+      decided to give up my stupid ass push-and-pray dev cycle and start using
+      Ruby and TDD instead. Things have gone a lot more smoothly since then.
+    </p>
+
+    <pre><code class="language-ruby">most_recent_total_line_count = 0
+
+loop do
+  all_log_lines = File.readlines(@log_file_path)
+
+  newest_log_content = all_log_lines[most_recent_total_line_count..].join("\n")
+  send_content(newest_log_content)
+
+  most_recent_total_line_count = all_log_lines.count
+
+  sleep(@wait_interval)
+end</code></pre>
+
+    <p>
+      I always endeavor to make my code clear enough that it doesn't require an
+      explanation in English but I'll give one here anyway, just in case: every
+      five seconds, see how many lines the full log is, ignore however many
+      lines we've already sent, and send whatever remains. I expected the
+      only-send-new-content logic would be much more complex than this, but
+      aside from two minor tweaks (namely, "don't fire a request when there's
+      nothing new to send" and "don't continue to stream after the test suite
+      run has ended), the code you see above is all that has ever been needed.
+    </p>
+
+    <h2>Auto-scrolling</h2>
+
+    <p>
+      Things are shaping up. Log content gets sent from worker to web server,
+      at five second intervals, one little bit at a time instead of all at
+      once. We can basically call that part <b>done</b>. Log content gets saved
+      to the main database every five seconds by the web server. Also
+      <b>done</b>. The only glaring defects now are on the client side: the log
+      output is not formatted and the log content doesn't auto-scroll.
+    </p>
+
+    <p>
+      Conceptually, auto-scrolling is pretty simple: just scroll to the bottom
+      each time we get some new content.
+    </p>
+
+    <pre><code class="language-javascript">document.addEventListener("terminal-output:newContent", () => {
+  this.element.scrollTop = this.element.scrollHeight
+}</code></pre>
+
+    <p>
+      There are devils in the details though.
     </p>
   </div>
 </div>
