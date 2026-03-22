@@ -448,36 +448,8 @@ end</code></pre>
       of garbage! I have no recollection of creating this code, but I know it
       was AI-generated because of the comments. (I personally only write
       comments extremely rarely.) The thing is though, it's okay for this code
-      to be a mess, for two reasons.
-    </p>
-
-    <p>
-      The first reason it's fine for this code to be nasty is that it's <i>leaf
-      code</i>: nothing depends on it. Provided I keep the
-      <code>ansi_to_html(ansi_string)</code> method signature the same, I could
-      literally delete every single line inside the method and rewrite it from
-      scratch and no external client would have the slightest inkling that I
-      did so. In fact, I'm sure that at some point I'll do exactly that.
-    </p>
-
-    <p>
-      The second reason I don't mind that this code is garbage is because
-      through the lens of
-      <a href="https://www.codewithjason.com/sharp-blades-and-dull-blades/">Blade Theory</a>
-      this is a "dull blade" (i.e. a piece of code that's hard to understand
-      and work with) but it's a blade which we might not actually use again for
-      a very long time. If I sharpen a blade without having a specific reason
-      to believe that the cost of the sharpening will pay itself back, then I
-      risk making an investment that never pays off. That's why I usually
-      perform my
-      <a href="https://www.codewithjason.com/avoid-wasteful-refactoring/">refactorings</a>
-      just before I change a piece of code rather than at any other time. If I
-      try to change a piece of code and find that the change is difficult, then
-      that's concrete evidence that the code is a "dull blade" and that
-      sharpening it will pay off. The <code>ANSIToHTMLHelper</code> blade is
-      clearly dull as hell, but I might not need to cut with it again for
-      months or even years. When the day finally comes that I need to cut with
-      this blade, I'll sharpen it then, but no sooner.
+      to be a mess, for two reasons. Take a little scroll through this piece of
+      shit and I'll meet you on the other side to tell you what they are.
     </p>
 
     <pre><code class="language-ruby">module ANSIToHTMLHelper
@@ -564,5 +536,81 @@ end</code></pre>
   end
 end</code></pre>
 
+    <p>
+      The first reason it's fine for this code to be nasty is that it's <i>leaf
+      code</i>: nothing depends on it. Provided I keep the
+      <code>ansi_to_html(ansi_string)</code> method signature the same, I could
+      literally delete every single line inside the method and rewrite it from
+      scratch and no external client would have the slightest inkling that I
+      did so. In fact, I'm sure that at some point I'll do exactly that.
+    </p>
+
+    <p>
+      The second reason I don't mind that this code is garbage is because
+      through the lens of
+      <a href="https://www.codewithjason.com/sharp-blades-and-dull-blades/">Blade Theory</a>
+      this is a "dull blade" (i.e. a piece of code that's hard to understand
+      and work with) but it's a blade which we might not actually use again for
+      a very long time. If I sharpen a blade without having a specific reason
+      to believe that the cost of the sharpening will pay itself back, then I
+      risk making an investment that never pays off. That's why I usually
+      perform my
+      <a href="https://www.codewithjason.com/avoid-wasteful-refactoring/">refactorings</a>
+      just before I change a piece of code rather than at any other time. If I
+      try to change a piece of code and find that the change is difficult, then
+      that's concrete evidence that the code is a "dull blade" and that
+      sharpening it will pay off. The <code>ANSIToHTMLHelper</code> blade is
+      clearly dull as hell, but I might not need to cut with it again for
+      months or even years. When the day finally comes that I need to cut with
+      this blade, I'll sharpen it then, but no sooner.
+    </p>
+
+    <h2>Why did this work?</h2>
+
+    <p>
+      When I first resolved to climb Mount Log Streaming, I imagined it to be a
+      steep and slippery edifice, but the application of classic tactics like
+      breaking down the problem into sub-problems, seeking a "steel thread"
+      solution, starting with the simplest thing that could possibly work,
+      getting the feedback loop started early and working in small atomic
+      increments of work, I climbed to the summit without ever mentally
+      breaking a sweat. That's what these techniques do: they make hard
+      problems dissolve.
+    </p>
+
+    <p>
+      I never brought it up in this post but I was boosted mightily in this
+      project, as I am in every project, by
+      <a href="https://www.amazon.com/Professional-Rails-Testing-Tools-Principles/dp/B0DJRLK93M">test-driven development</a>
+      (TDD). My thorough test suite ensured that everything I got working
+      <i>stayed</i> working, even when I made radical changes to the
+      implementation. Since TDD always helps a programmer divide the
+      <i>what</i> from the <i>how</i> and address each separately, thus
+      lowering the overall mental burden at any given time, I was able to
+      tackle the trickier parts of this project without ever having to think
+      terribly hard. And I took great delight in the fact that I was able to
+      run the test suite for SaturnCI on SaturnCI itself.
+    </p>
+
+    <p>
+      One way I think of AI is that it's like a "mental lubricant", reducing
+      the friction in annoying little tasks that require intellectual
+      gruntwork. I don't remember any single big boost that AI gave me during
+      this project, but I know that it helped me because I've been using AI
+      daily since sometime in 2023. I believe most if not all of this project
+      was complete prior to that great inflection point called Claude Code
+      General Availability, so any help that AI gave me during this project was
+      just copy/pasting from ChatGPT, but that's still a lot more than nothing.
+    </p>
+
+    <p>
+      As helpful as AI is, it wasn't the key to success in this project, it was
+      merely an (insanely powerful) accelerator. What I believe allowed this
+      project to succeed was the set of techniques described above, which have
+      served programmers well for decades and which continue to serve us well
+      today. I've found that when I combine the power of AI with the logic of
+      good programming principles, almost any project is easy, quick, and a
+      whole lot of fun.
+    </p>
   </div>
 </div>
