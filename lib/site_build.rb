@@ -65,6 +65,11 @@ class SiteBuild
       content = page[:content]
       content = content.gsub('{{endpoints}}', formatted_endpoints) if formatted_endpoints
 
+      if page[:path]&.include?('src/blog/')
+        content = content.sub('<h1>', '<h1 class="blog-post-heading">')
+        content = content.sub(%r{(</h1>)}, '\1' + "\n  <p class=\"byline\">by Jason Swett</p>")
+      end
+
       page_with_content = page.merge(content: content)
       html = render_page(page_with_content, layout_template, all_pages)
 

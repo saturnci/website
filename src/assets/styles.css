@@ -14,17 +14,6 @@ body {
   padding: 5px 20px;
 }
 
-h1 {
-  font-size: 36px;
-  border-bottom: 4px solid #BBB;
-  margin-bottom: 60px !important;
-  padding: 0 0 8px 0;
-}
-
-h2 {
-  font-size: 24px;
-}
-
 .page-content pre,
 .code-filename {
   padding-left: 10px;
@@ -45,6 +34,12 @@ p code {
   display: inline-block;
   padding: 0 4px;
   border-radius: 5px;
+}
+
+.byline {
+  color: #666;
+  font-style: italic;
+  margin-top: -10px;
 }
 
 h1,
@@ -110,4 +105,23 @@ pre.ai-response {
   border-radius: 5px;
   max-width: 600px;
   white-space: pre-wrap;
+}
+
+h1 {
+  font-size: 36px;
+  border-bottom: 4px solid #BBB;
+  margin-bottom: 60px;
+  padding: 0 0 8px 0;
+}
+
+h1.blog-post-heading {
+  margin-bottom: 22px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+.byline {
+  margin-bottom: 60px;
 }
