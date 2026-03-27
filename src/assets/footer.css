@@ -10,6 +10,12 @@
   margin-top: 60px;
 }
 
+.footer-logo {
+  font-family: 'MyriadPro';
+  font-size: 20px;
+  line-height: 1.2;
+}
+
 .site-footer a {
   color: #FFF;
 }
