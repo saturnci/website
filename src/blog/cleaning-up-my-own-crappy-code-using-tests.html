@@ -1,0 +1,240 @@
+---
+page_title: Cleaning Up My Own Crappy Code (Using Tests)
+nav: cleaning-up-my-own-crappy-code-(using-tests)
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Cleaning Up My Own Crappy Code (Using Tests)</h1>
+
+  <div class="page-content">
+<pre><code class="language-ruby">def start_stream
+  File.write(LOG_PATH, '')
+  $stdout.reopen(LOG_PATH, 'a')
+  $stdout.sync = true
+
+  @stream = SaturnCIWorkerAPI::Stream.new(
+    LOG_PATH,
+    "tasks/#{@task_id}/system_logs",
+    wait_interval: 1
+  )
+  @stream.start
+  sleep 1
+
+  puts "Task ID: \"#{@task_id}\""
+
+  response = @client.get("tasks/#{@task_id}")
+  @task_info = JSON.parse(response.body)
+  send_task_event('task_fetched')
+
+  puts <<~OUTPUT
+    Task info received:
+      github_repo_full_name: #{@task_info['github_repo_full_name']}
+      branch_name: #{@task_info['branch_name']}
+      commit_hash: #{@task_info['commit_hash']}
+      github_installation_id: #{@task_info['github_installation_id']}
+      rspec_seed: #{@task_info['rspec_seed']}
+      run_order_index: #{@task_info['run_order_index']}
+      number_of_concurrent_runs: #{@task_info['number_of_concurrent_runs']}
+      env_vars: [#{@task_info['env_vars'].keys.join(', ')}]
+  OUTPUT
+end</code></pre>
+
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../../lib/executor'
+require_relative '../../lib/saturn_ci_worker_api_client'
+require_relative '../../lib/adapters/rails_rspec/leader_worker'
+require_relative '../../lib/adapters/rails_rspec/follower_worker'
+
+host = ENV.fetch('SATURNCI_API_HOST')
+executor = Executor.new(
+  host: host,
+  task_id: ENV.fetch('TASK_ID'),
+  client: SaturnCIWorkerAPIClient.new(host: host)
+)
+executor.start_stream
+
+worker_class = executor.task_info['run_order_index'] == 1 ? Adapters::RailsRSpec::LeaderWorker : Adapters::RailsRSpec::FollowerWorker
+worker = worker_class.new(executor)
+worker.run
+
+
+  <p>
+    This method is big and messy. Maybe we should restructure it before trying to add tests.
+  </p>
+
+<pre><code class="language-ruby">def start_stream
+  File.write(LOG_PATH, '')
+  $stdout.reopen(LOG_PATH, 'a')
+  $stdout.sync = true
+
+  @stream = SaturnCIWorkerAPI::Stream.new(
+    LOG_PATH,
+    "tasks/#{@task_id}/system_logs",
+    wait_interval: 1
+  )
+  @stream.start
+  sleep 1
+end
+
+def fetch_task_info
+  puts "Task ID: \"#{@task_id}\""
+
+  response = @client.get("tasks/#{@task_id}")
+  @task_info = JSON.parse(response.body)
+  send_task_event('task_fetched')
+
+  puts <<~OUTPUT
+    Task info received:
+      github_repo_full_name: #{@task_info['github_repo_full_name']}
+      branch_name: #{@task_info['branch_name']}
+      commit_hash: #{@task_info['commit_hash']}
+      github_installation_id: #{@task_info['github_installation_id']}
+      rspec_seed: #{@task_info['rspec_seed']}
+      run_order_index: #{@task_info['run_order_index']}
+      number_of_concurrent_runs: #{@task_info['number_of_concurrent_runs']}
+      env_vars: [#{@task_info['env_vars'].keys.join(', ')}]
+  OUTPUT
+end</code></pre>
+
+<p>
+  Here's what the call site looks like now:
+</p>
+
+<pre><code class="language-ruby">host = ENV.fetch('SATURNCI_API_HOST')
+executor = Executor.new(
+  host: host,
+  task_id: ENV.fetch('TASK_ID'),
+  client: SaturnCIWorkerAPIClient.new(host: host)
+)
+executor.start_stream
+executor.fetch_task_info
+
+worker_class = executor.task_info['run_order_index'] == 1 ? Adapters::RailsRSpec::LeaderWorker : Adapters::RailsRSpec::FollowerWorker
+worker = worker_class.new(executor)
+worker.run</code></pre>
+
+Now we can regard <code>start_stream</code> in isolation.
+
+<pre><code class="language-ruby">def start_stream
+  File.write(LOG_PATH, '')
+  $stdout.reopen(LOG_PATH, 'a')
+  $stdout.sync = true
+
+  @stream = SaturnCIWorkerAPI::Stream.new(
+    LOG_PATH,
+    "tasks/#{@task_id}/system_logs",
+    wait_interval: 1
+  )
+  @stream.start
+  sleep 1
+end</code></pre>
+
+Look at all the dependencies!
+
+What does it do? I asked Claude to explain these two lines:
+<pre><code class="language-ruby">$stdout.reopen(LOG_PATH, 'a')
+$stdout.sync = true</code></pre>
+
+    <blockquote>
+      <p>
+        <code>$stdout.reopen(LOG_PATH, 'a')</code> redirects the global stdout to
+        append to the log file. After this, any <code>puts</code> or
+        <code>print</code> in the process writes to
+        <code>/tmp/output.log</code> instead of the terminal.
+      </p>
+
+      <p>
+        <code>$stdout.sync = true</code> disables output buffering, so each write
+        is flushed to the file immediately rather than being held in a buffer. This
+        matters because the Stream reads the log file on an interval — without
+        sync, there could be output that's been <code>puts</code>'d but hasn't
+        actually been written to disk yet, so the Stream would miss it.
+      </p>
+    </blockquote>
+
+    <p>
+      This struck me as suspicious:
+    </p>
+
+<pre><code class="language-ruby">File.write(LOG_PATH, '')
+$stdout.reopen(LOG_PATH, 'a')
+$stdout.sync = true</code></pre>
+
+<pre><code class="language-ruby">$stdout.reopen(LOG_PATH, 'w')
+$stdout.sync = true</code></pre>
+
+    <blockquote>
+      <p>
+        Before, we had two steps: first, write an empty string to the file to erase
+        it, then open the file in "append" mode (which means "add to the end of
+        whatever's already there"). But since we just erased it, appending to an
+        empty file is the same as starting fresh.
+      </p>
+
+      <p>
+        The problem is that step one only exists because of how step two works. If
+        we just open the file in "write" mode instead of "append" mode, "write"
+        mode automatically erases the file when it opens it. So we get the same
+        result in one step instead of two — the extra clearing line was
+        unnecessary.
+      </p>
+    </blockquote>
+
+<pre><code class="language-ruby">def start_stream
+  $stdout.reopen(LOG_PATH, 'w')
+  $stdout.sync = true
+
+  @stream = SaturnCIWorkerAPI::Stream.new(
+    LOG_PATH,
+    "tasks/#{@task_id}/system_logs",
+    wait_interval: 1
+  )
+  @stream.start
+  sleep 1
+end</code></pre>
+
+❯     $stdout.reopen(LOG_PATH, 'w')                                                                                                                                                            
+    $stdout.sync = true                                                                                                                                                                        
+                                                                                                                                                                                               
+stated at a high level of abstraction, what do these two lines do?                                                                                                                             
+
+⏺ They redirect all output to the log file.
+
+host = ENV.fetch('SATURNCI_API_HOST')
+task_id = ENV.fetch('TASK_ID')
+
+stream = SaturnCIWorkerAPI::Stream.new(
+  Executor::LOG_PATH,
+  "tasks/#{task_id}/system_logs",
+  wait_interval: 1
+)
+
+executor = Executor.new(
+  host: host,
+  task_id: task_id,
+  client: SaturnCIWorkerAPIClient.new(host: host),
+  stream: stream
+)
+executor.start_stream
+executor.fetch_task_info
+
+worker_class = executor.task_info['run_order_index'] == 1 ? Adapters::RailsRSpec::LeaderWorker : Adapters::RailsRSpec::FollowerWorker
+worker = worker_class.new(executor)
+worker.run
+
+
+
+  def start_stream
+    $stdout.reopen(LOG_PATH, 'w')
+    $stdout.sync = true
+
+    @stream.start
+    sleep 1
+  end
+
+
+  </div>
+</div>
