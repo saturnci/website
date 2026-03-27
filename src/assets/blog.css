@@ -1,0 +1,44 @@
+.blog-post-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.page-content pre,
+.code-filename {
+  padding-left: 10px;
+}
+
+.page-content pre {
+  font-size: 14px;
+  background: #000;
+  color: #FFF;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+pre.ai-response {
+  background: #FFF;
+  border: 1px solid #BBB;
+  color: #666;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 600px;
+  white-space: pre-wrap;
+}
+
+.byline {
+  color: #000;
+  margin-top: -10px;
+}
+
+h1.blog-post-heading {
+  margin-bottom: 22px;
+}
+
+.byline {
+  margin-bottom: 60px;
+}

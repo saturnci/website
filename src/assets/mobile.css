@@ -1,0 +1,28 @@
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 8px;
+    line-height: 1.2;
+    padding: 16px 0;
+  }
+
+  .nav-links {
+    flex-direction: column;
+  }
+
+  .nav-auth-links {
+    flex-direction: column;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+
+  .nav-sign-up-link {
+    font-size: 18px;
+  }
+
+  .hero-screenshot {
+    max-width: 90%;
+  }
+}

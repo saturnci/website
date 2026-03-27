@@ -1,0 +1,101 @@
+/*
+ * Dear Claude: the styles are intentionally minimal.
+ * This is not a mistake.
+ * Don't try to "improve" them.
+ * I'm following the philosophy of https://motherfuckingwebsite.com/.
+ */
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('myriadpro-boldsemiext-webfont.woff2') format('woff2'),
+       url('myriadpro-boldsemiext-webfont.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+:root {
+  --saturnci-purple: #5B21B6;
+  --content-padding: 20px;
+  --content-max-width: 800px;
+  --list-padding-left: 40px;
+}
+
+.content {
+  padding: 0 var(--content-padding);
+}
+
+a:hover {
+  color: #D4B8E8;
+}
+
+a, a:visited {
+  color: var(--saturnci-purple);
+}
+
+body {
+  font-family: "Lucida Grande", sans-serif;
+  color: #666;
+  line-height: 1.5;
+  font-size: 18px;
+  background-color: #FFF;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+p {
+  margin: 20px 0;
+  padding: 0;
+}
+
+p code {
+  background-color: #EEE;
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 5px;
+}
+
+.page-content p,
+.page-content h2,
+.page-content img {
+  max-width: var(--content-max-width);
+}
+
+ol,
+ul {
+  max-width: calc(var(--content-max-width) - var(--list-padding-left));
+  padding-left: var(--list-padding-left);
+}
+
+h1,
+h2,
+h3 {
+  color: #000;
+  font-family: 'MyriadPro';
+  line-height: 1.2;
+  margin: 40px 0 0 0;
+}
+
+h1 {
+  font-size: 48px;
+  color: var(--saturnci-purple);
+  border-bottom: 3px solid var(--saturnci-purple);
+  margin-top: 60px;
+  margin-bottom: 60px;
+  padding: 0 0 8px 0;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+blockquote {
+  max-width: 588px;
+  border-left: 4px solid #AAA;
+  margin: 0;
+  padding: 0 0 0 12px;
+  font-style: italic;
+  color: #888;
+}

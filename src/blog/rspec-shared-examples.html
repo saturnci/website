@@ -1,11 +1,11 @@
 ---
-page_title: RSpec shared examples unmasked
+page_title: RSpec Shared Examples Unmasked
 nav: rspec-shared-examples
 ---
 
 <div class="container page-container">
   <div class="page-content">
-    <h1>RSpec shared examples unmasked</h1>
+    <h1>RSpec Shared Examples Unmasked</h1>
 
     <p>
       <a href="https://www.betterspecs.org/">Better Specs</a> is a popular
@@ -28,7 +28,7 @@ nav: rspec-shared-examples
       "bad" and "good" way to write a test.
     </p>
 
-    <h3>Better Specs' "good" way</h3>
+    <h2>Better Specs' "good" way</h2>
     <p>
       In the following test, a very brief one, we can see that we're apparently
       testing a listable resource, a paginable resource, a searchable resource
@@ -54,7 +54,7 @@ end</code></pre>
       examples. What does the bad way look like?
     </p>
 
-    <h3>Better Specs' "bad" way</h3>
+    <h2>Better Specs' "bad" way</h2>
     <p>
       We can see that the first couple of lines of this second example are the
       same as the first example, the lines that define a <code>resource</code>
@@ -96,7 +96,7 @@ end</code></pre>
       actually are.
     </p>
 
-    <h3>Duplication in tests: okay or not okay?</h3>
+    <h2>Duplication in tests: okay or not okay?</h2>
 
     <p>
       The essence of
@@ -122,7 +122,7 @@ the DRY principle itself. Inexperienced or unthoughtful people misunderstanding
 a good idea does not turn the good idea into a bad idea.
     </p>
 
-    <h3>Why test code is different</h3>
+    <h2>Why test code is different</h2>
 
     <p>
       "Tolerate some duplication, and go easy on the DRY" is more or less the
@@ -151,7 +151,7 @@ a good idea does not turn the good idea into a bad idea.
       constitute duplication.
     </p>
 
-    <h3>How to identify real duplication in tests</h3>
+    <h2>How to identify real duplication in tests</h2>
 
     <p>
       If one piece of duplicated code changes but its twin does not, does that
@@ -251,7 +251,7 @@ it_behaves_like('a filterable resource')</code></pre>
       bad again?
     </p>
 
-    <h3>The cost of global variables</h3>
+    <h2>The cost of global variables</h2>
 
     <p>
       Just like with duplication, it's not exactly that global variables are bad,
@@ -273,7 +273,7 @@ it_behaves_like('a filterable resource')</code></pre>
       side effects.
     </p>
 
-    <h3>It gets worse</h3>
+    <h2>It gets worse</h2>
 
     <p>
       The design of shared examples, where you define global variables, then use
@@ -313,7 +313,7 @@ end</code></pre>
       the first place. No thank you!
     </p>
 
-    <h3>Alternatives to shared examples</h3>
+    <h2>Alternatives to shared examples</h2>
 
     <p>
       Even though shared examples are a bad solution, and even though it's not a

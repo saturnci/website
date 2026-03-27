@@ -1,0 +1,15 @@
+.site-footer {
+  color: #FFF;
+  font-size: 16px;
+  margin-top: auto;
+}
+
+.site-footer-inner {
+  padding: 20px;
+  background-color: var(--saturnci-purple);
+  margin-top: 60px;
+}
+
+.site-footer a {
+  color: #FFF;
+}

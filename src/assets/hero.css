@@ -1,0 +1,38 @@
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  max-width: auto !important;
+  width: auto;
+  font-family: "MyriadPro";
+  text-align: center;
+  border: none;
+  margin: 80px 0 8px 0;
+  padding: 0;
+}
+
+.hero .logo {
+  width: 340px;
+  margin-top: 40px;
+}
+
+.hero-screenshot {
+  max-width: 1200px;
+  margin-top: 40px;
+}
+
+.nav-sign-up-link {
+  display: inline-block;
+  margin: 10px auto 40px auto;
+  padding: 8px 18px;
+  background-color: var(--saturnci-purple);
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 26px;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-sign-up-link, .nav-sign-up-link:visited {
+  color: #FFF;
+}

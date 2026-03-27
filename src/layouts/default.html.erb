@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="SaturnCI: Continuous Integration for Ruby on Rails and RSpec">
   <title><%= page_title ? "#{page_title} - #{title}" : title %></title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="hero.css">
+  <link rel="stylesheet" href="features.css">
+  <link rel="stylesheet" href="footer.css">
+  <link rel="stylesheet" href="blog.css">
+  <link rel="stylesheet" href="mobile.css">
   <link rel="stylesheet" href="syntax-highlighting.css">
 
   <!-- Google tag (gtag.js) -->
@@ -23,25 +29,32 @@
 
 <nav class="navbar">
   <div class="nav-links">
-    <a href="./index.html" class="nav-link<%= active_nav == 'index' ? ' active' : '' %>">Home</a>
+    <a href="./index.html" class="nav-logo-link">SaturnCI</a>
     <a href="./documentation.html" class="nav-link<%= active_nav == 'documentation' ? ' active' : '' %>">Documentation</a>
+    <a href="./blog.html" class="nav-link<%= active_nav == 'blog' ? ' active' : '' %>">Blog</a>
     <a href="./about.html" class="nav-link<%= active_nav == 'about' ? ' active' : '' %>">About</a>
   </div>
-  <a class="nav-sign-up-link" href="https://app.saturnci.com">Start Running Tests for Free</a>
+
+  <div class="nav-auth-links">
+    <a href="https://app.saturnci.com/sign_in" class="nav-link">Sign In</a>
+    <a href="https://app.saturnci.com" class="nav-link">Sign Up</a>
+  </div>
 </nav>
 
+<div class="content">
 <%= content %>
-
-<br>
-<hr>
-
-<div>SaturnCI</div>
-<div><a href="mailto:jason@saturnci.com">jason@saturnci.com</a></div>
-
-<div>
-  16601 Myers Lake Ave<br>
-  Sand Lake, Michigan 49343
 </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>SaturnCI</div>
+    <div><a href="mailto:jason@saturnci.com">jason@saturnci.com</a></div>
+    <div>
+      16601 Myers Lake Ave<br>
+      Sand Lake, Michigan 49343
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
