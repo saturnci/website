@@ -64,7 +64,7 @@ RSpec.describe SiteBuild do
 
         html = build.render_page(regular_page, layout, [regular_page])
 
-        expect(html).to include("Frustration-free CI built exclusively for Ruby on Rails and RSpec")
+        expect(html).to include(SiteBuild::DEFAULT_OG_DESCRIPTION)
       end
     end
   end
