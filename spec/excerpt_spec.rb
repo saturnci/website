@@ -3,7 +3,7 @@ require_relative '../lib/excerpt'
 RSpec.describe Excerpt do
   describe ".from_html" do
     it "returns the plain text content without HTML markup" do
-      html = '<div><h1>My Title</h1><p>This is a <b>great</b> blog post about testing.</p></div>'
+      html = '<div><h1>My Title</h1> <p>This is a <b>great</b> blog post about testing.</p></div>'
 
       result = Excerpt.from_html(html)
 
