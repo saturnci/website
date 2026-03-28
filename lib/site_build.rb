@@ -74,30 +74,34 @@ class SiteBuild
     require_relative 'api_documentation'
     openapi_file = File.join(@source.path, 'openapi.yml')
     formatted_endpoints = APIDocumentation.new(openapi_file).formatted_endpoints
+    blog_list_html = blog_post_list_html(all_pages)
 
     all_pages.each do |page|
       content = page[:content]
       content = content.gsub('{{endpoints}}', formatted_endpoints) if formatted_endpoints
-
-      blog_posts = all_pages.select { |page| blog_post?(page) && !page[:frontmatter]['draft'] }
-      blog_post_links = blog_posts.map { |blog_post|
-        title = blog_post[:frontmatter]['page_title'] || blog_post[:filename]
-        "<li><a href=\"#{blog_post[:filename]}.html\">#{title}</a></li>"
-      }.join("\n")
-      content = content.gsub('{{blog_posts}}', "<ul class=\"blog-post-list\">\n#{blog_post_links}\n</ul>")
-
-      if blog_post?(page)
-        content = content.sub('<h1>', '<h1 class="blog-post-heading">')
-        content = content.sub(%r{(</h1>)}, '\1' + "\n  <p class=\"byline\">by Jason Swett</p>")
-      end
+      content = content.gsub('{{blog_posts}}', blog_list_html)
+      content = decorate_blog_post_content(content) if blog_post?(page)
 
       page_with_content = page.merge(content: content)
       html = render_page(page_with_content, layout_template, all_pages)
 
-      # Write to output
       output_file = File.join(@output_dir, "#{page[:filename]}.html")
       File.write(output_file, html)
       puts "Generated: #{output_file}"
     end
+  end
+
+  def blog_post_list_html(all_pages)
+    blog_posts = all_pages.select { |page| blog_post?(page) && !page[:frontmatter]['draft'] }
+    links = blog_posts.map { |blog_post|
+      title = blog_post[:frontmatter]['page_title'] || blog_post[:filename]
+      "<li><a href=\"#{blog_post[:filename]}.html\">#{title}</a></li>"
+    }.join("\n")
+    "<ul class=\"blog-post-list\">\n#{links}\n</ul>"
+  end
+
+  def decorate_blog_post_content(content)
+    content = content.sub('<h1>', '<h1 class="blog-post-heading">')
+    content.sub(%r{(</h1>)}, '\1' + "\n  <p class=\"byline\">by Jason Swett</p>")
   end
 end
