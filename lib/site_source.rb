@@ -29,6 +29,7 @@ class SiteSource
     Dir.glob(File.join(@assets_dir, '*.css')) +
     Dir.glob(File.join(@assets_dir, '*.woff')) +
     Dir.glob(File.join(@assets_dir, '*.woff2')) +
+    Dir.glob(File.join(@assets_dir, '*.png')) +
     Dir.glob(File.join(@root_path, 'CNAME')).select { |f| File.exist?(f) }
   end
 
