@@ -3,11 +3,19 @@ require_relative '../lib/excerpt'
 RSpec.describe Excerpt do
   describe ".from_html" do
     it "returns the plain text content without HTML markup" do
-      html = '<div><h1>My Title</h1> <p>This is a <b>great</b> blog post about testing.</p></div>'
+      html = '<div><p>This is a <b>great</b> blog post about testing.</p></div>'
 
       result = Excerpt.from_html(html)
 
-      expect(result).to eq("My Title This is a great blog post about testing.")
+      expect(result).to eq("This is a great blog post about testing.")
+    end
+
+    it "strips headings from the content" do
+      html = '<h1>My Title</h1><p>Body text here.</p>'
+
+      result = Excerpt.from_html(html)
+
+      expect(result).to eq("Body text here.")
     end
 
     context "when the content is longer than 160 characters" do

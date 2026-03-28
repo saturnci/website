@@ -37,7 +37,7 @@ RSpec.describe SiteBuild do
         blog_page = {
           filename: 'my-post',
           frontmatter: { 'page_title' => 'My Post' },
-          content: '<p>This is a blog post about testing in Rails.</p>',
+          content: '<h1>My Post</h1><p>This is a blog post about testing in Rails.</p>',
           path: 'src/blog/my-post.html'
         }
         layout = '<%= og_description %>'
@@ -47,6 +47,7 @@ RSpec.describe SiteBuild do
         html = build.render_page(blog_page, layout, [blog_page])
 
         expect(html).to include("This is a blog post about testing in Rails.")
+        expect(html).not_to include("My Post")
       end
     end
 
