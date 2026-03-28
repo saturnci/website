@@ -7,6 +7,9 @@ require_relative 'excerpt'
 class SiteBuild
   include SyntaxHighlighter
 
+  DEFAULT_OG_DESCRIPTION = "Frustration-free CI built exclusively for Ruby on Rails " \
+    "and RSpec. Failure messages front and center, no executable YAML, powered by Docker Compose."
+
   def initialize(source, output_dir)
     @source = source
     @output_dir = output_dir
@@ -22,11 +25,10 @@ class SiteBuild
   def render_page(page, layout_template, all_pages)
     content = highlight_code_blocks(page[:content])
 
-    # Create context for ERB template
-    og_description = if page[:path]&.include?('src/blog/')
+    og_description = if blog_post?(page)
       Excerpt.from_html(page[:content])
     else
-      "Frustration-free CI built exclusively for Ruby on Rails and RSpec. Failure messages front and center, no executable YAML, powered by Docker Compose."
+      DEFAULT_OG_DESCRIPTION
     end
 
     context = OpenStruct.new(
@@ -43,6 +45,10 @@ class SiteBuild
   end
 
   private
+
+  def blog_post?(page)
+    page[:path]&.include?('src/blog/')
+  end
 
   def clean_output_dir
     FileUtils.rm_rf(@output_dir)
@@ -73,14 +79,14 @@ class SiteBuild
       content = page[:content]
       content = content.gsub('{{endpoints}}', formatted_endpoints) if formatted_endpoints
 
-      blog_posts = all_pages.select { |p| p[:path]&.include?('src/blog/') && !p[:frontmatter]['draft'] }
-      blog_post_links = blog_posts.map { |p|
-        title = p[:frontmatter]['page_title'] || p[:filename]
-        "<li><a href=\"#{p[:filename]}.html\">#{title}</a></li>"
+      blog_posts = all_pages.select { |page| blog_post?(page) && !page[:frontmatter]['draft'] }
+      blog_post_links = blog_posts.map { |blog_post|
+        title = blog_post[:frontmatter]['page_title'] || blog_post[:filename]
+        "<li><a href=\"#{blog_post[:filename]}.html\">#{title}</a></li>"
       }.join("\n")
       content = content.gsub('{{blog_posts}}', "<ul class=\"blog-post-list\">\n#{blog_post_links}\n</ul>")
 
-      if page[:path]&.include?('src/blog/')
+      if blog_post?(page)
         content = content.sub('<h1>', '<h1 class="blog-post-heading">')
         content = content.sub(%r{(</h1>)}, '\1' + "\n  <p class=\"byline\">by Jason Swett</p>")
       end
