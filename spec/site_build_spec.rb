@@ -32,38 +32,37 @@ RSpec.describe SiteBuild do
       expect(html).to include('<title>Test Page</title>')
     end
 
-    context "when the page is a blog post" do
-      it "sets og_description to an excerpt of the content" do
-        blog_page = {
+    context "when og_description is provided" do
+      it "uses the provided og_description" do
+        test_page = {
           filename: 'my-post',
           frontmatter: { 'page_title' => 'My Post' },
-          content: '<h1>My Post</h1><p>This is a blog post about testing in Rails.</p>',
+          content: '<p>This is a blog post about testing in Rails.</p>',
           path: 'src/blog/my-post.html'
         }
         layout = '<%= og_description %>'
-        source = double('SiteSource', pages: [blog_page])
+        source = double('SiteSource', pages: [test_page])
         build = SiteBuild.new(source, 'public')
 
-        html = build.render_page(blog_page, layout, [blog_page])
+        html = build.render_page(test_page, layout, [test_page], og_description: "Custom description")
 
-        expect(html).to include("This is a blog post about testing in Rails.")
-        expect(html).not_to include("My Post")
+        expect(html).to include("Custom description")
       end
     end
 
-    context "when the page is not a blog post" do
-      it "sets og_description to the generic site description" do
-        regular_page = {
+    context "when og_description is not provided" do
+      it "uses the default site description" do
+        test_page = {
           filename: 'about',
           frontmatter: { 'page_title' => 'About' },
           content: '<p>About us.</p>',
           path: 'src/pages/about.html'
         }
         layout = '<%= og_description %>'
-        source = double('SiteSource', pages: [regular_page])
+        source = double('SiteSource', pages: [test_page])
         build = SiteBuild.new(source, 'public')
 
-        html = build.render_page(regular_page, layout, [regular_page])
+        html = build.render_page(test_page, layout, [test_page])
 
         expect(html).to include(SiteBuild::DEFAULT_OG_DESCRIPTION)
       end

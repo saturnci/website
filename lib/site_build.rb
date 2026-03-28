@@ -22,14 +22,8 @@ class SiteBuild
     puts "Site built successfully in #{@output_dir}/"
   end
 
-  def render_page(page, layout_template, all_pages)
+  def render_page(page, layout_template, all_pages, og_description: DEFAULT_OG_DESCRIPTION)
     content = highlight_code_blocks(page[:content])
-
-    og_description = if blog_post?(page)
-      Excerpt.from_html(page[:content])
-    else
-      DEFAULT_OG_DESCRIPTION
-    end
 
     context = OpenStruct.new(
       title: page[:frontmatter]['title'] || 'SaturnCI - Continuous Integration for Ruby on Rails',
@@ -77,13 +71,19 @@ class SiteBuild
     blog_list_html = blog_post_list_html(all_pages)
 
     all_pages.each do |page|
+      og_description = if blog_post?(page)
+        Excerpt.from_html(page[:content])
+      else
+        DEFAULT_OG_DESCRIPTION
+      end
+
       content = page[:content]
       content = content.gsub('{{endpoints}}', formatted_endpoints) if formatted_endpoints
       content = content.gsub('{{blog_posts}}', blog_list_html)
       content = decorate_blog_post_content(content) if blog_post?(page)
 
       page_with_content = page.merge(content: content)
-      html = render_page(page_with_content, layout_template, all_pages)
+      html = render_page(page_with_content, layout_template, all_pages, og_description: og_description)
 
       output_file = File.join(@output_dir, "#{page[:filename]}.html")
       File.write(output_file, html)
