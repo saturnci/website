@@ -33,5 +33,41 @@ RSpec.describe SiteBuild do
       expect(html).to include('<h1>Hello World</h1>')
       expect(html).to include('<p>This is a test page.</p>')
     end
+
+    context "when the page is a blog post" do
+      it "sets og_description to an excerpt of the content" do
+        blog_page = {
+          filename: 'my-post',
+          frontmatter: { 'page_title' => 'My Post' },
+          content: '<p>This is a blog post about testing in Rails.</p>',
+          path: 'src/blog/my-post.html'
+        }
+        layout = '<%= og_description %>'
+        source = double('SiteSource', pages: [blog_page])
+        build = SiteBuild.new(source, 'public')
+
+        html = build.render_page(blog_page, layout, [blog_page])
+
+        expect(html).to include("This is a blog post about testing in Rails.")
+      end
+    end
+
+    context "when the page is not a blog post" do
+      it "sets og_description to the generic site description" do
+        regular_page = {
+          filename: 'about',
+          frontmatter: { 'page_title' => 'About' },
+          content: '<p>About us.</p>',
+          path: 'src/pages/about.html'
+        }
+        layout = '<%= og_description %>'
+        source = double('SiteSource', pages: [regular_page])
+        build = SiteBuild.new(source, 'public')
+
+        html = build.render_page(regular_page, layout, [regular_page])
+
+        expect(html).to include("Frustration-free CI built exclusively for Ruby on Rails and RSpec")
+      end
+    end
   end
 end

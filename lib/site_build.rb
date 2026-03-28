@@ -2,6 +2,7 @@ require 'erb'
 require 'fileutils'
 require 'ostruct'
 require_relative 'syntax_highlighter'
+require_relative 'excerpt'
 
 class SiteBuild
   include SyntaxHighlighter
@@ -22,11 +23,18 @@ class SiteBuild
     content = highlight_code_blocks(page[:content])
 
     # Create context for ERB template
+    og_description = if page[:path]&.include?('src/blog/')
+      Excerpt.from_html(page[:content])
+    else
+      "Frustration-free CI built exclusively for Ruby on Rails and RSpec. Failure messages front and center, no executable YAML, powered by Docker Compose."
+    end
+
     context = OpenStruct.new(
       title: page[:frontmatter]['title'] || 'SaturnCI - Continuous Integration for Ruby on Rails',
       page_title: page[:frontmatter]['page_title'],
       active_nav: page[:frontmatter]['nav'] || page[:filename],
       content: content,
+      og_description: og_description,
       pages: all_pages
     )
 
