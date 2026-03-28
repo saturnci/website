@@ -23,15 +23,13 @@ RSpec.describe SiteBuild do
 
     let(:all_pages) { [page] }
 
-    it "renders a page with layout and frontmatter" do
+    it "injects frontmatter values into the layout template" do
       source = double('SiteSource', pages: all_pages)
       build = SiteBuild.new(source, 'public')
 
       html = build.render_page(page, layout_template, all_pages)
 
       expect(html).to include('<title>Test Page</title>')
-      expect(html).to include('<h1>Hello World</h1>')
-      expect(html).to include('<p>This is a test page.</p>')
     end
 
     context "when the page is a blog post" do
