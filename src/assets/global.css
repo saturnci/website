@@ -92,7 +92,7 @@ h2 {
 }
 
 blockquote {
-  max-width: 588px;
+  max-width: var(--content-max-width);
   border-left: 4px solid #AAA;
   margin: 0;
   padding: 0 0 0 12px;

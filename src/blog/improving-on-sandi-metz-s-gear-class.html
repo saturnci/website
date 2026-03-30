@@ -1,0 +1,275 @@
+---
+page_title: Improving on Sandi Metz's Gear Class from POODR
+nav: improving-on-sandi-metz's-gear-class
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Improving on Sandi Metz's Gear Class from POODR</h1>
+
+  <div class="page-content">
+    <p>
+      In Chapter 2 of Sandi Metz's
+      <a href="https://www.poodr.com/">Practical Object-Oriented Design, An Agile Primer Using Ruby (POODR)</a>,
+      titled "Designing Classes with a Single Responsibility",
+      the concept of a bicycle gear is spelled out in clear detail:
+    </p>
+
+    <blockquote>
+      Gears work by changing how far the bicycle travels each time your feet
+      complete one circle with the pedals. More specifically, your gear
+      controls how many times the wheels rotate for each time the pedals
+      rotate. In a small gear, your feet spin around several times to make the
+      wheels rotate just once; in a big gear, each complete pedal rotation may
+      cause the wheels to rotate multiple times.
+    </blockquote>
+
+    <p>
+      Not being terribly familiar with bicycle terminology myself, I got a
+      little tripped up when I first tried to think about bicycle gears. I
+      assumed those round things with teeth, the things the chain goes on, were
+      called <i>gears</i>, but no, they have a different name. The front one
+      (which I now know thanks to a diagram in <i>POODR</i> is called the
+      <i>chainring</i> and the rear one is called the <i>cog</i>. The higher
+      the ratio of chainring teeth to cog teeth, the easier the gear.
+    </p>
+
+    <h2>Hang on, what is a gear?</h2>
+
+    <p>
+      <i>Gear</i> is actually a bit of a sloppy term. <i>Gear</i> is short for
+      <i>gear ratio</i>, just as <i>acoustic</i> is short for acoustic guitar
+      and <i>Cuban</i> is short for Cuban cigar. These things are
+      <i>ratios</i>, <i>guitars</i> and <i>cigars</i>, respectively, but their
+      colloquial names omit the very word for what they are! How curious.
+    </p>
+
+    <p>
+      Compounding the sloppiness of <i>gear</i> is the fact that, as we just
+      saw, a bicycle has no gears; it has a chainring and a cog. So what
+      cyclists call a <i>gear</i> is really a <i>gear ratio</i>, but it's not
+      even a gear ratio, it's a <i>chainring-to-cog ratio</i>. But I forgive
+      cyclists for their imprecision. "Let's kick it into high gear!" sure
+      rolls off the tongue a lot better than "let's kick it into high
+      chainring-to-cog ratio!" By the time you get done saying that, the ride
+      is over.
+      <a href="https://www.youtube.com/watch?v=zGxwbhkDjZM">Ain't nobody got time for that.</a>
+      So for better or worse, <i>gear</i> is the term we have. Here is the
+      initial code Sandi gives for calculating a gear ratio.
+    </p>
+
+    <pre><code class="language-ruby">chainring = 52
+cog = 11
+ratio = chainring / cog.to_f
+puts ratio</code></pre>
+
+    <p>
+      The "problem" with this code is that it's not object-oriented. Ideally,
+      we could neatly package this behavior into an abstraction that represents
+      a concept in the application's domain. Here's what Sandi has to say about
+      that.
+    </p>
+
+    <blockquote>
+      The application [that's being designed in this chapter] will be made of
+      Ruby classes, each representing some part of the domain. If you read
+      through the preceding description [the excerpt above] looking for nouns
+      that represent objects in the domain, you'll see words like
+      <i>bicycle</i> and <i>gear</i>. These nouns represent the simplest
+      candidates to be classes. Intuition says that <i>bicycle</i> should be a
+      class, but nothing in the description lists any behavior for bicycle, so,
+      as yet, it does not qualify. <i>Gear</i>, however, has chainrings, cogs,
+      and ratios; that is, it has both data and behavior. It deserves to be a
+      class.
+    </blockquote>
+
+    <p>
+      That sounds reasonable enough to me! Here's Sandi's <code>Gear</code>
+      class.
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  attr_reader :chainring, :cog
+  def initialize(chainring, cog)
+    @chainring = chainring
+    @cog = cog
+  end
+
+  def ratio
+    chainring / cog.to_f
+  end
+end
+
+puts Gear.new(52, 11).ratio
+puts Gear.new(30, 27).ratio</code></pre>
+
+    <h2>Call things what they are</h2>
+
+    <p>
+      Unfortunately, some of this code violates what is to me one of the most
+      important principles in programming: <i>call things what they are</i>. At
+      first glance I would expect <code>chainring</code> to be a chainring and
+      <code>cog</code> to be a cog. But chainring is not in fact a chainring,
+      it's an <i>integer</i> whose value represents the <i>number of teeth</i>
+      on a chainring. This conceptual mismatch results in a very awkward
+      definition for the <code>#ratio</code> method:
+    </p>
+
+    <pre><code class="language-ruby">def ratio
+  chainring / cog.to_f
+end</code></pre>
+
+    <p>
+      Nonsense! You can't divide a chainring by a cog any more than you can
+      divide a dentist by a banana. (Go on, try it.) What we're really doing,
+      of course, is dividing the <i>number of teeth</i> on the chainring by the
+      <i>number of teeth</i> on the cog. Wouldn't it be clearer if we made the
+      code match reality?
+    </p>
+
+    <pre><code class="language-ruby">def ratio
+  chainring_tooth_count / cog_tooth_count.to_f
+end</code></pre>
+
+    <p>
+      Here's the full class with that change in place.
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  attr_reader :chainring_tooth_count, :cog_tooth_count
+  def initialize(chainring_tooth_count, cog_tooth_count)
+    @chainring_tooth_count = chainring_tooth_count
+    @cog_tooth_count = cog_tooth_count
+  end
+
+  def ratio
+    chainring_tooth_count / cog_tooth_count.to_f
+  end
+end
+
+puts Gear.new(52, 11).ratio
+puts Gear.new(30, 27).ratio</code></pre>
+
+    <h2>Clarifying the public API</h2>
+
+    <p>
+      It's important to pay attention to the public API of this class, which
+      indicates the class's understandability just as much as, if not more
+      than, the class's actual content. To be clear, when I say "the public
+      API of this class", what I'm referring to is this:
+    </p>
+
+    <pre><code class="language-ruby">Gear.new(52, 11).ratio</code></pre>
+
+    <p>
+      What do <code>52</code> and <code>11</code> represent? From the outside,
+      I have no way to know. Even if you happen to have laid eyes on the
+      class's code quite recently (which of course you have!), you still have
+      to exert a little mental energy in order to remember that the first
+      parameter is <code>chainring_tooth_count</code> and the second is
+      <code>cog_tooth_count</code>. Why make the reader do this when we can
+      easily save the trouble?
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  attr_reader :chainring_tooth_count, :cog_tooth_count
+                                                                                                                                               
+  def initialize(chainring_tooth_count:, cog_tooth_count:)                                                                                   
+    @chainring_tooth_count = chainring_tooth_count
+    @cog_tooth_count = cog_tooth_count
+  end
+
+  def ratio
+    chainring_tooth_count / cog_tooth_count.to_f
+  end
+end</code></pre>
+
+    <p>
+      Now that the class takes keyword arguments instead of positional
+      argument's, the class's public API looks like this:
+    </p>
+
+    <pre><code class="language-ruby">Gear.new(chainring_tooth_count: 52, cog_tooth_count: 11).ratio</code></pre>
+
+    <p>
+      No more having to look up (or try to remember) what the arguments mean.
+      If the arguments are labeled, they're impossible to misunderstand. Yes,
+      the code is more "verbose", but what good is succinctness if it comes at
+      the cost of understandability?
+    </p>
+
+    <h2>No speculative coding</h2>
+
+    <p>
+      Finally, we can improve this code still further by taking away a little
+      bit of <i>speculative code</i>: code which is not driven by a concrete
+      need, code that's added "just in case". What I'm referring to is the
+      <code>attr_reader</code> which makes the
+      <code>chainring_tooth_count</code> and <code>cog_tooth_count</code>
+      attributes publicly readable. We don't currently have a need for these
+      attributes to be publicly accessible, and doing so increases the size
+      of the class's API, increasing the potential coupling between this
+      class and its clients. The risk is low, but why have it at all?
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  def initialize(chainring_tooth_count:, cog_tooth_count:)                                                                                   
+    @chainring_tooth_count = chainring_tooth_count
+    @cog_tooth_count = cog_tooth_count
+  end
+
+  def ratio
+    @chainring_tooth_count / @cog_tooth_count.to_f
+  end
+end</code></pre>
+
+    <p>
+      Based on the comments on
+      <a href="https://www.codewithjason.com/dont-wrap-instance-variables-attr_reader-unless-necessary/">a different post I wrote</a>,
+      my views toward this sort of usage of <code>attr_reader</code> are
+      apparently controversial, so I'm not going to say that I think this last
+      change is an <i>objective</i> improvement, just that I <i>personally</i>
+      think it's an improvement. I don't think there's a good reason to write a
+      piece of code until you're absolutely sure that you need it (and there's
+      a test for it). Otherwise you're just gambling.
+    </p>
+
+    <p>
+      Setting aside the controversial <code>attr_reader</code> change which is
+      not a hill I'm interested in dying on, let's review the two big
+      improvements we made to this class. First, we made the
+      <code>#ratio</code> method much more clear and coherent, merely by
+      "calling things what they are".
+    </p>
+
+    <pre><code class="language-ruby"># original version
+def ratio
+  chainring / cog.to_f
+end
+
+# new version
+def ratio
+  chainring_tooth_count / cog_tooth_count.to_f
+end</code></pre>
+
+    <p>
+      Second, we changed the arguments of the <code>Gear</code> initializer
+      from mysterious to clear by changing them from positional arguments to
+      keyword arguments.
+    </p>
+
+    <pre><code class="language-ruby">puts Gear.new(52, 11).ratio
+puts Gear.new(chainring_tooth_count: 52, cog_tooth_count: 11).ratio</code></pre>
+
+    <h2>Who cares?</h2>
+
+    <p>
+      Some might feel that I'm getting overly worked up about a piece of code
+      which is ultimately just an example. I can understand that. But since this
+      example comes from a book about <i>object-oriented design</i>, I think
+      it's appropriate to hold its examples to more than just a very low bar.
+      Examples should be exemplary.
+    </p>
+
+  </div>
+</div>
