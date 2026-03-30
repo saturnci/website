@@ -26,10 +26,6 @@ draft: true
     </blockquote>
 
     <p>
-      I personally had made the mistake of thinking that the round metal things
-      that a chain wraps around were themselves called gears, but no, they're
-      called <i>sprockets</i>. The front sprocket is called the
-      <i>chainring</i> and the rear sprocket is called the <i>cog</i>.
       Here's the code Sandi gives to introduce the way a gear ratio is
       calculated.
     </p>
@@ -62,7 +58,13 @@ puts ratio</code></pre>
 
     <p>
       That sounds reasonable enough to me. Here's Sandi's <code>Gear</code>
-      class.
+      class. Before you look, remember that this class represents not a gear is
+      in a part of a machine, but a gear as in a <i>gear ratio</i>. The class
+      could have been called <code>GearRatio</code> and thus been clearer in a
+      sense, but then it wouldn't match the colloquial (and admittedly
+      imprecise) language that cyclists use in real life. Think of <i>gear</i>
+      to mean <i>gear ratio</i> the same way that <i>acoustic</i> can mean
+      <i>acoustic guitar</i> or <i>domestic</i> can mean <i>domestic beer</i>.
     </p>
 
     <pre><code class="language-ruby">class Gear
@@ -81,47 +83,8 @@ puts Gear.new(52, 11).ratio
 puts Gear.new(30, 27).ratio</code></pre>
 
     <p>
-      But wait. We've said that this is a gear <i>ratio</i>. The original code
-      didn't say <code>gear = chainring / cog.to_f</code>, it said <code>ratio
-      = chainring / cog.to_f</code>. Might it be better to call this class
-      <code>GearRatio</code>, since the ratio between two sprockets is what we're
-      representing? Actually, if it's a ratio between sprockets, maybe we should
-      call it <code>SprocketRatio</code>. But <code>SprocketRatio</code> would be
-      a bit odd given that cyclists refer to this ratio concept as <i>gear</i>,
-      not as <i>sprocket ratio</i>. The language of the code should match the
-      language of the real world, otherwise we'll constantly have to translate
-      between the code and the real world. But the real-world term, <i>gear</i>,
-      is confusing given that a bicycle has no gears. What's going on here?
-    </p>
-
-    <h2>The meaning of <i>gear</i></h2>
-
-    <p>
-      After a bit of thought I realized that <i>gear</i> is short for <i>gear
-      ratio</i>, just as the word <i>acoustic</i> can be short for acoustic
-      guitar and <i>Cuban</i> can be short for Cuban cigar. These things are
-      <i>ratios</i>, <i>guitars</i> and <i>cigars</i>, respectively, but their
-      colloquial names omit the very word for what they are! Curious.
-    </p>
-
-    <p>
-      Whereas there's no such thing as "an acoustic" other than an acoustic
-      guitar, there most certainly is such a thing as "a gear". <i>Gear</i> is
-      an overloaded word which can refer either to a gear ratio or an actual
-      part of a machine called a gear. (It can also refer to other things, of
-      course.) That's where my personal confusion came from. I saw
-      <code>Gear</code> and thought gear as in part, not gear as in ratio. How
-      mistaken I was!
-    </p>
-
-    <p>
-      After all that thought, I realized that <code>Gear</code> was indeed the
-      best possible name for the <code>Gear</code> class. It just so happens
-      that the term <i>gear</i> is irreducibly confusing due to its multiple
-      meanings. I'm sharing that long mental journey that I took in case you
-      found the term <i>gear</i> as confusing as I initially did, and in case
-      you find it as satisfying as I do to get an iron grip on the meaning of
-      the word. With that sorted out, time to move on!
+      When I first laid eyes on this code, my intuition told me something was off.
+      What is it?
     </p>
 
     <h2>Call things what they are</h2>
@@ -154,11 +117,12 @@ puts Gear.new(30, 27).ratio</code></pre>
 end</code></pre>
 
     <p>
-      Nonsense, of course. You can't divide a chainring by a cog any more than
-      you can divide, say, a dentist by a banana. (If you don't believe me, try
-      it for yourself.) What we're really doing, of course, is dividing the
-      <i>number of teeth</i> on the chainring by the <i>number of teeth</i> on
-      the cog. Wouldn't it be clearer if we made the code match reality?
+      This code is nonsense, of course. You can't divide a chainring by a cog
+      any more than you can divide, say, a dentist by a banana. (If you don't
+      believe me, try it for yourself.) What we're really doing, of course, is
+      dividing the <i>number of teeth</i> on the chainring by the <i>number of
+      teeth</i> on the cog. Wouldn't it be clearer if we made the code match
+      reality?
     </p>
 
     <pre><code class="language-ruby">def ratio
@@ -305,9 +269,10 @@ puts Gear.new(chainring_tooth_count: 52, cog_tooth_count: 11).ratio</code></pre>
       that just a couple minor tweaks can have a dramatic effect on the
       understandability of a piece of code. I believe these changes also show
       that as much excellent advice is contained in this great book which has
-      helped so many people, <i>POODR</i> also contains some lessons which I
-      think are frankly quite dubious, and we shouldn't be afraid to point out
-      these instances and improve upon them where we can.
+      helped so many people, <i>POODR</i> also contains some regrettably poor
+      examples (such as the <code>chainring</code> and <code>cog</code>
+      misnomers), and we shouldn't be afraid to point out these instances and
+      improve upon them where we can.
     </p>
 
   </div>
