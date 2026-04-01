@@ -8,7 +8,7 @@ class BlogPostGenerator
   def slug
     raise "Title cannot be blank" if title.strip.empty?
 
-    title.downcase.gsub(/\s+/, "-")
+    title.downcase.gsub("'", "").gsub(/[^a-z0-9\s]/, " ").gsub(/\s+/, "-")
   end
 
   def boilerplate

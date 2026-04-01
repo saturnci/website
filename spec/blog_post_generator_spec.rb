@@ -9,6 +9,13 @@ RSpec.describe BlogPostGenerator do
       end
     end
 
+    context "when the title contains an apostrophe" do
+      it "strips the apostrophe" do
+        generator = BlogPostGenerator.new(title: "Improving on Sandi Metz's Gear Class")
+        expect(generator.slug).to eq("improving-on-sandi-metzs-gear-class")
+      end
+    end
+
     context "when a blank title is supplied" do
       it "raises an error" do
         generator = BlogPostGenerator.new(title: "")
