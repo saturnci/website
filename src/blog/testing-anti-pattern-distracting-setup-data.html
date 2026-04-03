@@ -16,18 +16,20 @@ nav: testing-anti-pattern-distracting-setup-data
 
     <p>
       These letters are destined for Alaska, Australia, Belfast, Bucarest,
-      Boston, Portland, Paris, Peru, Kansas and Kuala Lumpur. Some of them go
-      to Spain and Seattle, Memphis and Malaysia. The readers of my letters are
-      scattered across every inhabitable continent, and sometimes I even cross
-      the ocean to visit them. I've been doing this for years.
+      Boston, Portland, Paris, Peru, Kansas and Kuala Lumpur. They also go to
+      Denver and Dallas, Spain and Seattle, Memphis, Malaysia and Minneapolis.
+      Others just make a short trip across town.
+      The readers of my letters are scattered across every inhabitable
+      continent, and sometimes I even cross the ocean to visit them. I've been
+      doing this for years.
     </p>
 
     <p>
-      To what am I referring? I'm the author of what I assume is one of the
-      world's very few <i>snail mail</i> programming newsletters,
+      I'm the author of what I assume is one of the world's very few <i>snail
+      mail</i> programming newsletters,
       <a href="https://www.nonsensemonthly.com/"><i>Nonsense Monthly</i></a>.
       I started it on a whim to promote my consulting services. Now it's become
-      a whole business on its own.
+      a whole business on its own. I print it myself, and I use Ruby to help.
     </p>
     
     <h2>Snail mail, powered by Ruby</h2>
@@ -180,18 +182,17 @@ end</code></pre>
       values, only the <i>test</i> code would need that, and it's not to my
       taste to add useless and possibly misleading behavior to my application
       code just to make the tests a little more convenient to write. The
-      application code should only serve one master, the needs of the
+      application code should only serve one master: the needs of the
       application.
     </p>
 
     <p>
-      Code that's easier to understand is code that's easier to change, and
-      code that's easier to change is code that's cheaper to own. Most teams
-      unfortunately don't give as much attention to the understandability of
-      their test suites and they do to the understandability of their
-      application code, but all of the same principles apply in both areas, and
-      a general policy of investing in clear, understandable tests always pays
-      off.
+      Code that's easier to understand is easier to change. Code that's easier
+      to change is cheaper to own. Most teams unfortunately don't give as much
+      attention to the understandability of their test suites and they do to
+      the understandability of their application code, but all of the same
+      principles apply in both areas, and a general policy of investing in
+      clear, understandable tests always pays off.
     </p>
   </div>
 </div>
