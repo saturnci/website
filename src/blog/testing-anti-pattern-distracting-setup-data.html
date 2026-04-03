@@ -1,0 +1,179 @@
+---
+page_title: "Testing Anti-Pattern: Distracting Setup Data"
+nav: testing-anti-pattern-distracting-setup-data
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Testing Anti-Pattern: Distracting Setup Data</h1>
+
+  <div class="page-content">
+    <p>
+      Every month, I send letters,
+      <a href="https://www.nonsensemonthly.com/">actual paper letters</a>,
+      all over the planet. Believe it or not, people even <i>pay</i> me to send
+      them these letters! It's wacky but it's true.
+    </p>
+
+    <p>
+      When it's time to send these letters, I run a command-line Ruby program
+      which 1) grabs my paid subscribers from Stripe and then 2) combines that
+      list with a list of courtesy recipients who receive the newsletter free
+      of charge. (It's a form of advertising.) Finally, the program 3)
+      generates a PDF of all my recipients' addresses which I then print onto
+      label paper. That's where Ruby's involvement in my production process
+      ends. The next steps for me are to slap stamps and labels onto envelopes,
+      stuff those bad boys with letters and send them out into the world.
+    </p>
+
+    <p>
+      Separately, I have a command-line report which I run every so often which
+      shows me my monthly expenses and profits. Its output looks like this.
+    </p>
+
+    <pre><code>         Count     Cost    Profit
+---------------------------------
+US          80   $58.40
+Int'l       26   $42.90
+---------------------------------
+Total      106  $101.30    $21.20</code></pre>
+
+    <p>
+      I call this table the <b>Postage Summary Ledger</b>. Using my
+      <a href="https://github.com/jasonswett/llm-skills/blob/main/tdd/SKILL.md">test-driven-development LLM skill</a>, Claude wrote me a series of tests for this feature.
+      Here's a test for the Profit column of the ledger. (By the way, if you're
+      doing anything that's actually important,
+      <a href="https://0.30000000000000004.com/">don't use floats for monetary values</a>
+      like I am. Floats are liable to give you wrong answers. Using floats is
+      only okay in my case because I'm just seeking a rough idea of my profits
+      and nothing is actually at stake.)
+    </p>
+
+    <h2>Profit test: too much information</h2>
+
+    <p>
+      It's easy to see what this test expects the profit to be: $12.00. Can you
+      tell how that profit is calculated, though?
+    </p>
+
+    <pre><code class="language-ruby">describe "#monthly_profit" do
+  it "is monthly revenue minus total postage cost" do
+    postage_summary_ledger = PostageSummaryLedger.new(
+      us_recipient_count: 3,
+      us_monthly_cost: 5.00,
+      international_recipient_count: 2,
+      international_monthly_cost: 3.00,
+      monthly_revenue: 20.00
+    )
+
+    expect(postage_summary_ledger.monthly_profit).to eq(12.00)
+  end
+end</code></pre>
+
+    <p>
+      I can't, at least not easily. Look at all the numbers!
+      <code>3</code>,
+      <code>5.00</code>,
+      <code>2</code>,
+      <code>3.00</code>,
+      <code>20.00</code> and
+      <code>12.00</code>.
+      Which of these numbers are relevant to the test? Which of these values
+      need to be specifically what they are, and which are arbitrary? It's not
+      easy to tell.
+    </p>
+
+    <h2>Refactored test setup: just the essentials</h2>
+
+    <p>
+      Here's a refactored version of the test which hides the distracting
+      details and only shows the information that's relevant to the test.
+    </p>
+
+    <pre><code class="language-ruby">describe "#monthly_profit" do
+  it "is monthly revenue minus total postage cost" do
+    postage_summary_ledger = build_postage_summary_ledger(
+      monthly_revenue: 10.00,
+      us_monthly_cost: 2.00
+    )
+
+    expect(postage_summary_ledger.monthly_profit).to eq(8.00)
+  end
+end</code></pre>
+
+    <p>
+      The only numbers in this version of the test are <code>10.00</code>,
+      <code>2.00</code> and <code>8.00</code>. It doesn't take a math genius to
+      figure out that the 8 comes from subtracting 2 from 10. This test is
+      easier to understand than the original verson because it makes use of the
+      principle of <i>abstraction</i>: throwing away unneeded lower-level
+      details and emphasizing higher-level, essential information. Abstraction
+      is just as useful in test code as it is in application code.
+    </p>
+
+    <h2>Test helper definition</h2>
+
+    <p>
+      The abstraction in this test&mdash;hiding the irrelevant numbers&mdash;is
+      made possible by a helper method which initializes a
+      <code>PostageSummaryLedger</code> object with pre-populated values for
+      all the values that the object requires. Since the profit calculation
+      only needs monthly revenue and <i>some</i> expense (either US monthly
+      cost or international monthly cost, doesn't matter which one), it's okay
+      for all of the ledger's other attributes to be zero.
+    </p>
+
+    <pre><code class="language-ruby">describe "#monthly_profit" do
+  it "is monthly revenue minus total postage cost" do
+    postage_summary_ledger = build_postage_summary_ledger(
+      monthly_revenue: 10.00,
+      us_monthly_cost: 2.00
+    )
+
+    expect(postage_summary_ledger.monthly_profit).to eq(8.00)
+  end
+end
+
+def build_postage_summary_ledger(**overrides)
+  defaults = {
+    us_recipient_count: 0,
+    us_monthly_cost: 0,
+    international_recipient_count: 0,
+    international_monthly_cost: 0,
+    monthly_revenue: 0
+  }
+
+  PostageSummaryLedger.new(**defaults.merge(overrides))
+end</code></pre>
+
+    <p>
+      I defined the <code>build_postage_summary_ledger</code> helper method
+      inline, right at the bottom of the <code>PostageSummaryLedger</code>
+      test, because this file is the one and only place the helper is used, and
+      doing so helps my code maintain high
+      <a href="https://www.codewithjason.com/cohesion/">cohesion</a>.
+    </p>
+
+    <p>
+      Why did I go to all the trouble to create a helper method when I could
+      have just given all of <code>PostageSummaryLedger</code>'s attributes
+      default values of <code>nil</code>? Because the <i>application code</i>
+      doesn't ever need these attributes to have default <code>nil</code>
+      values, only the <i>test</i> code would need that, and it's not to my
+      taste to add useless and possibly misleading behavior to my application
+      code just to make the tests a little more convenient to write. The
+      application code should only serve one master, the needs of the
+      application.
+    </p>
+
+    <p>
+      Code that's easier to understand is code that's easier to change, and
+      code that's easier to change is code that's cheaper to own. Most teams
+      unfortunately don't give as much attention to the understandability of
+      their test suites and they do to the understandability of their
+      application code, but all of the same principles apply in both areas, and
+      a general policy of investing in clear, understandable tests always pays
+      off.
+    </p>
+  </div>
+</div>
