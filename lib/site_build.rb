@@ -42,7 +42,8 @@ class SiteBuild
     author_blurb = File.read(File.join(@source.path, 'author-blurb.html')).strip
     content = content.sub('<h1>', '<h1 class="blog-post-heading">')
     content = content.sub('</h1>', "</h1>\n  <p class=\"byline\">by Jason Swett</p>")
-    content + "\n<p class=\"author-blurb\">#{author_blurb}</p>"
+    blurb_html = "\n  <div class=\"author-blurb\">#{author_blurb}</div>"
+    content.sub(%r{(</div>\s*</div>)\s*\z}, "#{blurb_html}\n\\1")
   end
 
   private

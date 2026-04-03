@@ -42,3 +42,22 @@ h1.blog-post-heading {
 .byline {
   margin-bottom: 60px;
 }
+
+.author-blurb {
+  background-color: #EEE;
+  padding: 15px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: var(--content-max-width);
+  box-sizing: border-box;
+}
+
+.author-blurb-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+
+  object-fit: cover;
+}
