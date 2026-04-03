@@ -68,4 +68,16 @@ RSpec.describe SiteBuild do
       end
     end
   end
+
+  describe "#decorate_blog_post_content" do
+    it "appends an author blurb" do
+      source = double('SiteSource', pages: [], path: 'src')
+      build = SiteBuild.new(source, 'public')
+
+      content = '<h1>Test Post</h1><p>Some content.</p>'
+      result = build.decorate_blog_post_content(content)
+
+      expect(result).to include('class="author-blurb"')
+    end
+  end
 end

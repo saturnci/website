@@ -38,6 +38,13 @@ class SiteBuild
     ERB.new(layout_template).result(context.instance_eval { binding })
   end
 
+  def decorate_blog_post_content(content)
+    author_blurb = File.read(File.join(@source.path, 'author-blurb.txt')).strip
+    content = content.sub('<h1>', '<h1 class="blog-post-heading">')
+    content = content.sub('</h1>', "</h1>\n  <p class=\"byline\">by Jason Swett</p>")
+    content + "\n<p class=\"author-blurb\">#{author_blurb}</p>"
+  end
+
   private
 
   def blog_post?(page)
@@ -100,8 +107,4 @@ class SiteBuild
     "<ul class=\"blog-post-list\">\n#{links}\n</ul>"
   end
 
-  def decorate_blog_post_content(content)
-    content = content.sub('<h1>', '<h1 class="blog-post-heading">')
-    content.sub(%r{(</h1>)}, '\1' + "\n  <p class=\"byline\">by Jason Swett</p>")
-  end
 end
