@@ -39,7 +39,7 @@ class SiteBuild
   end
 
   def decorate_blog_post_content(content)
-    author_blurb = File.read(File.join(@source.path, 'author-blurb.txt')).strip
+    author_blurb = File.read(File.join(@source.path, 'author-blurb.html')).strip
     content = content.sub('<h1>', '<h1 class="blog-post-heading">')
     content = content.sub('</h1>', "</h1>\n  <p class=\"byline\">by Jason Swett</p>")
     content + "\n<p class=\"author-blurb\">#{author_blurb}</p>"
