@@ -1,0 +1,118 @@
+---
+page_title: Speculative Code
+nav: speculative-code
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Speculative Code (or, Martian Attack Insurance)</h1>
+
+  <div class="page-content">
+    <p>
+      Tests are executable specifications; they specify what your application
+      is supposed to do. The tests, not the application code, are the
+      authoritative source of truth for a program's intended behavior.
+    </p>
+
+
+    <p>
+      Why is this so? Because the application code has to answer to the higher
+      authority of the tests, but the tests are subject to no such constraint.
+      The tests are God's Ten Commandments; the lines of application code are
+      His obedient subjects. The commandments tell the subjects what to do.
+      Nobody can tell God what to do. In the realm of your application, you,
+      the programmer, are God, and your tests are your holy commandments.
+    </p>
+
+    <h2>Specify-encode-fulfill</h2>
+
+    <p>
+      In test-driven development, we start with a specification, then
+      <i>encode</i> that specification as an automated test, then
+      <i>fulfill</i> the specification by writing just enough code to make the
+      test pass. (I call this the <i>specify-encode-fulfill loop</i>.) Note the
+      sequence: We start with a requirement, then refine that requirement into
+      detailed specifications, then encode one of those specifications into a
+      test and then, as the very last step, write the code to fulfill the
+      specification. We decide what we need to do and then do it, not the other
+      way around.
+    </p>
+
+    <p>
+      One of the great benefits of TDD is that it provides feedback. Once
+      you've defined a specification and encoded it in a test, you run the test
+      and watch it fail, which gives you feedback about the validity of your
+      test. (If your test passes even though you haven't yet written the code
+      to make it pass, or if it fails in a way that's irrelevant to the
+      specified behavior, then the test is invalid.) Provided your test is
+      indeed valid, your test failure gives you feedback that your program does
+      not (yet) meet the specification that you described in your test. The
+      test going green gives you feedback that your program now meets the new
+      specification, and the rest of the test suite remaining green gives you
+      feedback that all prior specifications are still being met as well.
+    </p>
+
+    <h2>For this, any price is too expensive</h2>
+
+    <p>
+      <i>Speculative</i> coding, as I define it, is <b>coding without
+      requirements nor feedback</b>. When I code speculatively, I skip over
+      the step where I define a requirement and I just jump straight to doing
+      something. Instead of deciding what to do and then doing it, I just do
+      it. Here's an example of such speculative code:
+    </p>
+
+    <pre><code class="language-ruby">def generate_report(data)
+  return "No data" if data.nil?
+  # The above guard clause is pointless because the data argument, in this
+  # scenario, is never nil.
+end</code></pre>
+
+    <p>
+      The implied requirement behind this code is that in the case where
+      <code>data</code> is <code>nil</code>, the <code>generate_report</code>
+      method returns an error message. But what if, and let's suppose that in
+      this example this is indeed the case, <code>data</code> is <i>not</i>
+      ever <code>nil</code>? If that's the case then this "requirement" is
+      extremely speculative. I'm choosing to add this code, incurring an
+      indefinite carrying cost, not in order to meet a current need, but just
+      on the off chance that somehow, someday, someone might pass
+      <code>nil</code> to this method. I might as well take out an insurance
+      policy on my house in case of an attack from Mars.
+    </p>
+
+    <p>
+      This is a small example, of course. This guard clause is pointless but
+      it's not doing much harm. True, but I think even one dollar a month is
+      too much to pay for Martian attack insurance. A tiny moronic investment
+      is moronic nonetheless.
+    </p>
+
+    <h2>Back-alley features</h2>
+
+    <p>
+      Given that speculative code is usually tossed in on a whim, it's seldom
+      covered by tests. The "requirement" behind my speculative code is
+      therefore missing from my program's authoritative collection of
+      specifications. It's off the books, a back-alley deal. This means that
+      future runs of my test suite to check for regressions will not
+      alert me to a regression on my speculative code. Neither did I think
+      about whether my investment in this feature was going to yield a return,
+      nor did I install any mechanism to make sure my feature was going to keep
+      working after future changes. The insurance company could cancel my
+      Martian Attack Policy anytime, keep collecting my payments, and I
+      wouldn't even know! What a sucker I must be.
+    </p>
+
+    <p>
+      Speculative code is stupid, dangerous, and, unfortunately, extremely
+      common. I've personally found that LLMs <i>love</i> to write speculative
+      code. (I hope and expect that this is a passing phase and that LLMs will
+      grow out of it as they mature.) Sadly, human developers love to write
+      speculative code too. The antidote is simple: never write code without a)
+      a real need and b) feedback, preferably in the form of an automated test.
+      When you decide not to pay for things you don't need, you can save a hell
+      of a lot of money.
+    </p>
+  </div>
+</div>
