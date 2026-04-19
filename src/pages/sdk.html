@@ -1,0 +1,42 @@
+---
+page_title: SDK
+nav: docs
+---
+
+<div class="container page-container">
+  <h1>SDK</h1>
+
+  <div class="page-content">
+    <h2>What is the SaturnCI SDK?</h2>
+
+    <p>
+      The <a href="https://github.com/saturnci/saturnci-sdk">SaturnCI SDK</a>
+      is a Ruby gem that provides a convenient way to interact with the SaturnCI
+      API. You can use it to trigger test suite runs, builds, and jobs
+      programmatically.
+    </p>
+
+    <h2>Installation</h2>
+
+    <pre><code>gem install saturnci-sdk</code></pre>
+
+    <p>Or add to your Gemfile:</p>
+
+    <pre><code class="language-ruby">gem 'saturnci-sdk'</code></pre>
+
+    <h2>Usage</h2>
+
+    <p>
+      See the <a href="https://github.com/saturnci/saturnci-sdk#usage">SDK README</a>
+      for usage examples including running tests, building Docker images,
+      running jobs, and full test-build-deploy pipelines.
+    </p>
+
+    <p>
+      The SDK reads credentials automatically from
+      <code>~/.saturnci/credentials.json</code>. See
+      <a href="./api-authentication.html">API Authentication</a> for setup
+      instructions.
+    </p>
+  </div>
+</div>
