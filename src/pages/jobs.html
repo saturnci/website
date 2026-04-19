@@ -59,6 +59,13 @@ RUN curl -sLO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" \
       - ../../../:/app
     working_dir: /app</code></pre>
 
+    <p>
+      The service must be named <code>job</code>. The build
+      <code>context</code> is the repository root so your entire repository
+      is available during the image build, and the volume mount makes the
+      same files available when the <code>run</code> script executes.
+    </p>
+
     <p><code>.saturnci/jobs/deploy/run</code>:</p>
 
     <pre><code class="language-bash">#!/bin/bash
