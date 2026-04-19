@@ -17,6 +17,7 @@ class APIDocumentation
         'description' => endpoint_value['description'],
         'base_url' => data['base_url'],
         'auth' => data['auth'],
+        'request' => endpoint_value['request'],
         'response' => endpoint_value['response']
       })
 

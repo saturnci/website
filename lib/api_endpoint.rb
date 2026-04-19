@@ -13,7 +13,7 @@ class APIEndpoint
 
   def to_html
     curl = CurlCommand.new(
-      { @data['endpoint_key'] => { 'response' => @data['response'] } },
+      { @data['endpoint_key'] => { 'request' => @data['request'], 'response' => @data['response'] } },
       @data['base_url'],
       @data['auth']
     ).to_s
