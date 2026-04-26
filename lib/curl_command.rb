@@ -12,7 +12,7 @@ class CurlCommand
     method, path = endpoint_key.split(' ', 2)
     request_body = @endpoint_data.values.first['request']
 
-    parts = ['curl', '-u', 'USER_ID:PERSONAL_ACCESS_TOKEN']
+    parts = ['curl', '-H', '"Authorization: Bearer PERSONAL_ACCESS_TOKEN"']
     if method != 'GET'
       parts += ['-X', method]
     end

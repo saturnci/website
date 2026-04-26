@@ -13,11 +13,11 @@ RSpec.describe CurlCommand do
   end
 
   let(:base_url) { "https://app.saturnci.com/api/v1" }
-  let(:auth) { "Basic Auth (USER_ID / PERSONAL_ACCESS_TOKEN)" }
+  let(:auth) { "Bearer Auth (PERSONAL_ACCESS_TOKEN)" }
 
   it "generates a curl command for a GET endpoint" do
     curl = CurlCommand.new(endpoint_data, base_url, auth)
-    expected = "curl -u USER_ID:PERSONAL_ACCESS_TOKEN https://app.saturnci.com/api/v1/test_suite_runs"
+    expected = 'curl -H "Authorization: Bearer PERSONAL_ACCESS_TOKEN" https://app.saturnci.com/api/v1/test_suite_runs'
 
     expect(curl.to_s).to eq(expected)
   end
@@ -35,7 +35,7 @@ RSpec.describe CurlCommand do
 
     it "includes the method, content type, and request body" do
       curl = CurlCommand.new(endpoint_data, base_url, auth)
-      expected = %q(curl -u USER_ID:PERSONAL_ACCESS_TOKEN -X POST -H "Content-Type: application/json" -d '{"repo_full_name":"owner/name"}' https://app.saturnci.com/api/v1/repositories)
+      expected = %q(curl -H "Authorization: Bearer PERSONAL_ACCESS_TOKEN" -X POST -H "Content-Type: application/json" -d '{"repo_full_name":"owner/name"}' https://app.saturnci.com/api/v1/repositories)
 
       expect(curl.to_s).to eq(expected)
     end
