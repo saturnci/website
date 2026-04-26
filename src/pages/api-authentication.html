@@ -17,19 +17,11 @@ nav: docs
       <li>Copy the token</li>
     </ol>
 
-    <h2>Getting your user ID</h2>
-
-    <ol>
-      <li>Sign into SaturnCI</li>
-      <li>Click on your name in the top right</li>
-      <li>Copy your user ID</li>
-    </ol>
-
     <h2>Using your access token</h2>
 
     <p>Example:</p>
 
-    <pre><code>curl -u USER_ID:PERSONAL_ACCESS_TOKEN https://app.saturnci.com/api/v1/test_suite_runs</code></pre>
+    <pre><code>curl -H "Authorization: Bearer PERSONAL_ACCESS_TOKEN" https://app.saturnci.com/api/v1/test_suite_runs</code></pre>
 
     <h2>Storing your credentials</h2>
 
@@ -38,7 +30,6 @@ nav: docs
     </p>
 
     <pre><code class="language-json">{
-  "user_id": "your-user-id",
   "api_token": "your-personal-access-token"
 }</code></pre>
 

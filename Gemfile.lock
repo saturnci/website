@@ -8,6 +8,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.2-arm64-darwin)
       racc (~> 1.4)
+    ostruct (0.6.3)
     racc (1.8.1)
     rouge (4.6.1)
     rspec (3.13.2)
@@ -30,6 +31,7 @@ PLATFORMS
 
 DEPENDENCIES
   nokogiri
+  ostruct
   rouge (~> 4.0)
   rspec (~> 3.0)
 
