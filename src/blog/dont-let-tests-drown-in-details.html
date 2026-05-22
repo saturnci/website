@@ -1,0 +1,24 @@
+---
+page_title: Don't Let Tests Drown in Details
+nav: dont-let-tests-drown-in-details
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Don't Let Tests Drown in Details</h1>
+
+  <div class="page-content">
+
+    <p>Recently I asked Claude to write tests for</p>
+
+    <pre><code class="language-ruby">context "when the user was created within the last 24 hours" do
+  it "highlights the Created cell with #0F0" do
+    create(:user, name: "Just Created", created_at: 1.hour.ago)
+    get admin_users_path
+
+    formatted = I18n.l(1.hour.ago.in_time_zone(Rails.application.config.admin_time_zone))
+    expect(response.body).to match(%r{<td[^>]*style="[^"]*background-color: ?#0F0[^"]*"[^>]*>\s*#{Regexp.escape(formatted)}}i)
+  end
+end</code></pre>
+  </div>
+</div>
