@@ -3,6 +3,7 @@ require 'fileutils'
 require 'ostruct'
 require_relative 'syntax_highlighter'
 require_relative 'excerpt'
+require_relative 'rss_feed'
 
 class SiteBuild
   include SyntaxHighlighter
@@ -15,10 +16,13 @@ class SiteBuild
     @output_dir = output_dir
   end
 
+  SITE_URL = "https://www.saturnci.com"
+
   def execute
     clean_output_dir
     copy_assets
     generate_pages
+    generate_feed
     puts "Site built successfully in #{@output_dir}/"
   end
 
@@ -97,6 +101,14 @@ class SiteBuild
       File.write(output_file, html)
       puts "Generated: #{output_file}"
     end
+  end
+
+  def generate_feed
+    blog_posts = @source.pages.select { |page| blog_post?(page) && !page[:frontmatter]['draft'] }
+    xml = RssFeed.new(blog_posts, site_url: SITE_URL).to_xml
+    output_file = File.join(@output_dir, 'feed.xml')
+    File.write(output_file, xml)
+    puts "Generated: #{output_file}"
   end
 
   def blog_post_list_html(all_pages)
