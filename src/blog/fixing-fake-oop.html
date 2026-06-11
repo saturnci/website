@@ -1,0 +1,67 @@
+---
+page_title: Fixing Fake OOP
+nav: fixing-fake-oop
+date: "2026-06-06"
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Fixing Fake OOP</h1>
+
+  <div class="page-content">
+    <p>
+      What is a program&mdash;a software system&mdash;made of? Superficially,
+      a software system is made of code. But really, it's made of <i>ideas</i>.
+    </p>
+
+    <p>
+      Perhaps there's a universe where the manuscript for <i>Jurassic Park</i>
+      got tragically destroyed just after Michael Critchton got done writing
+      it. No big deal. The <i>essence</i> of a novel lies not in the specific
+      words on the page but in the author's mind. If Michael Critchton had had
+      to rewrite <i>Jurassic Park</i> from scratch, the wording would have
+      ended up different but the story would probably have been just as good.
+    </p>
+
+    <p>
+      The essence of a software system, what I'll call its <b>conceptual
+      framework</b>, is a ghostly thing, floating somewhere in the ether, with
+      no physical instantiation. A system's conceptual framework lies
+      <i>upstream</i> of any physical instantiation. The quality of a system's
+      conceptual framework sets the ceiling on the quality of the system's
+      code.
+    </p>
+
+    <p>
+      Where does a system's conceptual framework come from?
+    </p>
+
+    <pre><code class="language-ruby">require 'yaml'
+require_relative 'api_endpoint'
+
+class APIDocumentation
+  def initialize(openapi_file)
+    @openapi_file = openapi_file
+  end
+
+  def formatted_endpoints
+    return nil unless File.exist?(@openapi_file)
+
+    data = YAML.load_file(@openapi_file)
+
+    data['endpoints'].map do |endpoint_key, endpoint_value|
+      endpoint_yaml = YAML.dump({
+        'endpoint_key' => endpoint_key,
+        'description' => endpoint_value['description'],
+        'base_url' => data['base_url'],
+        'auth' => data['auth'],
+        'request' => endpoint_value['request'],
+        'response' => endpoint_value['response']
+      })
+
+      APIEndpoint.new(endpoint_yaml).to_html
+    end.join("\n\n")
+  end
+end</code></pre>
+  </div>
+</div>
