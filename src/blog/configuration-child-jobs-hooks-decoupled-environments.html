@@ -1,0 +1,161 @@
+---
+page_title: "New SaturnCI Job Configuration: Child Jobs, Hooks and Decoupled Environments"
+nav: configuration-child-jobs-hooks-decoupled-environments
+date: "2026-06-28"
+---
+
+<div class="container page-container">
+  <h1>New SaturnCI Job Configuration: Child Jobs, Hooks, and Decoupled Environments</h1>
+
+  <div class="page-content">
+    <p>
+      A change has been made to the SaturnCI configuration API which addresses
+      the following weaknesses:
+
+      <ol>
+        <li>
+          There was no good way to trigger child jobs from parent jobs.
+        </li>
+
+        <li>
+          When a job got rerun, the rerun would illogically fail to rerun its child jobs.
+        </li>
+
+        <li>
+          There was no clear distinction between behavior that happened
+          <i>inside</i> of jobs and behavior that happened <i>between</i> jobs.
+        </li>
+
+        <li>
+          The definition of a job was conflated with the definition of the
+          <i>environment</i> for that job, hurting clarity and limiting the
+          reusability of environments across different jobs.
+        </li>
+      </ol>
+
+      Consequently, I've more or less redesigned the SaturnCI configuration API from the ground up.
+    </p>
+
+    <h2>SaturnCI's conceptual building blocks</h2>
+
+    <p>
+      The core unit in SaturnCI is a <b>Job</b>, from which are triggered
+      <b>Job Runs</b>. Every job runs in an <b>Environment</b>, which is
+      literally just a Docker Compose environment. Below is an example of a
+      SaturnCI configuration which defines four types of jobs and three types
+      of environments.
+    </p>
+
+    <pre><code>.saturnci
+├── environments                                                                                                                                                                             
+│   ├── rspec                         
+│   │   ├── Dockerfile
+│   │   ├── database.yml
+│   │   └── docker-compose.yml
+│   ├── production_image_build                                                                                                                                                               
+│   │   ├── Dockerfile         
+│   │   └── docker-compose.yml    
+│   └── default                                                                                                                                                                              
+│       ├── Dockerfile                                                                                                                                                                       
+│       └── docker-compose.yml                                                                                                                                                               
+└── jobs
+    ├── github_push
+    │   ├── config.yml
+    │   └── github_push_job.rb
+    ├── production_image_build
+    │   ├── config.yml
+    │   └── production_image_build_job.rb
+    ├── test_suite
+    │   ├── config.yml
+    │   └── test_suite_job.rb
+    └── deploy
+        ├── Dockerfile
+        ├── apply
+        ├── docker-compose.yml
+        ├── k8s
+        │   ├── deployment.yaml
+        │   ├── migration-job.yaml
+        │   └── worker-deployment.yaml
+        └── migrate</code></pre>
+
+    <p>
+      A job's (extremely brief) configuration file specifies the environment in which the job runs.
+    </p>
+
+    <pre><code class="language-yaml"># .saturnci/jobs/test_suite/config.yml
+environment: rspec</code></pre>
+
+    <p>
+      If you're familiar with SaturnCI's previous configuration API, the
+      concept of an <code>entrypoint</code>, which would get triggered upon
+      every GitHub webhook event, is gone. It has been replaced with a
+      <code>GitHubPushJob</code> which gets triggered upon every GitHub push.
+      We'll look at this job but first let's look at how child jobs get
+      triggered.
+    </p>
+
+    <h2>Triggering child jobs</h2>
+
+    <p>
+      Every job can take an <code>after</code> hook. The <code>after</code>
+      hook returns <b>an array of child jobs to be run</b>. Below is a job
+      which triggers a deploy if and only if the test suite has passed and
+      we're on the <code>main</code> branch.
+    </p>
+
+    <pre><code class="language-ruby"># .saturnci/jobs/test_suite/test_suite_job.rb
+
+class TestSuiteJob
+  def after(job_run)
+    return if job_run.status != "Passed"
+    return if job_run.branch_name != "main"
+
+    [{ job_name: "deploy" }]
+  end
+end</code></pre>
+
+    <p>
+      The <b>Child Job Specification</b> always requires, at minimum, a
+      <code>job_name</code>, which corresponds to the name of the folder where
+      that job is defined. If a <code>job_name</code> of <code>deploy</code>
+      is given, as in the above example, SaturnCI will go looking for a job
+      defined in <code>.saturnci/jobs/deploy</code>.
+    </p>
+
+    <p>
+      You can see that an <code>after</code> hook gets, as an argument, a
+      <code>job_run</code>. This is, as you may imagine, the job which just
+      ran. Having access to this job run can be useful if running a child job
+      depends on things that happened with its parent job run.
+    </p>
+
+    <p>
+      A job can trigger multiple children as follows:
+    </p>
+
+    <pre><code class="language-ruby"># .saturnci/jobs/test_suite/test_suite_job.rb
+
+class TestSuiteJob
+  def after(job_run)
+    return if job_run.status != "Passed"
+    return if job_run.branch_name != "main"
+
+    [
+      { job_name: "deploy" },
+      { job_name: "deliver_test_suite_run_success_email" }
+    ]
+  end
+end</code></pre>
+
+    <p>
+      Since <code>after</code> hooks are written in plain Ruby, you can add
+      whatever conditions (or other behavior) you like.
+    </p>
+
+    <p>
+      You can find more information on SaturnCI's configuration API in the <a
+        href="https://www.saturnci.com/configuration.html">SaturnCI
+        configuration documentation</a>.
+    </p>
+  </div>
+</div>
