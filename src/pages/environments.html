@@ -1,0 +1,44 @@
+---
+page_title: Environments
+nav: docs
+---
+
+<div class="container page-container">
+  <h1>Environments</h1>
+
+  <div class="page-content">
+    <p>
+      SaturnCI jobs run in <i>environments</i>. If you know how to define a
+      Docker Compose environment, you know how to define a SaturnCI
+      environment.
+    </p>
+
+    <p>
+      Environments live in <code>.saturnci/environments/&lt;environment
+        name&gt;/</code>. To create an environment called, for example,
+      <code>ruby</code>, put a <code>Dockerfile</code> and a
+      <code>docker-compose.yml</code> in
+      <code>.saturnci/environments/ruby</code>. Below is an example of just
+      such an environment.
+    </p>
+
+    <pre><code class="language-dockerfile"># .saturnci/environments/ruby/Dockerfile
+
+FROM ruby:4.0.1-slim
+
+RUN apt-get update && apt-get install -y \
+  git \
+  && rm -rf /var/lib/apt/lists/*</code></pre>
+
+    <pre><code class="language-yaml"># .saturnci/environments/ruby/docker-compose.yml
+
+services:
+  job:
+    build:
+      context: ../../..
+      dockerfile: .saturnci/environments/ruby/Dockerfile
+    volumes:
+      - ../../../:/app
+    working_dir: /app</code></pre>
+  </div>
+</div>
