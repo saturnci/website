@@ -34,5 +34,61 @@ end</code></pre>
 
 environment: ruby</code></pre>
 
+    <h2>Triggering child jobs</h2>
+
+    <p>
+      A job can trigger one or more child jobs by defining an
+      <code>after</code> method that returns them.
+    </p>
+
+    <p>One child job:</p>
+
+    <pre><code class="language-ruby">class HelloWorldJob
+  def after(job_run)
+    [
+      { job_name: "goodbye_world" }
+    ]
+  end
+end</code></pre>
+
+    <p>Two child jobs:</p>
+
+    <pre><code class="language-ruby">class HelloWorldJob
+  def after(job_run)
+    [
+      { job_name: "goodbye_world" },
+      { job_name: "hello_again" }
+    ]
+  end
+end</code></pre>
+
+    <h2>The GitHub push hook</h2>
+
+    <p>
+      The GitHub push hook is different. It is not a method on a job; it is a
+      webhook that GitHub sends to SaturnCI on every push. SaturnCI responds by
+      running the <code>github_push</code> job.
+    </p>
+
+    <p>
+      The <code>github_push</code> job's <code>after</code> hook is where you
+      say what should happen on a push. Here it triggers the
+      <code>test_suite</code> job:
+    </p>
+
+    <pre><code class="language-ruby"># .saturnci/jobs/github_push/github_push_job.rb
+
+class GitHubPushJob
+  def after(job_run)
+    [
+      {
+        task_adapter_name: "rails_rspec",
+        job_name: "test_suite",
+        job_run_type: "test_suite_run",
+      }
+    ]
+  end
+end</code></pre>
+
   </div>
 </div>
