@@ -37,13 +37,15 @@ environment: ruby</code></pre>
     <h2>Triggering child jobs</h2>
 
     <p>
-      A job can trigger one or more child jobs by defining an
-      <code>after</code> method that returns them.
+      A job can trigger one or more child jobs by defining a
+      <b>transition</b> that returns them.
     </p>
 
     <p>One child job:</p>
 
-    <pre><code class="language-ruby">class HelloWorldJob
+    <pre><code class="language-ruby"># .saturnci/transitions/hello_world_transition.rb
+
+class HelloWorldTransition
   def after(job_run)
     [
       { job_name: "goodbye_world" }
@@ -53,7 +55,9 @@ end</code></pre>
 
     <p>Two child jobs:</p>
 
-    <pre><code class="language-ruby">class HelloWorldJob
+    <pre><code class="language-ruby"># .saturnci/transitions/hello_world_transition.rb
+
+class HelloWorldTransition
   def after(job_run)
     [
       { job_name: "goodbye_world" },
@@ -62,23 +66,17 @@ end</code></pre>
   end
 end</code></pre>
 
-    <h2>The GitHub push hook</h2>
+    <h2>The GitHub push</h2>
 
     <p>
-      The GitHub push hook is different. It is not a method on a job; it is a
-      webhook that GitHub sends to SaturnCI on every push. SaturnCI responds by
-      running the <code>github_push</code> job.
+      The <code>github_push</code> job is triggered by a webhook that GitHub
+      sends to SaturnCI on every push. Its transition is where you say what
+      should happen on a push. Here it triggers the <code>test_suite</code> job:
     </p>
 
-    <p>
-      The <code>github_push</code> job's <code>after</code> hook is where you
-      say what should happen on a push. Here it triggers the
-      <code>test_suite</code> job:
-    </p>
+    <pre><code class="language-ruby"># .saturnci/transitions/github_push_transition.rb
 
-    <pre><code class="language-ruby"># .saturnci/jobs/github_push/github_push_job.rb
-
-class GitHubPushJob
+class GitHubPushTransition
   def after(job_run)
     [
       {
