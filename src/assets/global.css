@@ -91,6 +91,17 @@ h2 {
   font-size: 32px;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #AAA;
+  padding: 4px 12px;
+  text-align: left;
+}
+
 blockquote {
   max-width: var(--content-max-width);
   border-left: 4px solid #AAA;
