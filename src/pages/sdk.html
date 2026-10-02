@@ -10,30 +10,35 @@ nav: docs
     <h2>What is the SaturnCI SDK?</h2>
 
     <p>
-      The <a href="https://github.com/saturnci/saturnci-sdk">SaturnCI SDK</a>
-      is a Ruby gem that provides a convenient way to interact with the SaturnCI
-      API. You can use it to trigger test suite runs and jobs
-      programmatically.
+      On SaturnCI, a CI/CD pipeline is a Ruby file called a workflow. The
+      <a href="https://github.com/saturnci/saturnci-sdk">SaturnCI SDK</a> is the
+      Ruby gem that workflow is written against: it's how the workflow looks at
+      the state of a commit's pipeline and decides what to start next.
     </p>
 
     <h2>Installation</h2>
 
-    <pre><code>gem install saturnci-sdk</code></pre>
+    <p>
+      Inside a workflow, nothing. SaturnCI runs your workflow in a container
+      that already has the SDK installed.
+    </p>
 
-    <p>Or add to your Gemfile:</p>
+    <p>
+      To use the SDK from your own machine or scripts, install it from its
+      repository at a tagged release:
+    </p>
 
-    <pre><code class="language-ruby">gem 'saturnci-sdk'</code></pre>
+    <pre><code class="language-ruby">gem 'saturnci-sdk', git: 'https://github.com/saturnci/saturnci-sdk.git', tag: 'v1.0.1'</code></pre>
 
     <h2>Usage</h2>
 
     <p>
-      See the <a href="https://github.com/saturnci/saturnci-sdk#usage">SDK README</a>
-      for usage examples including running tests, building Docker images,
-      running jobs, and full test-build-deploy pipelines.
+      The <a href="https://github.com/saturnci/saturnci-sdk#readme">SDK README</a>
+      covers how a workflow runs, a minimal workflow, and the full reference.
     </p>
 
     <p>
-      The SDK reads credentials automatically from
+      Outside a workflow, the SDK reads credentials from
       <code>~/.saturnci/credentials.json</code>. See
       <a href="./api-authentication.html">API Authentication</a> for setup
       instructions.
