@@ -1,0 +1,223 @@
+---
+page_title: Workflows
+nav: docs
+---
+
+<div class="container page-container">
+  <h1>Workflows</h1>
+
+  <div class="page-content">
+    <p>
+      A SaturnCI pipeline is a Ruby file called a <b>workflow</b>. It lives in
+      your repository at
+      <code>.saturnci/workflows/default_workflow.rb</code> and it decides what
+      runs on a commit.
+    </p>
+
+    <h2>How a workflow runs</h2>
+
+    <p>
+      When you push, SaturnCI creates a <b>workflow run</b> for the commit and
+      evaluates your workflow: it runs the file in a container that already has
+      the <a href="./sdk.html">SDK</a> installed, with the workflow run's id in
+      the environment.
+    </p>
+
+    <p>
+      SaturnCI evaluates the workflow again every time a job in that workflow
+      run finishes, and periodically while the run is still going. Each
+      evaluation is a fresh process. The file doesn't wait for anything: it
+      looks at the current state of the workflow run, starts whatever is now
+      ready to start, and exits. When the pipeline is complete, it tells
+      SaturnCI the workflow run is finished.
+    </p>
+
+    <p>
+      Because the same file is evaluated many times per commit, everything it
+      creates is created with <code>idempotent: true</code>. The first
+      evaluation creates the job run; every later evaluation gets back that
+      same job run and its current status.
+    </p>
+
+    <p>
+      Inside the container, the environment contains:
+    </p>
+
+    <ul>
+      <li><code>WORKFLOW_RUN_ID</code> &mdash; the id of the workflow run being evaluated</li>
+      <li><code>SATURNCI_ACCESS_TOKEN</code> &mdash; an API token scoped to this evaluation</li>
+      <li><code>BRANCH_NAME</code>, <code>COMMIT_HASH</code>, <code>COMMIT_MESSAGE</code>, <code>AUTHOR_NAME</code> &mdash; the commit's git metadata</li>
+    </ul>
+
+    <h2>A minimal workflow</h2>
+
+    <p>
+      This workflow runs the test suite and finishes.
+    </p>
+
+    <pre><code class="language-ruby"># .saturnci/workflows/default_workflow.rb
+
+class DefaultWorkflow
+  def initialize(env: ENV)
+    @env = env
+  end
+
+  def perform(io: $stdout)
+    test_suite_run = workflow_run.test_suite_runs.create(
+      job_name: "test_suite",
+      task_adapter_name: "rails_rspec",
+      idempotent: true
+    )
+
+    test_suite_run.start
+
+    io.puts "Started test_suite run: id=#{test_suite_run.id} url=#{test_suite_run.url}"
+
+    workflow_run.finish if test_suite_run_finished?
+  end
+
+  private
+
+  def test_suite_run_finished?
+    run = workflow_run.job_runs.list(job_name: "test_suite").first
+    return false unless run
+
+    run.passed? || run.failed?
+  end
+
+  def workflow_run
+    @workflow_run ||= SaturnCI::WorkflowRun.find(
+      client: saturnci_client,
+      id: @env.fetch("WORKFLOW_RUN_ID")
+    )
+  end
+
+  def saturnci_client
+    SaturnCI::Client.new(
+      SaturnCI::Credentials.new(api_token: @env.fetch("SATURNCI_ACCESS_TOKEN"))
+    )
+  end
+end
+
+DefaultWorkflow.new.perform if $PROGRAM_NAME == __FILE__</code></pre>
+
+    <p>
+      Read it as a sequence of evaluations:
+    </p>
+
+    <ol>
+      <li>
+        <b>On push:</b> the test suite run is created and started. It isn't
+        finished yet, so the file returns.
+      </li>
+      <li>
+        <b>When the test suite finishes:</b> <code>create</code> returns the
+        existing run, now passed or failed, so the workflow run is finished.
+      </li>
+    </ol>
+
+    <p>
+      <code>test_suite</code> is a <a href="./jobs.html">job</a> defined in
+      your repository under <code>.saturnci/jobs/</code>.
+    </p>
+
+    <h2>Running jobs in parallel</h2>
+
+    <p>
+      Create and start several job runs in the same evaluation and they run
+      concurrently. Later evaluations check each one.
+    </p>
+
+    <pre><code class="language-ruby">rubocop_job_run = workflow_run.job_runs.create(
+  job_name: "rubocop",
+  task_adapter_name: "shell",
+  idempotent: true
+)
+
+rubocop_job_run.start
+
+javascript_job_run = workflow_run.job_runs.create(
+  job_name: "javascript",
+  task_adapter_name: "shell",
+  idempotent: true
+)
+
+javascript_job_run.start</code></pre>
+
+    <h2>Running a job only after another one passes</h2>
+
+    <p>
+      Look up the earlier run and return if it hasn't passed yet.
+    </p>
+
+    <pre><code class="language-ruby">test_suite_run = workflow_run.job_runs.list(job_name: "test_suite").first
+return unless test_suite_run&.passed?</code></pre>
+
+    <p>
+      <code>list</code> returns <code>[]</code> when nothing with that name has
+      been created yet.
+    </p>
+
+    <h2>Running a job only on one branch</h2>
+
+    <pre><code class="language-ruby">return unless workflow_run.branch_name == "main"</code></pre>
+
+    <h2>Passing values to a job</h2>
+
+    <p>
+      Extra keyword arguments to <code>create</code> become the job's params,
+      and reach the job's container as upper-cased environment variables.
+    </p>
+
+    <pre><code class="language-ruby">deploy_job_run = workflow_run.job_runs.create(
+  job_name: "deploy",
+  task_adapter_name: "shell",
+  container_image_url: "registry.example.com/app:abc123",
+  idempotent: true
+)
+
+# The deploy job sees CONTAINER_IMAGE_URL=registry.example.com/app:abc123</code></pre>
+
+    <p>
+      Params can also be set after creation:
+    </p>
+
+    <pre><code class="language-ruby">deploy_job_run.update(container_image_url: image_url)</code></pre>
+
+    <h2>Passing values between jobs</h2>
+
+    <p>
+      A job can read another job's params.
+    </p>
+
+    <pre><code class="language-ruby">production_image_build_job_run = workflow_run.job_runs
+  .list(job_name: "production_image_build")
+  .find(&:passed?)
+
+image_url = SaturnCI::JobRun
+  .find(client: saturnci_client, id: production_image_build_job_run.id)
+  .params["container_image_url"]</code></pre>
+
+    <h2>Nesting a run under another</h2>
+
+    <p>
+      Pass <code>parent_job_run_id:</code> to <code>create</code> to show a run
+      nested under another one in the SaturnCI UI.
+    </p>
+
+    <pre><code class="language-ruby">workflow_run.job_runs.create(
+  job_name: "rubocop",
+  task_adapter_name: "shell",
+  parent_job_run_id: deploy_job_run.id,
+  idempotent: true
+)</code></pre>
+
+    <h2>Learn more</h2>
+
+    <ul>
+      <li><a href="./jobs.html">Jobs</a></li>
+      <li><a href="./environments.html">Environments</a></li>
+      <li><a href="./sdk.html">SDK</a></li>
+    </ul>
+  </div>
+</div>
