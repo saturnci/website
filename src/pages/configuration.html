@@ -6,11 +6,9 @@ nav: docs
 <div class="container page-container">
   <h1>Configuration</h1>
 
-  <p>
-    Here's how to get SaturnCI set up on your project.
-  </p>
-
   <div class="page-content">
+    <p>Here's how to get SaturnCI set up on your project.</p>
+
     <h2>Prerequisites</h2>
 
     <p>
@@ -22,41 +20,59 @@ nav: docs
     <h2>Sign up and connect your repository</h2>
 
     <ol>
-      <li>Visit <a href="https://app.saturnci.com/">https://app.saturnci.com</a> and sign up with GitHub</li>
+      <li>Visit <a href="https://app.saturnci.com">https://app.saturnci.com</a> and sign up with GitHub</li>
       <li>Install the SaturnCI GitHub App when prompted</li>
       <li>Select your repository</li>
     </ol>
 
     <h2>Configure your application</h2>
 
-    <p>
-      Run the following command from your application's root directory:
-    </p>
+    <p>Run the following command from your application's root directory:</p>
 
-    <pre><code class="language-bash">rails app:template LOCATION=https://raw.githubusercontent.com/saturnci/saturnci-config-templates/main/rails/template.rb</code></pre>
+    <pre><code>rails app:template LOCATION=https://raw.githubusercontent.com/saturnci/saturnci-config-templates/main/rails/template.rb</code></pre>
 
     <p>
-      This command will create a <code>.saturnci</code> directory in your project with all the necessary configuration files.
+      This creates a <code>.saturnci</code> directory in your project
+      containing everything SaturnCI needs:
     </p>
+
+    <ul>
+      <li>
+        <code>workflows/default_workflow.rb</code> &mdash; the
+        <a href="./workflows.html">workflow</a> SaturnCI runs on every push.
+        The one the template writes runs your test suite and finishes.
+      </li>
+      <li>
+        <code>jobs/test_suite/config.yml</code> &mdash; the test suite
+        <a href="./jobs.html">job</a>, which names the environment it runs in.
+      </li>
+      <li>
+        <code>environments/rspec/</code> &mdash; the
+        <a href="./environments.html">environment</a> the job runs in: a
+        <code>Dockerfile</code> and a <code>docker-compose.yml</code> with
+        Postgres and Chrome.
+      </li>
+    </ul>
 
     <p>
-      After running the template, commit the changes and push to GitHub:
+      It also adds <code>spec/support/saturnci_capybara.rb</code>, which points
+      your system specs at the Chrome service in that environment.
     </p>
 
-    <pre><code class="language-bash">git add .saturnci
+    <p>After running the template, commit the changes and push to GitHub:</p>
+
+    <pre><code>git add .saturnci
 git commit -m "Add SaturnCI configuration"
 git push</code></pre>
 
-    <p>
-      Your tests will run automatically on each push.
-    </p>
+    <p>Your tests will run automatically on each push.</p>
 
     <h2>Learn more</h2>
 
     <ul>
+      <li><a href="./workflows.html">Workflows</a></li>
       <li><a href="./jobs.html">Jobs</a></li>
       <li><a href="./environments.html">Environments</a></li>
     </ul>
-
   </div>
 </div>
