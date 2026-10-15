@@ -8,85 +8,114 @@ nav: docs
 
   <div class="page-content">
     <p>
-      The fundamental unit of work in SaturnCI is a <b>job</b>.
+      The fundamental unit of work in SaturnCI is a <b>job</b>. A job is a Ruby
+      script that runs inside an
+      <a href="./environments.html">environment</a>.
+      <a href="./workflows.html">Workflows</a> are what start jobs.
     </p>
+
+    <h2>Defining a job</h2>
 
     <p>
-      A job runs inside an
-      <a href="./environments.html">environment</a>. A job lives in a
-      directory under <code>.saturnci/jobs/</code> and names the environment
-      it runs in. Here is a job named <code>hello_world</code>:
+      A job lives in a directory under <code>.saturnci/jobs/</code>. The
+      directory holds a <code>config.yml</code>, which names the environment
+      the job runs in, and a script named after the job. Here is a job named
+      <code>hello_world</code>:
     </p>
-
-    <pre><code class="language-ruby"># .saturnci/jobs/hello_world/hello_world_job.rb
-
-class HelloWorldJob
-  def initialize(io: $stdout)
-    @io = io
-  end
-
-  def perform
-    @io.puts "hello world"
-  end
-end</code></pre>
 
     <pre><code class="language-yaml"># .saturnci/jobs/hello_world/config.yml
 
 environment: ruby</code></pre>
 
-    <h2>Triggering child jobs</h2>
+    <pre><code class="language-ruby"># .saturnci/jobs/hello_world/hello_world_job.rb
+
+class HelloWorldJob
+  def perform
+    puts "hello world"
+  end
+end
+
+if $PROGRAM_NAME == __FILE__
+  HelloWorldJob.new.perform
+end</code></pre>
 
     <p>
-      A job can trigger one or more child jobs by defining a
-      <b>transition</b> that returns them.
+      SaturnCI runs the script directly, so the <code>$PROGRAM_NAME</code>
+      guard is what actually invokes the job. The job passes or fails on the
+      script's exit status.
     </p>
-
-    <p>One child job:</p>
-
-    <pre><code class="language-ruby"># .saturnci/transitions/hello_world_transition.rb
-
-class HelloWorldTransition
-  def after(job_run)
-    [
-      { job_name: "goodbye_world" }
-    ]
-  end
-end</code></pre>
-
-    <p>Two child jobs:</p>
-
-    <pre><code class="language-ruby"># .saturnci/transitions/hello_world_transition.rb
-
-class HelloWorldTransition
-  def after(job_run)
-    [
-      { job_name: "goodbye_world" },
-      { job_name: "hello_again" }
-    ]
-  end
-end</code></pre>
-
-    <h2>The GitHub push</h2>
 
     <p>
-      The <code>github_push</code> job is triggered by a webhook that GitHub
-      sends to SaturnCI on every push. Its transition is where you say what
-      should happen on a push. Here it triggers the <code>test_suite</code> job:
+      A job that shells out can exit on the result of the command:
     </p>
 
-    <pre><code class="language-ruby"># .saturnci/transitions/github_push_transition.rb
+    <pre><code class="language-ruby"># .saturnci/jobs/rubocop/rubocop_job.rb
 
-class GitHubPushTransition
-  def after(job_run)
-    [
-      {
-        task_adapter_name: "rails_rspec",
-        job_name: "test_suite",
-        job_run_type: "test_suite_run",
-      }
-    ]
+class RubocopJob
+  def perform
+    system("bundle exec rubocop")
   end
+end
+
+if $PROGRAM_NAME == __FILE__
+  exit RubocopJob.new.perform
 end</code></pre>
 
+    <h2>Starting a job</h2>
+
+    <p>
+      Jobs are started from your <a href="./workflows.html">workflow</a>:
+    </p>
+
+    <pre><code class="language-ruby">hello_world_job_run = workflow_run.job_runs.create(
+  job_name: "hello_world",
+  task_adapter_name: "shell",
+  idempotent: true
+)
+
+hello_world_job_run.start</code></pre>
+
+    <h2>Task adapters</h2>
+
+    <p>
+      Every job run names a <b>task adapter</b>, which is what SaturnCI uses to
+      run the job and interpret its output.
+    </p>
+
+    <ul>
+      <li>
+        <code>shell</code> &mdash; runs the job's script. This is the adapter
+        for deployments, linters, image builds, and anything else that passes
+        or fails as a whole.
+      </li>
+      <li>
+        <code>rails_rspec</code> &mdash; runs a Rails app's RSpec suite,
+        splitting it across test runners and reporting individual test results.
+        Use this one with
+        <code>workflow_run.test_suite_runs.create</code>.
+      </li>
+      <li>
+        <code>rails_minitest</code> &mdash; the same, for Minitest.
+      </li>
+    </ul>
+
+    <h2>Choosing the service a job runs in</h2>
+
+    <p>
+      An environment can define more than one Docker Compose service. For test
+      suite jobs, <code>config.yml</code> says which service the tests run in:
+    </p>
+
+    <pre><code class="language-yaml"># .saturnci/jobs/test_suite/config.yml
+
+environment: rspec
+service: saturnci_test_app</code></pre>
+
+    <h2>Learn more</h2>
+
+    <ul>
+      <li><a href="./workflows.html">Workflows</a></li>
+      <li><a href="./environments.html">Environments</a></li>
+    </ul>
   </div>
 </div>
