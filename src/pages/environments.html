@@ -40,5 +40,42 @@ services:
     volumes:
       - ../../../:/app
     working_dir: /app</code></pre>
+
+    <p>
+      Jobs that use the <code>shell</code> task adapter run in the service
+      named <code>job</code>. Test suite jobs name their service in the job's
+      <code>config.yml</code>; see
+      <a href="./jobs.html">Jobs</a>.
+    </p>
+
+    <h2>Secrets and environment variables</h2>
+
+    <p>
+      The environment variables you set in your repository's Secrets section in
+      SaturnCI are written to a <code>.env</code> file next to the
+      environment's <code>docker-compose.yml</code>. To make a service see
+      them, pull the file in with <code>env_file</code>:
+    </p>
+
+    <pre><code class="language-yaml">services:
+  job:
+    env_file:
+      - .env</code></pre>
+
+    <p>
+      SaturnCI also passes your app's <code>.ruby-version</code> in as the
+      build argument <code>SATURNCI_RUBY_VERSION</code>, so a Dockerfile can
+      track the version your app actually uses:
+    </p>
+
+    <pre><code class="language-dockerfile">ARG SATURNCI_RUBY_VERSION
+FROM ruby:${SATURNCI_RUBY_VERSION}-slim</code></pre>
+
+    <h2>Learn more</h2>
+
+    <ul>
+      <li><a href="./jobs.html">Jobs</a></li>
+      <li><a href="./workflows.html">Workflows</a></li>
+    </ul>
   </div>
 </div>
