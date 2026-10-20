@@ -23,6 +23,26 @@ endpoints:
       commit_sha: "abc123"
       created_at: "2025-01-15T10:30:00Z"
 
+  POST /test_suite_runs:
+    description: Create a test suite run
+    request:
+      repository: "owner/name"
+      job_name: "test_suite"
+      task_adapter_name: "rails_rspec"
+      environment_name: "rspec"
+      service_name: "saturnci_test_app"
+      command: "bundle exec rspec"
+      branch_name: "main"
+      commit_hash: "abc123"
+      commit_message: "Fix the thing"
+      author_name: "Jane Doe"
+      workflow_run_id: "550e8400-e29b-41d4-a716-446655440000"
+      idempotent: true
+    response:
+      id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      url: "https://app.saturnci.com/repositories/550e8400-e29b-41d4-a716-446655440000/test_suite_runs/6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      status: "Not Started"
+
   POST /repositories:
     description: Create a repository
     request:

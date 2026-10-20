@@ -40,15 +40,13 @@ nav: docs
       <li>
         <code>workflows/default_workflow.rb</code> &mdash; the
         <a href="./workflows.html">workflow</a> SaturnCI runs on every push.
-        The one the template writes runs your test suite and finishes.
-      </li>
-      <li>
-        <code>jobs/test_suite/config.yml</code> &mdash; the test suite
-        <a href="./jobs.html">job</a>, which names the environment it runs in.
+        The one the template writes runs your test suite and finishes. Its
+        create call names the environment the suite runs in, the service that
+        runs it, and the command: <code>bundle exec rspec</code>.
       </li>
       <li>
         <code>environments/rspec/</code> &mdash; the
-        <a href="./environments.html">environment</a> the job runs in: a
+        <a href="./environments.html">environment</a> the test suite runs in: a
         <code>Dockerfile</code> and a <code>docker-compose.yml</code> with
         Postgres and Chrome.
       </li>

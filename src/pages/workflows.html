@@ -66,6 +66,9 @@ class DefaultWorkflow
     test_suite_run = workflow_run.test_suite_runs.create(
       job_name: "test_suite",
       task_adapter_name: "rails_rspec",
+      environment_name: "rspec",
+      service_name: "saturnci_test_app",
+      command: "bundle exec rspec",
       idempotent: true
     )
 

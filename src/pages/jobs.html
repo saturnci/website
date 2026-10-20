@@ -92,24 +92,41 @@ hello_world_job_run.start</code></pre>
         <code>rails_rspec</code> &mdash; runs a Rails app's RSpec suite,
         splitting it across test runners and reporting individual test results.
         Use this one with
-        <code>workflow_run.test_suite_runs.create</code>.
+        <code>workflow_run.test_suite_runs.create</code>; see
+        <a href="#test-suite-jobs">test suite jobs</a>.
       </li>
       <li>
         <code>rails_minitest</code> &mdash; the same, for Minitest.
       </li>
     </ul>
 
-    <h2>Choosing the service a job runs in</h2>
+    <h2 id="test-suite-jobs">Test suite jobs</h2>
 
     <p>
-      An environment can define more than one Docker Compose service. For test
-      suite jobs, <code>config.yml</code> says which service the tests run in:
+      A test suite job has no script and no <code>config.yml</code>. Everything
+      that defines it is on the create call in your workflow: the environment
+      it runs in, the Docker Compose service in that environment that runs the
+      tests, and the command that runs them.
     </p>
 
-    <pre><code class="language-yaml"># .saturnci/jobs/test_suite/config.yml
+    <pre><code class="language-ruby">test_suite_run = workflow_run.test_suite_runs.create(
+  job_name: "test_suite",
+  task_adapter_name: "rails_rspec",
+  environment_name: "rspec",
+  service_name: "saturnci_test_app",
+  command: "bundle exec rspec",
+  idempotent: true
+)
 
-environment: rspec
-service: saturnci_test_app</code></pre>
+test_suite_run.start</code></pre>
+
+    <p>
+      SaturnCI runs the command once with <code>--dry-run</code> to list the
+      examples, splits them across test runners, and then runs the command on
+      each runner's share, adding the flags it needs to collect results.
+      Anything that invokes RSpec works as the command, e.g.
+      <code>bundle exec appraisal rails-7.1 rspec</code>.
+    </p>
 
     <h2>Learn more</h2>
 
