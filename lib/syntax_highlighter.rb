@@ -1,3 +1,5 @@
+require 'cgi'
+
 module SyntaxHighlighter
 
   def highlight_code_blocks(content)
@@ -9,7 +11,7 @@ module SyntaxHighlighter
       lexer = Rouge::Lexer.find(language)
       formatter = Rouge::Formatters::HTML.new(css_class: 'highlight')
 
-      highlighted = formatter.format(lexer.lex(code))
+      highlighted = formatter.format(lexer.lex(CGI.unescapeHTML(code)))
 
       if filename
         "<div class=\"code-block\"><div class=\"code-filename\">#{filename}</div><pre class=\"highlight\"><code>#{highlighted}</code></pre></div>"
