@@ -1,8 +1,11 @@
-class BlogPostGenerator
-  attr_reader :title
+require "date"
 
-  def initialize(title:)
+class BlogPostGenerator
+  attr_reader :title, :date
+
+  def initialize(title:, date: Date.today)
     @title = title
+    @date = date
   end
 
   def slug
@@ -28,6 +31,7 @@ class BlogPostGenerator
       ---
       page_title: #{title}
       nav: #{slug}
+      date: "#{date.iso8601}"
       draft: true
       ---
     YAML

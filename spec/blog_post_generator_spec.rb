@@ -25,12 +25,13 @@ RSpec.describe BlogPostGenerator do
   end
 
   describe "#frontmatter" do
-    it "includes the title, slug, and draft flag" do
-      generator = BlogPostGenerator.new(title: "My Great Post")
+    it "includes the title, slug, date, and draft flag" do
+      generator = BlogPostGenerator.new(title: "My Great Post", date: Date.new(2026, 11, 3))
       expected = <<~YAML
         ---
         page_title: My Great Post
         nav: my-great-post
+        date: "2026-11-03"
         draft: true
         ---
       YAML
