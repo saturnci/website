@@ -1,0 +1,200 @@
+---
+page_title: Why I've Become Dependency-Skeptical
+nav: why-ive-become-dependency-skeptical
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Why I've Become Dependency-Skeptical</h1>
+
+  <div class="page-content">
+    <p>
+      With no offense intended to the great <a href="https://en.wikipedia.org/wiki/Terry_A._Davis">Terry Davis</a>,
+      you'd have to be crazy to write your own operating system from scratch.
+    </p>
+
+    <p>
+      At the other end of the standing-on-the-shoulders-of-giants spectrum,
+      the <a href="https://www.npmjs.com/package/is-even">is-even</a>,
+      does nothing more than provide a method that returns true if a given
+      number is even and false if it isn't, and is clearly not worth using.
+      (Not that that stops hundreds of thousands of people from using it,
+      sadly)
+    </p>
+
+    <p>
+      In between these two no-brainer examples lie many cases which require a
+      bit of pondering. Should you use a third-party library for things like
+      pagination? Search? CSS utilities? How should one decide these things?
+    </p>
+
+    <p>
+      Adopting a third-party library is like buying a puppy. You see it, you
+      like it, you bring it home, and then you realize that you have to feed
+      and water it for the next 15+ years. If you realize you don't actually
+      want the puppy, you can't just easily get rid of it. The kids will cry.
+      At some point the dog might take a crap on your floor. With all these
+      liabilities considered, it's a good idea to be quite certain you want a
+      dog before you commit to having one in your life.
+    </p>
+
+    <p>
+      That's why these days I only bring a new dependency into my codebase if
+      it's very clearly going to be worth it. To illustrate my (lack of)
+      appetite for third-party dependencies, here's the full
+      <code>Gemfile</code> for <a href="https://www.saturnci.com">SaturnCI</a>:
+    </p>
+
+    <pre><code class="language-ruby">source "https://rubygems.org"
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+ruby file: ".ruby-version"
+
+gem "rails", "~> 8.1.4"
+
+gem "bootsnap", require: false
+gem "bugsnag"
+gem "importmap-rails"
+gem "jbuilder"
+gem "mission_control-jobs"
+gem "net-ssh"
+gem "newrelic_rpm"
+gem "pg", "~> 1.1"
+gem "puma", ">= 8.0.2"
+gem "pundit"
+gem "rdoc", "7.0.4"
+gem "solid_cable"
+gem "solid_cache"
+gem "solid_queue"
+gem "sprockets-rails"
+gem "stimulus-rails"
+gem "turbo-rails", "~> 2.0"
+
+# For email delivery
+gem "postmark-rails"
+
+# For soft deletion
+gem "paranoia"
+
+gem "audited"
+gem "devise"
+gem "view_component", "~> 4.4"
+
+# For Digital Ocean
+gem "aws-sdk-s3"
+gem "droplet_kit"
+
+# For GitHub authentication
+gem "aws-sdk-secretsmanager", require: false
+gem "faraday-retry", require: false
+gem "jwt", require: false
+gem "octokit", require: false
+gem "omniauth-github"
+gem "omniauth-rails_csrf_protection"
+
+group :development, :test do
+  gem "capybara", ">= 3.37.1"
+  gem "debug", platforms: %i(mri)
+  gem "factory_bot_rails"
+  gem "faker"
+
+  gem "ostruct" # Needed for pry
+  gem "pry"
+  gem "readline" # Needed for pry
+
+  gem "rspec-rails"
+  gem "selenium-webdriver"
+  gem "simplecov", require: false
+  gem "webmock"
+
+  gem "dotenv-rails"
+end
+
+group :development do
+  gem "rubocop", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rails", require: false
+  gem "web-console"
+end</code></pre>
+
+    <p>My <code>package.json</code> is significantly smaller:</p>
+
+    <pre><code class="language-javascript">{
+  "name": "saturnci",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "jsdom": "^25.0.1",
+    "vitest": "^5.0.2"
+  },
+  "engines": {
+    "node": "&gt;=22.12.0"
+  }
+}</code></pre>
+
+    <p>
+      I use no library for pagination and I never will. Even though it's
+      initially cheaper to grab a pagination off the shelf and plug it in, I'm
+      making a bet that it would be more expensive over time to keep that
+      pagination gem up-to-date than to maintain my own pagination code.
+    </p>
+
+    <p>
+      I <i>certainly</i> don't use a UI library like Bootstrap or Tailwind. You
+      know what I bet happened to most Rails projects that used Bootstrap and
+      then tried to migrate to Tailwind? They now use an unholy mixture of
+      Bootstrap <i>and</i> Tailwind, and they always will. When some other
+      thing becomes more fashionable than Tailwind, these projects will
+      probably adopt the newer thing without dropping Bootstrap and
+      Tailwind. Since I intend to maintain <a href="https://www.saturnci.com/">SaturnCI</a>
+      for the next 20+ years, I've decided it's worth building my own, custom
+      CSS utility library, similar in spirit to Tailwind but without the
+      strings attached to a third party. My first-party library will never get
+      out-of-date because it's automatically always on the latest version. I'll
+      never have to migrate to something more fashionable because my library
+      was never fashionable in the first place. Maybe that sounds insane but I
+      really don't think it is.
+    </p>
+
+    <p>
+      When upgrading Rails apps, I've found that the trickiest part of the
+      upgrade is always updating the dependencies, and the trickiest
+      dependencies are always the JavaScript libraries. That's why I keep
+      JavaScript dependencies to an <i>absolute</i> minimum. For the first
+      couple years of the project, SaturnCI had no JavaScript dependencies at
+      all. It was only once the project's JavaScript got sufficiently
+      voluminous and complicated that I decided to bring in Vitest so I could
+      write tests directly for my JavaScript code instead of testing it
+      indirectly (but still thoroughly!) via system specs. I intend to add more
+      JavaScript libraries only as a last resort.
+    </p>
+
+    <p>
+      The fewer dependencies I have, the faster my app boots up, the shorter my
+      image build times are and the smaller my images are, meaning they're
+      faster to upload and download. Since I value short, fast feedback loops,
+      the amount of time that I have to spend waiting for a test to run locally
+      or on CI is something I take very seriously.
+    </p>
+
+    <p>
+      Does AI make a difference in deciding whether to adopt a dependency or
+      not? To me it absolutely does. Although owning dependencies is cheaper
+      now because AI can help keep dependencies up-to-date, I still of course
+      find a zero cost preferable to a small cost. If I want to for example
+      write my own pagination code instead of depending on a third-party
+      library, AI makes it easy to do so, and writing code for these sorts of
+      common needs is exactly the kind of job AI is good at and can be trusted
+      with.
+
+    <p>
+      For big, complex concerns such as browser manipulation or background job
+      processing, I'm grateful to be able to stand on the shoulders of giants.
+      For anything smaller than that, my default answer is no thank you.
+    </p>
+  </div>
+</div>
