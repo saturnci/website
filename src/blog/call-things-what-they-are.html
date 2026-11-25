@@ -1,0 +1,250 @@
+---
+page_title: Call Things What They Are
+nav: call-things-what-they-are
+date: "2026-11-25"
+---
+
+<div class="container page-container">
+  <h1>Call Things What They Are</h1>
+
+  <div class="page-content">
+    <p>
+      With no disrespect intended to Sandi Metz as a person, I think <a
+        href="https://www.amazon.com/Practical-Object-Oriented-Design-Agile-Primer/dp/0134456475">Practical
+        Object-Oriented Design in Ruby</a> (POODR) is a criminally overrated
+      book. For some reason, everyone loves it. They talk about it like
+      it's the Word of God. At the same time, I've never heard anyone share a
+      single concrete lesson they've learned from it. Suspicious.
+    </p>
+
+    <p>
+      Once in a while I study a passage of POODR so that I can find something
+      to disagree with and write a blog post about. In this sense, POODR for me
+      is a veritable gold mine!
+    </p>
+
+    <p>
+      The part I was looking at today was the code sample on page 38, from
+      Chapter 3, Managing Dependencies. Let's take a gander.
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  attr_reader :chainring, :cog, :rim, :tire
+  def initialize(chainring, cog, rim, tire)
+    @chainring = chainring
+    @cog       = cog
+    @rim       = rim
+    @tire      = tire
+  end
+
+  def gear_inches
+    ratio * Wheel.new(rim, tire).diameter
+  end
+
+  def ratio
+    chainring / cog.to_f
+  end
+# ...
+end
+
+class Wheel
+  attr_reader :rim, :tire
+  def initialize(rim, tire)
+    @rim  = rim
+    @tire = tire
+  end
+
+  def diameter
+    rim + (tire * 2)
+  end
+# ...
+end
+
+puts Gear.new(52, 11, 26, 1.5).gear_inches</code></pre>
+
+    <p>
+      This code violates one of the most simple, fundamental
+      and easy-to-follow rules in software design: <b>Call Things What They
+      Are</b>.
+    </p>
+
+    <p>
+      The formula behind the Call Things What They Are rule is as follows:
+
+      <ol>
+        <li>Take a thing. What is it? By what name do you call it?</li>
+        <li>Call it that.</li>
+      </ol>
+    </p>
+
+    <p>
+      Sadly, many programmers, judging by the code I read, <i>hate</i> the
+      Call Things What They Are rule. They absolutely hate it. If something is a
+      record, for example, they'll call it a <code>rec</code>, an
+      <code>rcd</code>, anything but what it actually is. In fact, a resistance to calling
+      things what they are isn't just a trait of the worst programmers, it seems to actually be the norm. Getting a
+      programmer to call something what it is is like trying to lower a cat
+      into a tub of water. They'll fight to the end. What's extra sad is that
+      LLMs have picked up this bad habit. If I had a dollar for every time I had
+      to tell Codex "call things what they are for fuck's sake!!!" (even though I already told
+      it in <code>AGENTS.md</code>) I would be a very rich man indeed.
+    </p>
+
+    <p>
+      Unfortunately, Sandi Metz seems to share this maddening resistance to
+      calling things what they are. Let's take a closer look at the <code>#diameter</code>
+      method from the example above.
+    </p>
+
+    <pre><code class="language-ruby">class Wheel
+  def diameter
+    rim + (tire * 2)
+  end
+end</code></pre>
+
+    <p>
+      I would have thought that the thing called <code>tire</code> represents a
+      tire. But it must not be, since you can't multiply a tire by 2. <code>tire</code>
+      must be some sort of numerical value. Of what? Apparently we multiply
+      <code>tire</code> by 2 and add it to <code>rim</code>. What's <code>rim</code> then?
+      Maybe that's a clue.
+    </p>
+
+    <p>
+      By now I obviously know better
+      than to think <code>rim</code> means rim. Like <code>tire</code>, <code>rim</code>
+      must also be a numerical value. I'll be honest with you, dear reader: I
+      couldn't figure out the meanings of these variables by thinking through
+      it on my own, nor by flipping through the book's pages. I had to go and ask Claude.
+      It told me that <code>tire</code> represents the thickness of the tire and
+      <code>rim</code> means the diameter of the rim. Obvious in hindsight, I supposed,
+      but I was sincerely stumped.
+    </p>
+
+    <p>
+      If it were me, the names I would have given to "rim diameter" and "tire
+      thickness" are <code>rim_diameter</code> and <code>tire_thickness</code>.
+      (Remember the rule: think of what the thing is and then call it that.)
+      Let's see how the code reads with those two names replaced.
+    </p>
+
+    <pre><code class="language-ruby">class Wheel
+  def diameter
+    rim_diameter + (tire_thickness * 2)
+  end
+end</code></pre>
+
+    <p>
+      See how the meaning just pops out when you Call Things What They Are?
+    </p>
+
+    <p>
+      Just for fun, let's label all the cases in the <code>Gear</code> class
+      where something is called something other than what it actually is.
+      There are a lot of them.
+    </p>
+
+    <pre><code class="language-ruby">class Gear
+  attr_reader :chainring, :cog, :rim, :tire
+  def initialize(chainring, cog, rim, tire)
+    @chainring = chainring # chainring_tooth_count
+    @cog       = cog       # cog_tooth_count
+    @rim       = rim       # rim_diameter
+    @tire      = tire      # tire_thickness
+  end
+
+  def gear_inches # size
+    ratio * Wheel.new(rim, tire).diameter
+  end
+
+  def ratio # gear_ratio
+    chainring / cog.to_f
+  end
+end
+
+puts Gear.new(52, 11, 26, 1.5).gear_inches</code></pre>
+
+  <p>
+    The final reckoning: 0 for 4 on the variables and 0 for 2 on the method
+    names. Let's address the method names first,
+    <code>gear_inches</code> and <code>ratio</code>.
+    Since <code>gear_inches</code> is an instance method on the <code>Gear</code>
+    object, the code that uses <code>gear_inches</code> might look something like this:
+  </p>
+
+  <pre><code class="language-ruby">gear = Gear.new(52, 11, 26, 1.5)
+puts gear.gear_inches</code></pre>
+
+  <p>
+    It doesn't make much sense. A gear doesn't have a gear. A gear has a
+    <i>size</i>. The <i>bicycle</i> has a gear. Look how much clearer this is:
+  </p>
+
+  <pre><code class="language-ruby">gear = Gear.new(52, 11, 26, 1.5)
+puts gear.size_inches</code></pre>
+
+  <p>
+    By the way, what's with the <code>_inches</code> suffix? Are we suffixing all
+    our inch values with <code>_inches</code> or are we not? It certainly doesn't
+    make sense to to just arbitrarily use that suffix for some inch values but
+    not others.
+    Here's the full POODR snippet, but following the Call Things What They Are rule.
+  </p>
+
+  <pre><code class="language-ruby">class Gear
+  attr_reader :chainring_tooth_count, :cog_tooth_count, :rim_diameter_inches, :tire_thickness_inches
+  def initialize(chainring_tooth_count, cog_tooth_count, rim_diameter_inches, tire_thickness_inches)
+    @chainring_tooth_count = chainring_tooth_count
+    @cog_tooth_count       = cog_tooth_count
+    @rim_diameter_inches   = rim_diameter_inches
+    @tire_thickness_inches = tire_thickness_inches
+  end
+
+  def size_inches
+    gear_ratio * Wheel.new(rim_diameter_inches, tire_thickness_inches).diameter_inches
+  end
+
+  def gear_ratio
+    chainring_tooth_count / cog_tooth_count.to_f
+  end
+# ...
+end
+
+class Wheel
+  attr_reader :rim_diameter_inches, :tire_thickness_inches
+  def initialize(rim_diameter_inches, tire_thickness_inches)
+    @rim_diameter_inches   = rim_diameter_inches
+    @tire_thickness_inches = tire_thickness_inches
+  end
+
+  def diameter_inches
+    rim_diameter_inches + (tire_thickness_inches * 2)
+  end
+# ...
+end
+
+puts Gear.new(52, 11, 26, 1.5).size_inches</code></pre>
+  <p>
+    Much easier to understand.
+  </p>
+
+  <p>
+    You may say: "Jason, you're being overly critical. These are just
+    examples!" I happen to think that when we're shown examples, they should
+    be <i>good</i> examples, not bad examples. In fact, it has been said
+    that examples should be exemplary. I agree.
+  </p>
+
+  <p>
+    The subject of POODR isn't performance or algorithms, it's software design.
+    Using grossly inaccurate names in a book teaching software design is like a
+    cooking school feeding you a frozen TV dinner as an example of the level of
+    excellence you should be striving for. It's not just unfitting, it's
+    downright insulting. The advice in POODR is almost universally loved.
+    People eat it right up. I myself take a taste once in a while but I find
+    that it usually doesn't agree with me. In fact, most of it
+    makes me want to puke.
+  </p>
+
+  </div>
+</div>
