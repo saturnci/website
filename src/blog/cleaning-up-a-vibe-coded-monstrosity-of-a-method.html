@@ -1,0 +1,50 @@
+---
+page_title: Cleaning up a Vibe-Coded Monstrosity of a Method
+nav: cleaning-up-a-vibe-coded-monstrosity-of-a-method
+draft: true
+---
+
+<div class="container page-container">
+  <h1>Cleaning up a Vibe-Coded Monstrosity of a Method</h1>
+
+  <div class="page-content">
+
+    <p>
+      When it came time to build a website and a blog for
+      <a href="/why-ive-become-dependency-skeptical.html">SaturnCI</a>,
+      I, being somewhat
+      <a href="/why-ive-become-dependency-skeptical.html">anti-dependency</a>,
+      decided to build my own static site generator.
+    </p>
+
+    <pre><code class="language-ruby">def generate_pages
+  layout_template = @source.layout('default')
+  all_pages = @source.pages
+
+  require_relative 'api_documentation'
+  openapi_file = File.join(@source.path, 'openapi.yml')
+  formatted_endpoints = APIDocumentation.new(openapi_file).formatted_endpoints
+  blog_list_html = blog_post_list_html(all_pages)
+
+  all_pages.each do |page|
+    og_description = if blog_post?(page)
+      Excerpt.from_html(page[:content])
+    else
+      DEFAULT_OG_DESCRIPTION
+    end
+
+    content = page[:content]
+    content = content.gsub('&#123;&#123;endpoints&#125;&#125;', formatted_endpoints) if formatted_endpoints
+    content = content.gsub('&#123;&#123;blog_posts&#125;&#125;', blog_list_html)
+    content = decorate_blog_post_content(content) if blog_post?(page)
+
+    page_with_content = page.merge(content: content)
+    html = render_page(page_with_content, layout_template, all_pages, og_description: og_description)
+
+    output_file = File.join(@output_dir, "#&#123;page[:filename]&#125;.html")
+    File.write(output_file, html)
+    puts "Generated: #&#123;output_file&#125;"
+  end
+end</code></pre>
+  </div>
+</div>
