@@ -4,6 +4,7 @@ require 'ostruct'
 require_relative 'syntax_highlighter'
 require_relative 'excerpt'
 require_relative 'rss_feed'
+require_relative 'blog_post_list'
 
 class SiteBuild
   include SyntaxHighlighter
@@ -80,7 +81,7 @@ class SiteBuild
     require_relative 'api_documentation'
     openapi_file = File.join(@source.path, 'openapi.yml')
     formatted_endpoints = APIDocumentation.new(openapi_file).formatted_endpoints
-    blog_list_html = blog_post_list_html(all_pages)
+    blog_list_html = BlogPostList.new(all_pages.select { |page| blog_post?(page) }).to_html
 
     all_pages.each do |page|
       og_description = if blog_post?(page)
@@ -109,15 +110,6 @@ class SiteBuild
     output_file = File.join(@output_dir, 'feed.xml')
     File.write(output_file, xml)
     puts "Generated: #{output_file}"
-  end
-
-  def blog_post_list_html(all_pages)
-    blog_posts = all_pages.select { |page| blog_post?(page) && !page[:frontmatter]['draft'] }
-    links = blog_posts.map { |blog_post|
-      title = blog_post[:frontmatter]['page_title'] || blog_post[:filename]
-      "<li><a href=\"#{blog_post[:filename]}.html\">#{title}</a></li>"
-    }.join("\n")
-    "<ul class=\"blog-post-list\">\n#{links}\n</ul>"
   end
 
 end
