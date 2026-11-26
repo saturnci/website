@@ -9,23 +9,8 @@ date: "2026-11-25"
 
   <div class="page-content">
     <p>
-      With no disrespect intended to Sandi Metz as a person, I think <a
-        href="https://www.amazon.com/Practical-Object-Oriented-Design-Agile-Primer/dp/0134456475">Practical
-        Object-Oriented Design in Ruby</a> (POODR) is a criminally overrated
-      book. For some reason, everyone loves it. They talk about it like
-      it's the Word of God. At the same time, I've never heard anyone share a
-      single concrete lesson they've learned from it. Suspicious.
-    </p>
-
-    <p>
-      Once in a while I study a passage of POODR so that I can find something
-      to disagree with and write a blog post about. In this sense, POODR for me
-      is a veritable gold mine!
-    </p>
-
-    <p>
-      The part I was looking at today was the code sample on page 38, from
-      Chapter 3, Managing Dependencies. Let's take a gander.
+      On page 38 of <a href="https://www.amazon.com/Practical-Object-Oriented-Design-Agile-Primer/dp/0134456475">Practical Object-Oriented Design in Ruby</a> (POODR) is the following code snippet,
+      one that recurs in some form many times throughout the book.
     </p>
 
     <pre><code class="language-ruby">class Gear
@@ -63,37 +48,26 @@ end
 puts Gear.new(52, 11, 26, 1.5).gear_inches</code></pre>
 
     <p>
-      This code violates one of the most simple, fundamental
-      and easy-to-follow rules in software design: <b>Call Things What They
-      Are</b>.
+      This code has always offended me. It violates one of the most simple and
+      fundamental rules in software design: <b>Call Things What They Are</b>.
     </p>
 
     <p>
-      The formula behind the Call Things What They Are rule is as follows:
-
-      <ol>
-        <li>Take a thing. What is it? By what name do you call it?</li>
-        <li>Call it that.</li>
-      </ol>
+      Sadly, many programmers, judging by the code I read, <i>hate</i> the Call
+      Things What They Are rule. If something is a <code>page_count</code>, for
+      example, they'll call it a <code>page</code>, a <code>count</code>,
+      anything but what it actually is. In fact, a resistance to calling things
+      what they are isn't just a trait of the worst programmers, it seems to
+      actually be the norm. What's extra sad is that LLMs have picked up this
+      bad habit. If I had a dollar for every time I had to tell Codex "call
+      things what they are for fuck's sake!!!" (even though I already told it
+      in <code>AGENTS.md</code>) I would be a very rich man indeed.
     </p>
 
     <p>
-      Sadly, many programmers, judging by the code I read, <i>hate</i> the
-      Call Things What They Are rule. They absolutely hate it. If something is a
-      record, for example, they'll call it a <code>rec</code>, an
-      <code>rcd</code>, anything but what it actually is. In fact, a resistance to calling
-      things what they are isn't just a trait of the worst programmers, it seems to actually be the norm. Getting a
-      programmer to call something what it is is like trying to lower a cat
-      into a tub of water. They'll fight to the end. What's extra sad is that
-      LLMs have picked up this bad habit. If I had a dollar for every time I had
-      to tell Codex "call things what they are for fuck's sake!!!" (even though I already told
-      it in <code>AGENTS.md</code>) I would be a very rich man indeed.
-    </p>
-
-    <p>
-      Unfortunately, Sandi Metz seems to share this maddening resistance to
-      calling things what they are. Let's take a closer look at the <code>#diameter</code>
-      method from the example above.
+      Unfortunately, Sandi Metz, the author of POODR, seems to share this
+      common resistance to calling things what they are. Let's take a closer
+      look at the <code>#diameter</code> method from the example above.
     </p>
 
     <pre><code class="language-ruby">class Wheel
@@ -117,14 +91,13 @@ end</code></pre>
       couldn't figure out the meanings of these variables by thinking through
       it on my own, nor by flipping through the book's pages. I had to go and ask Claude.
       It told me that <code>tire</code> represents the thickness of the tire and
-      <code>rim</code> means the diameter of the rim. Obvious in hindsight, I supposed,
+      <code>rim</code> means the diameter of the rim. Obvious in hindsight, I suppose,
       but I was sincerely stumped.
     </p>
 
     <p>
       If it were me, the names I would have given to "rim diameter" and "tire
       thickness" are <code>rim_diameter</code> and <code>tire_thickness</code>.
-      (Remember the rule: think of what the thing is and then call it that.)
       Let's see how the code reads with those two names replaced.
     </p>
 
@@ -166,7 +139,7 @@ puts Gear.new(52, 11, 26, 1.5).gear_inches</code></pre>
 
   <p>
     The final reckoning: 0 for 4 on the variables and 0 for 2 on the method
-    names. Let's address the method names first,
+    names. Ouch. Let's address the method names first,
     <code>gear_inches</code> and <code>ratio</code>.
     Since <code>gear_inches</code> is an instance method on the <code>Gear</code>
     object, the code that uses <code>gear_inches</code> might look something like this:
@@ -184,11 +157,12 @@ puts gear.gear_inches</code></pre>
 puts gear.size_inches</code></pre>
 
   <p>
-    By the way, what's with the <code>_inches</code> suffix? Are we suffixing all
-    our inch values with <code>_inches</code> or are we not? It certainly doesn't
-    make sense to to just arbitrarily use that suffix for some inch values but
-    not others.
-    Here's the full POODR snippet, but following the Call Things What They Are rule.
+    Another problem is the inconsistent application of the <code>_inches</code>
+    suffix. Are we suffixing all our inch values with <code>_inches</code> or
+    are we not? It certainly doesn't make sense to to just arbitrarily use that
+    suffix for some inch values but not others. Here's the full POODR snippet,
+    but following the Call Things What They Are rule and with the unit suffix
+    inconsistency fixed.
   </p>
 
   <pre><code class="language-ruby">class Gear
@@ -224,26 +198,22 @@ class Wheel
 end
 
 puts Gear.new(52, 11, 26, 1.5).size_inches</code></pre>
+
   <p>
-    Much easier to understand.
+    Much easier to understand. I can't tell you how many times I've done a
+    sweep through a piece of legacy code, changing nothing but the variable
+    names, and seen an utter transformation in the understandability of the
+    whole.
   </p>
 
   <p>
-    You may say: "Jason, you're being overly critical. These are just
-    examples!" I happen to think that when we're shown examples, they should
-    be <i>good</i> examples, not bad examples. In fact, it has been said
-    that examples should be exemplary. I agree.
-  </p>
-
-  <p>
-    The subject of POODR isn't performance or algorithms, it's software design.
-    Using grossly inaccurate names in a book teaching software design is like a
-    cooking school feeding you a frozen TV dinner as an example of the level of
-    excellence you should be striving for. It's not just unfitting, it's
-    downright insulting. The advice in POODR is almost universally loved.
-    People eat it right up. I myself take a taste once in a while but I find
-    that it usually doesn't agree with me. In fact, most of it
-    makes me want to puke.
+    Many concepts in software design are hard to learn: <a
+      href="https://www.saturnci.com/my-agent-skill-for-test-driven-development.html">test-driven
+      development</a>, object-oriented programming, abstraction, domain
+    modeling. Learning to simply Call Things What They Are is trivial. The
+    payoff is immense. All you have to do is invest a few minutes of thought on
+    your variable names up front, then you reap the rewards over and over
+    forever.
   </p>
 
   </div>
