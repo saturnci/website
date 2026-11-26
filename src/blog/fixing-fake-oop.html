@@ -1,7 +1,7 @@
 ---
 page_title: Fixing Fake OOP
 nav: fixing-fake-oop
-date: "2026-06-06"
+date: "2026-10-30"
 draft: true
 ---
 
@@ -10,30 +10,33 @@ draft: true
 
   <div class="page-content">
     <p>
-      What is a program&mdash;a software system&mdash;made of? Superficially,
-      a software system is made of code. But really, it's made of <i>ideas</i>.
+      What is a program&mdash;a software system&mdash;made of? In a sense, a
+      software system is made of code. But in a more important sense, a
+      software system is made of <i>ideas</i>.
     </p>
 
     <p>
-      Perhaps there's a universe where the manuscript for <i>Jurassic Park</i>
-      got tragically destroyed just after Michael Critchton got done writing
-      it. No big deal. The <i>essence</i> of a novel lies not in the specific
-      words on the page but in the author's mind. If Michael Critchton had had
-      to rewrite <i>Jurassic Park</i> from scratch, the wording would have
-      ended up different but the story would probably have been just as good.
+      The quality of the ideas in a software system sets the upper limit for
+      the quality of the code. If a program's UI is stupid and confusing, then
+      the code will probably be stupid and confusing too, because the code
+      probably reflects the UI.
     </p>
 
     <p>
-      The essence of a software system, what I'll call its <b>conceptual
-      framework</b>, is a ghostly thing, floating somewhere in the ether, with
-      no physical instantiation. A system's conceptual framework lies
-      <i>upstream</i> of any physical instantiation. The quality of a system's
-      conceptual framework sets the ceiling on the quality of the system's
-      code.
+      Building a software system tends to involve looking at a part of the
+      world and deciding how to slice up that part of the world into useful
+      abstractions, what some people call "domain modeling". It's something
+      which, as of this writing (November 2026), LLMs are unfortunately not
+      great at. Given LLMs' weak ability to conceive of useful models of the
+      world and use them in code, it's not surprising to me that LLMs are also
+      less than spectacular at object-oriented programming, which I see as the
+      act of taking domain models and expressing them in code.
     </p>
 
     <p>
-      Where does a system's conceptual framework come from?
+      I recently asked Claude to write me some code related to API
+      documentation. Here is its apparent attempt at writing something
+      "object-oriented".
     </p>
 
     <pre><code class="language-ruby">require 'yaml'
@@ -63,5 +66,94 @@ class APIDocumentation
     end.join("\n\n")
   end
 end</code></pre>
+
+    <p>
+      Excuse me while I barf. Evidently the LLM thought to itself: <i>What should
+      the models in our API documentation system be? I guess we'll want a model
+      called 'API Documentation'.</i> No, "API Documentation" is not a model.
+      There's no such thing as "an API documentation".
+    </p>
+
+    <p>
+      How might we improve this code? My go-to answer is to look at the call
+      sites. When we look at the places where the ill-conceived
+      <code>APIDocumentation</code> class is used, how do those usages read?
+      The sole place it's used is this big nasty embarrassment of a function
+      called <code>generate_pages</code>:
+    </p>
+
+    <pre><code class="language-ruby">def generate_pages
+  layout_template = @source.layout('default')
+  all_pages = @source.pages
+
+  require_relative 'api_documentation'
+  openapi_file = File.join(@source.path, 'openapi.yml')
+  formatted_endpoints = APIDocumentation.new(openapi_file).formatted_endpoints
+  blog_list_html = blog_post_list_html(all_pages)
+
+  all_pages.each do |page|
+    og_description = if blog_post?(page)
+      Excerpt.from_html(page[:content])
+    else
+      DEFAULT_OG_DESCRIPTION
+    end
+
+    content = page[:content]
+    content = content.gsub('\{\{endpoints\}\}', formatted_endpoints) if formatted_endpoints
+    content = content.gsub('\{\{blog_posts\}\}', blog_list_html)
+    content = decorate_blog_post_content(content) if blog_post?(page)
+
+    page_with_content = page.merge(content: content)
+    html = render_page(page_with_content, layout_template, all_pages, og_description: og_description)
+
+    output_file = File.join(@output_dir, "#{page[:filename]}.html")
+    File.write(output_file, html)
+    puts "Generated: #{output_file}"
+  end
+end</code></pre>
+
+    <p>
+      Even though the object is called <code>APIDocumentation</code>, implying
+      that API documentation is the essence of this code, it looks like the
+      actual usage of <code>APIDocumentation</code> is all about
+      <code>formatted_endpoints</code>. By looking at
+      <code>APIDocumentation#formatted_endpoints</code> above, I can see that the
+      method returns <code>APIEndpoint.new(endpoint_yaml).to_html</code>. I
+      wonder what <code>APIEndpoint</code> is all about.
+    </p>
+
+    <pre><code class="language-ruby">require 'yaml'
+require 'json'
+require_relative 'curl_command'
+
+class APIEndpoint
+  def initialize(endpoint_yaml)
+    @data = YAML.load(endpoint_yaml)
+  end
+
+  def format_response(response_data)
+    JSON.pretty_generate(response_data)
+  end
+
+  def to_html
+    curl = CurlCommand.new(
+      { @data['endpoint_key'] => { 'request' => @data['request'], 'response' => @data['response'] } },
+      @data['base_url'],
+      @data['auth']
+    ).to_s
+
+    response_json = format_response(@data['response'])
+
+    "&lt;hr&gt;\n\n&lt;h2&gt;#{@data['description']}&lt;/h2&gt;\n&lt;p&gt;&lt;code&gt;#{@data['endpoint_key']}&lt;/code&gt;&lt;/p&gt;\n&lt;pre&gt;&lt;code&gt;#{curl}&lt;/code&gt;&lt;/pre&gt;\n&lt;p&gt;Response:&lt;/p&gt;\n&lt;pre&gt;&lt;code class=\"language-json\"&gt;#{response_json}&lt;/code&gt;&lt;/pre&gt;"
+  end
+end</code></pre>
+
+    <p>
+      I have to confess that I don't understand this code. To me, the existence
+      of <code>APIEndpoint#to_html</code> implies that we're taking an API
+      endpoint and converting it to HTML. What might it mean to convert an API
+      endpoint to HTML? I don't think it's a coherent idea. So what's really
+      going on?
+    </p>
   </div>
 </div>
